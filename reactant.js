@@ -1,7 +1,7 @@
 'use strict'
 
 if(typeof require !== 'undefined') {
-    var EventDispatcher = require('./EventDispatcher')
+    var EventDispatcher = require('./eventdispatcher')
 }
 
 function equals(a, b) {

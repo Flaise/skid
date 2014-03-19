@@ -1,7 +1,7 @@
 'use strict'
 
 if(typeof require !== 'undefined') {
-    var LinkedList = require('./LinkedList')
+    var LinkedList = require('./linkedlist')
     var bind_until = require('./index').bind_until
 }
 

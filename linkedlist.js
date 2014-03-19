@@ -1,3 +1,4 @@
+'use strict'
 
 function LinkedListNode(element) {
     this.value = element
@@ -206,3 +207,7 @@ Object.defineProperties(LinkedList.prototype, {
         return result
     }}
 })
+
+if(typeof module !== 'undefined') {
+    module.exports = LinkedList
+}

@@ -1,3 +1,8 @@
+'use strict'
+
+if(typeof require !== 'undefined') {
+    var EventDispatcher = require('./EventDispatcher')
+}
 
 function equals(a, b) {
     if(a === b)
@@ -30,8 +35,9 @@ Reactant.prototype = {
         this.super_proc(prev, curr)
     },
     listen_pc: function(callback) {
+        var result = this.listen(callback)  /// TODO: test for removal called during first call of callback
         callback(undefined, this.value)
-        return this.listen(callback)
+        return result
     },
     and: function(other) {
         return this.compose(other, function(a, b) { return a && b })
@@ -117,3 +123,7 @@ Object.defineProperties(
         }
     }
 )
+
+if(typeof module !== 'undefined') {
+    module.exports = Reactant
+}

@@ -21,6 +21,29 @@ function bind_until(func, onUnbindGroup) {
     return result
 }
 
+function setInterval_rm(callback, delay) {
+    var interval = setInterval(callback, delay)
+    return bind_until(function() { clearInterval(interval) })
+}
+function setTimeout_rm(callback, delay) {
+    function execute() {
+        var delay = dest - Date.now()
+        if(delay > 0)
+            timeout = setTimeout(execute, delay)
+        else {
+            timeout = undefined
+            callback()
+        }
+    }
+
+    var dest = Date.now() + delay
+    var timeout = setTimeout(execute, delay)
+    return bind_until(function() { if(timeout !== undefined) clearTimeout(timeout) })
+}
+
+
 if(typeof exports !== 'undefined') {
     exports.bind_until = bind_until
+    exports.setInterval_rm = setInterval_rm
+    exports.setTimeout_rm = setTimeout_rm
 }

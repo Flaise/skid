@@ -183,9 +183,17 @@ LinkedList.prototype = {
     clear: function() {
         this.head.next = this.tail
     },
+
+    /*
+     * Calls predicate on each element until predicate returns true. Returns whether predicate returned true.
+     */
     some: function(predicate) {
         return this.someNode(function some_body(node) { return predicate(node.value) })
     },
+
+    /*
+     * Calls predicate on each node until predicate returns true. Returns whether predicate returned true.
+     */
     someNode: function(predicate) {
         var node = this.head
         while(true) {

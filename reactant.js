@@ -4,16 +4,6 @@ if(typeof require !== 'undefined') {
     var EventDispatcher = require('./eventdispatcher')
 }
 
-function equals(a, b) {
-    if(a === b)
-        return true
-    if(a && a.equals)
-        return a.equals(b)
-    if(b && b.equals)
-        return b.equals(a)
-    return false
-}
-
 function Reactant(value) {
     EventDispatcher.call(this)
     this.value = value
@@ -29,7 +19,7 @@ Reactant.prototype = {
     proc: function() {
         var prev = this.lastValue
         var curr = this.value
-        if(equals(prev, curr)) return
+        if(this.equals(prev, curr)) return
 
         this.lastValue = curr // must be saved here because it might be altered during event propagation
         this.super_proc(prev, curr)
@@ -102,6 +92,18 @@ Reactant.prototype = {
         var removeB = b.listen(result.proc.bind(result))
 
         return result
+    },
+    assignment: function(value) {
+        this.setFunc(function() { return value })
+    },
+    equals: function(a, b) {
+        if(a === b)
+            return true
+        if(a && a.equals)
+            return a.equals(b)
+        if(b && b.equals)
+            return b.equals(a)
+        return false
     }
 }
 Object.defineProperties(
@@ -112,7 +114,7 @@ Object.defineProperties(
                 return undefined
             },
             set: function(value) {
-                this.setFunc(function() { return value })
+                this.assignment(value)
             }
         },
         not: {

@@ -53,9 +53,9 @@ Reactant.prototype = {
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
         this.listen(function(prev, curr) {
-            if(curr === target) // Use ==, ===, or deepEquals?? Might change depending on task.
+            if(this.equals(curr, target))
                 result.proc()
-        })
+        }.bind(this))
         return result
     },
     onNot: function(target) {
@@ -63,9 +63,9 @@ Reactant.prototype = {
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
         this.listen(function(prev, curr) {
-            if(curr !== target)
+            if(!this.equals(curr, target))
                 result.proc()
-        })
+        }.bind(this))
         return result
     },
     /////////////////////////////////////////////// TODO: reactant.filter
@@ -122,6 +122,29 @@ Object.defineProperties(
         },
         negative: {
             get: function() { return this.transform(function(a) { return -a }) }
+        },
+        anyTruthy: {
+            get: function() {
+                var result = new EventDispatcher()
+
+                this.listen(function(prev, curr) {
+                    if(curr)
+                        result.proc()
+                })
+                return result
+            }
+        },
+        anyFalsy: {
+            get: function() {
+                // TODO: EventDispatcher.transform
+                var result = new EventDispatcher()
+
+                this.listen(function(prev, curr) {
+                    if(!curr)
+                        result.proc()
+                })
+                return result
+            }
         }
     }
 )

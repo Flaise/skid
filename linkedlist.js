@@ -90,6 +90,20 @@ LinkedList.prototype = {
         this.tail.insertBefore(node)
         return node
     },
+    removeFirst: function() {
+        var node = this.head.next
+        if(node === this.tail)
+            throw new Error()
+        node.remove()
+        return node.value
+    },
+    removeLast: function() {
+        var node = this.tail.prev
+        if(node === this.head)
+            throw new Error()
+        node.remove()
+        return node.value
+    },
     getFirst: function() {
         return this.head.next.value
     },

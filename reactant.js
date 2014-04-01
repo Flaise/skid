@@ -7,6 +7,7 @@ if(typeof require !== 'undefined') {
 function Reactant(value) {
     EventDispatcher.call(this)
     this.value = value
+    this.breakHierarchy = undefined
 }
 Reactant.prototype = {
     __proto__: EventDispatcher.prototype,
@@ -104,6 +105,11 @@ Reactant.prototype = {
         if(b && b.equals)
             return b.equals(a)
         return false
+    },
+    depend: function(transformation, reactant) {
+        this.setFunc(function() {
+            return transformation(reactant.value)
+        }, reactant)
     }
 }
 Object.defineProperties(

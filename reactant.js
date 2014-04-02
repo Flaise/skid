@@ -110,6 +110,11 @@ Reactant.prototype = {
         this.setFunc(function() {
             return transformation(reactant.value)
         }, reactant)
+    },
+    echo: function(reactant) {
+        this.setFunc(function() {
+            return reactant.value
+        }, reactant)
     }
 }
 Object.defineProperties(

@@ -20,7 +20,7 @@ Reactant.prototype = {
     proc: function() {
         var prev = this.lastValue
         var curr = this.value
-        if(this.equals(prev, curr)) return
+        if(this.equality(prev, curr)) return
 
         this.lastValue = curr // must be saved here because it might be altered during event propagation
         this.super_proc(prev, curr)
@@ -54,7 +54,7 @@ Reactant.prototype = {
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
         this.listen(function(prev, curr) {
-            if(this.equals(curr, target))
+            if(this.equality(curr, target))
                 result.proc()
         }.bind(this))
         return result
@@ -64,7 +64,7 @@ Reactant.prototype = {
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
         this.listen(function(prev, curr) {
-            if(!this.equals(curr, target))
+            if(!this.equality(curr, target))
                 result.proc()
         }.bind(this))
         return result
@@ -97,7 +97,7 @@ Reactant.prototype = {
     assignment: function(value) {
         this.setFunc(function() { return value })
     },
-    equals: function(a, b) {
+    equality: function(a, b) {
         if(a === b)
             return true
         if(a && a.equals)

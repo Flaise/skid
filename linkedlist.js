@@ -5,6 +5,7 @@ function LinkedListNode(element) {
     this._next = undefined
     this._prev = undefined
     this.removeUntil = undefined
+    this.removed = false
 }
 LinkedListNode.prototype = {
     insertAfter: function(node) {

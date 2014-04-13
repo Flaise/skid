@@ -175,3 +175,36 @@ test('no message sent to listeners added during procation', 1, function() {
     })
     dispatcher.proc()
 })
+test('two consecutive once-only listeners getting called', 2, function() {
+    var a = false
+    var b = false
+    var dispatcher = new EventDispatcher()
+    dispatcher.listenOnce(function() { a = true })
+    dispatcher.listenOnce(function() { b = true })
+    dispatcher.proc()
+    ok(a, 'first')
+    ok(b, 'second')
+})
+test('two consecutive once-only listeners with an until hook', 2, function() {
+    var a = false
+    var b = false
+    var dispatcher = new EventDispatcher()
+    var end = new EventDispatcher()
+    dispatcher.listenOnce(function() { a = true }).until(end)
+    dispatcher.listenOnce(function() { b = true })
+    dispatcher.proc()
+    ok(a, 'first')
+    ok(b, 'second')
+})
+test('two consecutive once-only listeners with an until hook that fires', function() {
+    var a = false
+    var b = false
+    var dispatcher = new EventDispatcher()
+    var end = new EventDispatcher()
+    dispatcher.listenOnce(function() { a = true }).until(end)
+    dispatcher.listenOnce(function() { b = true })
+    end.proc()
+    dispatcher.proc()
+    ok(!a, 'first')
+    ok(b, 'second')
+})

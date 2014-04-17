@@ -47,27 +47,22 @@ Reactant.prototype = {
         return result
     },
     onCondition: function(predicate) {
-        return this.transform(predicate).on(true)
+        var result = new EventDispatcher()
+        this.listen(function(prev, curr) {
+            if(predicate(prev, curr))
+                result.proc()
+        })
+        return result
     },
     on: function(target) {
-        var result = new EventDispatcher()
-
-        ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
-        this.listen(function(prev, curr) {
-            if(this.equality(curr, target))
-                result.proc()
+        return this.onCondition(function(prev, curr) {
+            return this.equality(curr, target)
         }.bind(this))
-        return result
     },
     onNot: function(target) {
-        var result = new EventDispatcher()
-
-        ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
-        this.listen(function(prev, curr) {
-            if(!this.equality(curr, target))
-                result.proc()
+        return this.onCondition(function(prev, curr) {
+            return !this.equality(curr, target)
         }.bind(this))
-        return result
     },
     /////////////////////////////////////////////// TODO: reactant.filter
 

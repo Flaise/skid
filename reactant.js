@@ -64,6 +64,19 @@ Reactant.prototype = {
             return !this.equality(curr, target)
         }.bind(this))
     },
+    
+    onCondition_pc: function(predicate, callback) {
+        var result = this.onCondition(predicate).listen(callback)
+        if(predicate(undefined, this.value))
+            callback()
+        return result
+    },
+    on_pc: function(target, callback) {
+        return this.onCondition_pc(function(prev, curr) {
+            return this.equality(curr, target)
+        }.bind(this), callback)
+    },
+    
     /////////////////////////////////////////////// TODO: reactant.filter
 
     setFuncSilent: function(func, onMod) {

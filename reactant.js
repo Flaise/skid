@@ -78,6 +78,10 @@ Reactant.prototype = {
     },
     
     /////////////////////////////////////////////// TODO: reactant.filter
+    
+    valueFunc: function() {
+        return undefined
+    },
 
     setFuncSilent: function(func, onMod) {
         if(this.breakHierarchy) this.breakHierarchy()
@@ -129,8 +133,12 @@ Object.defineProperties(
     Reactant.prototype, {
         value: {
             get: function() {
-                if(this.valueFunc) return this.valueFunc()
-                return undefined
+                /*
+                 * Cannot return lastValue directly because reactants whose values depend on this
+                 * reactant cannot fire events correctly under the current implementation without
+                 * calling the valueFunc each time.
+                 */
+                return this.valueFunc()
             },
             set: function(value) {
                 this.assignment(value)

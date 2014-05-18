@@ -26,8 +26,10 @@ Reactant.prototype = {
         this.super_proc(prev, curr)
     },
     listen_pc: function(callback) {
-        var result = this.listen(callback)  /// TODO: test for removal called during first call of callback
+        var result = this.listen(callback)
         callback(undefined, this.value)
+        // Don't have to check to see if the callback was removed because its removal wasn't made
+        // accessible to any other stack frame yet.
         return result
     },
     and: function(other) {

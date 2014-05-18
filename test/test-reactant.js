@@ -223,3 +223,53 @@ test('reactant event composition with itself', function() {
     reactant.value = 5
     reactant.value = 6
 })
+test('truthy events', function() {
+    var counter = 0
+    var reactant = new Reactant(0)
+    reactant.anyTruthy.listen(function() {
+        counter += 1
+    })
+    reactant.value = 1
+    strictEqual(counter, 1)
+    reactant.value = 2
+    strictEqual(counter, 2)
+    reactant.value = 0
+    strictEqual(counter, 2)
+    reactant.value = false
+    strictEqual(counter, 2)
+    reactant.value = true
+    strictEqual(counter, 3)
+    reactant.value = 'asdf'
+    strictEqual(counter, 4)
+    reactant.value = ''
+    strictEqual(counter, 4)
+    reactant.value = [1]
+    strictEqual(counter, 5)
+    reactant.value = null
+    strictEqual(counter, 5)
+})
+test('falsy events', function() {
+    var counter = 0
+    var reactant = new Reactant(0)
+    reactant.anyFalsy.listen(function() {
+        counter += 1
+    })
+    reactant.value = 1
+    strictEqual(counter, 0)
+    reactant.value = 2
+    strictEqual(counter, 0)
+    reactant.value = 0
+    strictEqual(counter, 1)
+    reactant.value = false
+    strictEqual(counter, 2)
+    reactant.value = true
+    strictEqual(counter, 2)
+    reactant.value = 'asdf'
+    strictEqual(counter, 2)
+    reactant.value = ''
+    strictEqual(counter, 3)
+    reactant.value = [1]
+    strictEqual(counter, 3)
+    reactant.value = null
+    strictEqual(counter, 4)
+})

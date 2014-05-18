@@ -181,29 +181,26 @@ var Reactant = (function () {
         enumerable: true,
         configurable: true
     });
+
+    Reactant.prototype.booleanEvent = function (target) {
+        var result = new EventDispatcher();
+
+        this.listen(function (prev, curr) {
+            if (!!curr === target)
+                result.proc();
+        });
+        return result;
+    };
     Object.defineProperty(Reactant.prototype, "anyTruthy", {
         get: function () {
-            var result = new EventDispatcher();
-
-            this.listen(function (prev, curr) {
-                if (curr)
-                    result.proc();
-            });
-            return result;
+            return this.booleanEvent(true);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Reactant.prototype, "anyFalsy", {
         get: function () {
-            // TODO: EventDispatcher.transform
-            var result = new EventDispatcher();
-
-            this.listen(function (prev, curr) {
-                if (!curr)
-                    result.proc();
-            });
-            return result;
+            return this.booleanEvent(false);
         },
         enumerable: true,
         configurable: true

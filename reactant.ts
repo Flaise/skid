@@ -145,24 +145,21 @@ class Reactant {
     get negative() {
         return this.transform(a => -a)
     }
-    get anyTruthy() {
+    
+    booleanEvent(target:boolean) {
         var result = new EventDispatcher()
 
         this.listen(function(prev, curr) {
-            if(curr)
+            if(!!curr === target)
                 result.proc()
         })
         return result
     }
+    get anyTruthy() {
+        return this.booleanEvent(true)
+    }
     get anyFalsy() {
-        // TODO: EventDispatcher.transform
-        var result = new EventDispatcher()
-
-        this.listen(function(prev, curr) {
-            if(!curr)
-                result.proc()
-        })
-        return result
+        return this.booleanEvent(false)
     }
 }
 Reactant.prototype['__proto__'] = EventDispatcher.prototype

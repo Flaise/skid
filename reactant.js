@@ -1,11 +1,12 @@
 'use strict';
-if (typeof require !== 'undefined') {
-    var EventDispatcher = require('./eventdispatcher');
-}
+if (typeof require !== 'undefined')
+    var EventDispatcher_ = require('./eventdispatcher');
+else
+    var EventDispatcher_ = EventDispatcher;
 
 var Reactant = (function () {
     function Reactant(value) {
-        EventDispatcher.call(this);
+        EventDispatcher_.call(this);
         this.value = value;
     }
     Reactant.prototype.assignment = function (value) {
@@ -26,12 +27,9 @@ var Reactant = (function () {
 
         this.valueFunc = func;
 
-        if (onMod)
-            this.unlink = onMod.listen(function () {
-                return _this.proc();
-            });
-        else
-            this.unlink = undefined;
+        this.unlink = onMod ? onMod.listen(function () {
+            return _this.proc();
+        }) : undefined;
         return this.unlink;
     };
     Reactant.prototype.depend = function (transformation, reactant) {
@@ -100,7 +98,7 @@ var Reactant = (function () {
         return result;
     };
     Reactant.prototype.onCondition = function (predicate) {
-        var result = new EventDispatcher();
+        var result = new EventDispatcher_();
         this.listen(function (prev, curr) {
             if (predicate(prev, curr))
                 result.proc();
@@ -183,7 +181,7 @@ var Reactant = (function () {
     });
 
     Reactant.prototype.booleanEvent = function (target) {
-        var result = new EventDispatcher();
+        var result = new EventDispatcher_();
 
         this.listen(function (prev, curr) {
             if (!!curr === target)
@@ -207,10 +205,9 @@ var Reactant = (function () {
     });
     return Reactant;
 })();
-Reactant.prototype['__proto__'] = EventDispatcher.prototype;
-Reactant.prototype.super_proc = EventDispatcher.prototype.proc;
+Reactant.prototype['__proto__'] = EventDispatcher_.prototype;
+Reactant.prototype.super_proc = EventDispatcher_.prototype.proc;
 
-if (typeof module !== 'undefined') {
+if (typeof module !== 'undefined')
     module.exports = Reactant;
-}
 //# sourceMappingURL=reactant.js.map

@@ -1,8 +1,5 @@
 'use strict'
 
-declare function require(name:string)
-declare var module:any
-
 if(typeof require !== 'undefined') {
     var LinkedList = require('./linkedlist')
     var bind_until = require('./index').bind_until
@@ -62,6 +59,7 @@ class EventDispatcher {
     }
 }
 
-if(typeof module !== 'undefined') {
+if(typeof module !== 'undefined')
     module.exports = EventDispatcher
-}
+if(typeof window !== 'undefined')
+    window['EventDispatcher'] = EventDispatcher

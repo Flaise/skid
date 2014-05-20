@@ -62,7 +62,8 @@ var EventDispatcher = (function () {
     return EventDispatcher;
 })();
 
-if (typeof module !== 'undefined') {
+if (typeof module !== 'undefined')
     module.exports = EventDispatcher;
-}
+if (typeof window !== 'undefined')
+    window['EventDispatcher'] = EventDispatcher;
 //# sourceMappingURL=eventdispatcher.js.map

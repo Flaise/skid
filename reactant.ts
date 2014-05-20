@@ -1,11 +1,9 @@
 'use strict'
 
-declare function require(name:string)
-declare var module:any
-
-if(typeof require !== 'undefined') {
-    var EventDispatcher = require('./eventdispatcher')
-}
+if(typeof require !== 'undefined')
+    var EventDispatcher_:any = require('./eventdispatcher')
+else
+    var EventDispatcher_:any = EventDispatcher
 
 class Reactant {
     unlink
@@ -14,7 +12,7 @@ class Reactant {
     listen
     
     constructor(value?) {
-        EventDispatcher.call(this)
+        EventDispatcher_.call(this)
         this.value = value
     }
     
@@ -33,10 +31,7 @@ class Reactant {
 
         this.valueFunc = func
 
-        if(onMod)
-            this.unlink = onMod.listen(() => this.proc())
-        else
-            this.unlink = undefined
+        this.unlink = onMod ? onMod.listen(() => this.proc()) : undefined
         return this.unlink
     }
     depend(transformation, reactant) {
@@ -91,7 +86,7 @@ class Reactant {
         return result
     }
     onCondition(predicate) {
-        var result = new EventDispatcher()
+        var result = new EventDispatcher_()
         this.listen((prev, curr) => {
             if(predicate(prev, curr))
                 result.proc()
@@ -147,7 +142,7 @@ class Reactant {
     }
     
     booleanEvent(target:boolean) {
-        var result = new EventDispatcher()
+        var result = new EventDispatcher_()
 
         this.listen(function(prev, curr) {
             if(!!curr === target)
@@ -162,9 +157,8 @@ class Reactant {
         return this.booleanEvent(false)
     }
 }
-Reactant.prototype['__proto__'] = EventDispatcher.prototype
-Reactant.prototype.super_proc = EventDispatcher.prototype.proc
+Reactant.prototype['__proto__'] = EventDispatcher_.prototype
+Reactant.prototype.super_proc = EventDispatcher_.prototype.proc
 
-if(typeof module !== 'undefined') {
+if(typeof module !== 'undefined')
     module.exports = Reactant
-}

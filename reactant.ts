@@ -31,7 +31,11 @@ class Reactant {
 
         this.valueFunc = func
 
-        this.unlink = onMod ? onMod.listen(() => this.proc()) : undefined
+        // TODO: should only link when there are listeners on this reactant
+        if(onMod)
+            this.unlink = onMod.listen(() => this.proc())
+        else
+            this.unlink = undefined
         return this.unlink
     }
     depend(transformation, reactant) {
@@ -53,16 +57,6 @@ class Reactant {
         this.super_proc(prev, curr)
     }
     
-    equality(a, b) {
-        if(a === b)
-            return true
-        if(a && a.equals)
-            return a.equals(b)
-        if(b && b.equals)
-            return b.equals(a)
-        return false
-    }
-    
     listen_pc(callback) {
         var result = this.listen(callback)
         callback(undefined, this.value)
@@ -78,11 +72,7 @@ class Reactant {
     }
     transform(func) {
         var result = new Reactant()
-        result.setFunc(() => func(this.value))
-
-        ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
-        var remove = this.listen(() => result.proc())
-
+        result.depend(func, this)
         return result
     }
     onCondition(predicate) {
@@ -108,9 +98,6 @@ class Reactant {
     on_pc(target, callback) {
         return this.onCondition_pc(((prev, curr) => this.equality(curr, target)), callback)
     }
-    valueFunc() {
-        return undefined
-    }
     compose(b, func) {
         var a = this
         var result = new Reactant()
@@ -124,11 +111,9 @@ class Reactant {
     }
     
     get value() {
-        /*
-         * Cannot return lastValue directly because reactants whose values depend on this
-         * reactant cannot fire events correctly under the current implementation without
-         * calling the valueFunc each time.
-         */
+        // Cannot return lastValue directly because reactants whose values depend on this
+        // reactant cannot fire events correctly under the current implementation without
+        // calling the valueFunc each time.
         return this.valueFunc()
     }
     set value(value) {
@@ -140,21 +125,24 @@ class Reactant {
     get negative() {
         return this.transform(a => -a)
     }
-    
-    booleanEvent(target:boolean) {
-        var result = new EventDispatcher_()
-
-        this.listen(function(prev, curr) {
-            if(!!curr === target)
-                result.proc()
-        })
-        return result
-    }
     get anyTruthy() {
-        return this.booleanEvent(true)
+        return this.onCondition((prev, curr) => curr)
     }
     get anyFalsy() {
-        return this.booleanEvent(false)
+        return this.onCondition((prev, curr) => !curr)
+    }
+    
+    equality(a, b) {
+        if(a === b)
+            return true
+        if(a && a.equals)
+            return a.equals(b)
+        if(b && b.equals)
+            return b.equals(a)
+        return false
+    }
+    valueFunc() {
+        return undefined
     }
 }
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype

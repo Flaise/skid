@@ -27,9 +27,13 @@ var Reactant = (function () {
 
         this.valueFunc = func;
 
-        this.unlink = onMod ? onMod.listen(function () {
-            return _this.proc();
-        }) : undefined;
+        // TODO: should only link when there are listeners on this reactant
+        if (onMod)
+            this.unlink = onMod.listen(function () {
+                return _this.proc();
+            });
+        else
+            this.unlink = undefined;
         return this.unlink;
     };
     Reactant.prototype.depend = function (transformation, reactant) {
@@ -55,16 +59,6 @@ var Reactant = (function () {
         this.super_proc(prev, curr);
     };
 
-    Reactant.prototype.equality = function (a, b) {
-        if (a === b)
-            return true;
-        if (a && a.equals)
-            return a.equals(b);
-        if (b && b.equals)
-            return b.equals(a);
-        return false;
-    };
-
     Reactant.prototype.listen_pc = function (callback) {
         var result = this.listen(callback);
         callback(undefined, this.value);
@@ -84,17 +78,8 @@ var Reactant = (function () {
         });
     };
     Reactant.prototype.transform = function (func) {
-        var _this = this;
         var result = new Reactant();
-        result.setFunc(function () {
-            return func(_this.value);
-        });
-
-        ////////////////////////////////////////////////////// TODO: This listener needs to be removed when `result` has none of its own listeners, and re-added when it does
-        var remove = this.listen(function () {
-            return result.proc();
-        });
-
+        result.depend(func, this);
         return result;
     };
     Reactant.prototype.onCondition = function (predicate) {
@@ -129,9 +114,6 @@ var Reactant = (function () {
             return _this.equality(curr, target);
         }), callback);
     };
-    Reactant.prototype.valueFunc = function () {
-        return undefined;
-    };
     Reactant.prototype.compose = function (b, func) {
         var a = this;
         var result = new Reactant();
@@ -148,11 +130,9 @@ var Reactant = (function () {
 
     Object.defineProperty(Reactant.prototype, "value", {
         get: function () {
-            /*
-            * Cannot return lastValue directly because reactants whose values depend on this
-            * reactant cannot fire events correctly under the current implementation without
-            * calling the valueFunc each time.
-            */
+            // Cannot return lastValue directly because reactants whose values depend on this
+            // reactant cannot fire events correctly under the current implementation without
+            // calling the valueFunc each time.
             return this.valueFunc();
         },
         set: function (value) {
@@ -179,30 +159,37 @@ var Reactant = (function () {
         enumerable: true,
         configurable: true
     });
-
-    Reactant.prototype.booleanEvent = function (target) {
-        var result = new EventDispatcher_();
-
-        this.listen(function (prev, curr) {
-            if (!!curr === target)
-                result.proc();
-        });
-        return result;
-    };
     Object.defineProperty(Reactant.prototype, "anyTruthy", {
         get: function () {
-            return this.booleanEvent(true);
+            return this.onCondition(function (prev, curr) {
+                return curr;
+            });
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Reactant.prototype, "anyFalsy", {
         get: function () {
-            return this.booleanEvent(false);
+            return this.onCondition(function (prev, curr) {
+                return !curr;
+            });
         },
         enumerable: true,
         configurable: true
     });
+
+    Reactant.prototype.equality = function (a, b) {
+        if (a === b)
+            return true;
+        if (a && a.equals)
+            return a.equals(b);
+        if (b && b.equals)
+            return b.equals(a);
+        return false;
+    };
+    Reactant.prototype.valueFunc = function () {
+        return undefined;
+    };
     return Reactant;
 })();
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype;

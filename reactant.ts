@@ -21,7 +21,7 @@ class Reactant {
      * })
      * a.value = 8 // prints 4, 8
      */
-    listen//:((any, any)=>void)=>void
+    listen
     
     /*
      * Initializes the value of this reactant to the parameter or undefined if no parameter is given.
@@ -46,7 +46,7 @@ class Reactant {
      * a.value = 'qwer' // prints '!!!'
      * a.value = 'QWER' // prints nothing because the value is not considered to have changed
      * console.log(a.value === 'QWER') // prints true because changing equality() only affects the
-     *                                 // behavior of proc(), not assignment() or setFunc()
+     *                                 // behavior of proc(), not setValue() or setFunc()
      */
     equality(a, b) {
         if(a === b)
@@ -59,10 +59,10 @@ class Reactant {
     }
     
     /*
-     * Used by the value property, default assignment() function, and setFunc(). Do not assign to
+     * Used by the value property, default setValue() function, and setFunc(). Do not assign to
      * this instance member directly.
      */
-    valueFunc() {
+    getValue() {
         return undefined
     }
     
@@ -83,7 +83,7 @@ class Reactant {
      * mouseX.value = 10 // sets the mouse x-position to 10, assuming sensible implementations of
      *                   // addMouseMoveListener() and setMouseX()
      */
-    assignment(value) {
+    setValue(value) {
         this.setFunc(() => value)
     }
     
@@ -141,7 +141,7 @@ class Reactant {
         if(this.unlink)
             this.unlink()
 
-        this.valueFunc = func
+        this.getValue = func
 
         // TODO: should only link when there are listeners on this reactant
         // TODO: should unlink when last listener is removed
@@ -155,9 +155,9 @@ class Reactant {
     /*
      * Called whenever the value of this reactant changes. It is only necessary to call this from
      * externally when using setFunc with a null/undefined onMod parameter. It is typically easiest
-     * to assign to the value of a reactant (i.e. reactant.value = ...) but when the valueFunc of
-     * a reactant is computed dynamically instead of with property assignment then proc() must be
-     * called every time the return value of valueFunc changes.
+     * to assign to the value of a reactant (i.e. reactant.value = ...) but when the getValue()
+     * function of a reactant is computed dynamically instead of with property assignment then
+     * proc() must be called every time the return value of getValue() changes.
      */
     proc() {
         var prev = this.lastValue
@@ -231,14 +231,15 @@ class Reactant {
     get value() {
         // Cannot return lastValue directly because reactants whose values depend on this
         // reactant cannot fire events correctly under the current implementation without
-        // calling the valueFunc each time.
-        return this.valueFunc()
+        // calling getValue() each time.
+        // Also required to make reactive tuples not break when the returned mutable list is changed.
+        return this.getValue()
     }
     
     /*
      * Sets the value of this reactant. The implementation can be altered at runtime but by default
-     * it sets the valueFunc and then fires an event, although it will not fire an event if the last
-     * value is the same value as the argument.
+     * it sets the getValue function and then fires an event, although it will not fire an event if
+     * the last value is the same value as the argument.
      * Example:
      * var a = new Reactant(5)
      * a.listen(function(previous, current) {
@@ -250,7 +251,7 @@ class Reactant {
      * a.value = 4 // prints 9, 4
      */
     set value(value) {
-        this.assignment(value)
+        this.setValue(value)
     }
     
     ///// SHORTCUTS
@@ -455,6 +456,13 @@ class Reactant {
      */
     get anyFalsy() {
         return this.onCondition((prev, curr) => !curr)
+    }
+    
+    static tuple(...reactants:Reactant[]) {
+        var result = new Reactant()
+        result.setFunc((() => reactants.map(r => r.value)),
+                       reactants.reduce((a, b) => a.aggregate(b)))
+        return result
     }
 }
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype

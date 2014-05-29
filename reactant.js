@@ -27,7 +27,7 @@ var Reactant = (function () {
     * a.value = 'qwer' // prints '!!!'
     * a.value = 'QWER' // prints nothing because the value is not considered to have changed
     * console.log(a.value === 'QWER') // prints true because changing equality() only affects the
-    *                                 // behavior of proc(), not assignment() or setFunc()
+    *                                 // behavior of proc(), not setValue() or setFunc()
     */
     Reactant.prototype.equality = function (a, b) {
         if (a === b)
@@ -40,10 +40,10 @@ var Reactant = (function () {
     };
 
     /*
-    * Used by the value property, default assignment() function, and setFunc(). Do not assign to
+    * Used by the value property, default setValue() function, and setFunc(). Do not assign to
     * this instance member directly.
     */
-    Reactant.prototype.valueFunc = function () {
+    Reactant.prototype.getValue = function () {
         return undefined;
     };
 
@@ -64,7 +64,7 @@ var Reactant = (function () {
     * mouseX.value = 10 // sets the mouse x-position to 10, assuming sensible implementations of
     *                   // addMouseMoveListener() and setMouseX()
     */
-    Reactant.prototype.assignment = function (value) {
+    Reactant.prototype.setValue = function (value) {
         this.setFunc(function () {
             return value;
         });
@@ -125,7 +125,7 @@ var Reactant = (function () {
         if (this.unlink)
             this.unlink();
 
-        this.valueFunc = func;
+        this.getValue = func;
 
         // TODO: should only link when there are listeners on this reactant
         // TODO: should unlink when last listener is removed
@@ -141,9 +141,9 @@ var Reactant = (function () {
     /*
     * Called whenever the value of this reactant changes. It is only necessary to call this from
     * externally when using setFunc with a null/undefined onMod parameter. It is typically easiest
-    * to assign to the value of a reactant (i.e. reactant.value = ...) but when the valueFunc of
-    * a reactant is computed dynamically instead of with property assignment then proc() must be
-    * called every time the return value of valueFunc changes.
+    * to assign to the value of a reactant (i.e. reactant.value = ...) but when the getValue()
+    * function of a reactant is computed dynamically instead of with property assignment then
+    * proc() must be called every time the return value of getValue() changes.
     */
     Reactant.prototype.proc = function () {
         var prev = this.lastValue;
@@ -221,13 +221,14 @@ var Reactant = (function () {
         get: function () {
             // Cannot return lastValue directly because reactants whose values depend on this
             // reactant cannot fire events correctly under the current implementation without
-            // calling the valueFunc each time.
-            return this.valueFunc();
+            // calling getValue() each time.
+            // Also required to make reactive tuples not break when the returned mutable list is changed.
+            return this.getValue();
         },
         /*
         * Sets the value of this reactant. The implementation can be altered at runtime but by default
-        * it sets the valueFunc and then fires an event, although it will not fire an event if the last
-        * value is the same value as the argument.
+        * it sets the getValue function and then fires an event, although it will not fire an event if
+        * the last value is the same value as the argument.
         * Example:
         * var a = new Reactant(5)
         * a.listen(function(previous, current) {
@@ -239,7 +240,7 @@ var Reactant = (function () {
         * a.value = 4 // prints 9, 4
         */
         set: function (value) {
-            this.assignment(value);
+            this.setValue(value);
         },
         enumerable: true,
         configurable: true
@@ -490,6 +491,22 @@ var Reactant = (function () {
         enumerable: true,
         configurable: true
     });
+
+    Reactant.tuple = function () {
+        var reactants = [];
+        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+            reactants[_i] = arguments[_i + 0];
+        }
+        var result = new Reactant();
+        result.setFunc((function () {
+            return reactants.map(function (r) {
+                return r.value;
+            });
+        }), reactants.reduce(function (a, b) {
+            return a.aggregate(b);
+        }));
+        return result;
+    };
     return Reactant;
 })();
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype;

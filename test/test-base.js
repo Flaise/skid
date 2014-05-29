@@ -19,8 +19,7 @@ function expectMultiSequence(arr, message) {
             fail('Expected only ' + arr.length + ' sequence assertions for ' + message)
             return
         }
-        for(var j = 0; j < arguments.length; j += 1)
-            strictEqual(arguments[j], arr[i][j], message)
+        deepEqual(Array.prototype.slice.call(arguments, 0), arr[i], message)
         i += 1
     }
 }

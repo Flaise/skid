@@ -273,3 +273,20 @@ test('falsy events', function() {
     reactant.value = null
     strictEqual(counter, 4)
 })
+test('tuples', 4, function() {
+    var a = new Reactant(1)
+    var b = new Reactant(5)
+    var tuple = Reactant.tuple(a, b)
+    deepEqual(tuple.value, [1, 5])
+    tuple.listen_pc(expectMultiSequence([
+        [undefined, [1, 5]],
+        [[1, 5], [4, 5]],
+        [[4, 5], [4, 3]]
+    ]))
+    a.value = 4
+    b.value = 3
+    
+    tuple.listen(fail)
+    a.value = 4
+    b.value = 3
+})

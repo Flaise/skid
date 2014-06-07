@@ -1,12 +1,13 @@
 'use strict';
 if (typeof require !== 'undefined') {
-    var LinkedList = require('./linkedlist');
+    var LinkedList_ = require('./linkedlist');
     var bind_until = require('./index').bind_until;
-}
+} else
+    var LinkedList_ = LinkedList;
 
 var EventDispatcher = (function () {
     function EventDispatcher() {
-        this.callbacks = new LinkedList();
+        this.callbacks = new LinkedList_();
     }
     EventDispatcher.prototype.listen = function (callback) {
         if (!callback.apply)

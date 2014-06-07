@@ -1,12 +1,14 @@
 'use strict'
 
 if(typeof require !== 'undefined') {
-    var LinkedList = require('./linkedlist')
+    var LinkedList_:any = require('./linkedlist')
     var bind_until = require('./index').bind_until
 }
+else
+    var LinkedList_:any = LinkedList
 
 class EventDispatcher {
-    callbacks = new LinkedList()
+    callbacks = new LinkedList_()
     
     constructor() {
     }

@@ -290,3 +290,10 @@ test('tuples', 4, function() {
     a.value = 4
     b.value = 3
 })
+test('assignment reassignment', 1, function() {
+    var a = new Reactant(1)
+    a.setValue = function(v) {
+        strictEqual(v, 'a')
+    }
+    a.value = 'a'
+})

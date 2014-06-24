@@ -56,10 +56,10 @@ var Reactant = (function () {
     * GUI.addMouseMoveListener(function(x, y) {
     *     mouseX.proc()
     * })
-    * mouseX.assignment = function(x) {
+    * mouseX.setValue = function(x) {
     *     GUI.setMouseX(x)
-    *     mouseX.proc() = x // necessary if setMouseX() does not generate an event
-    *                       // unnecessary but harmless otherwise
+    *     mouseX.proc() // necessary if setMouseX() does not generate an event
+    *                   // unnecessary but harmless otherwise
     * }
     * mouseX.value = 10 // sets the mouse x-position to 10, assuming sensible implementations of
     *                   // addMouseMoveListener() and setMouseX()
@@ -139,7 +139,7 @@ var Reactant = (function () {
     };
 
     /*
-    * Called whenever the value of this reactant changes. It is only necessary to call this from
+    * Called whenever the value of this reactant changes. It is only necessary to call this
     * externally when using setFunc with a null/undefined onMod parameter. It is typically easiest
     * to assign to the value of a reactant (i.e. reactant.value = ...) but when the getValue()
     * function of a reactant is computed dynamically instead of with property assignment then

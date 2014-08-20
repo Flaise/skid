@@ -259,5 +259,3 @@ class LinkedList {
 
 if(typeof module !== 'undefined')
     module.exports = LinkedList
-if(typeof window !== 'undefined')
-    window['LinkedList'] = LinkedList

@@ -34,6 +34,9 @@ var EventDispatcher = (function () {
         return remove;
     };
     EventDispatcher.prototype.proc = function (__varargs__) {
+        this.base_proc.apply(this, arguments);
+    };
+    EventDispatcher.prototype.base_proc = function (__varargs__) {
         var args = arguments;
         this.callbacks.forEach(function (callback) {
             return callback.apply(null, args);
@@ -65,6 +68,4 @@ var EventDispatcher = (function () {
 
 if (typeof module !== 'undefined')
     module.exports = EventDispatcher;
-if (typeof window !== 'undefined')
-    window['EventDispatcher'] = EventDispatcher;
 //# sourceMappingURL=eventdispatcher.js.map

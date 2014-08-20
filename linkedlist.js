@@ -288,6 +288,4 @@ var LinkedList = (function () {
 
 if (typeof module !== 'undefined')
     module.exports = LinkedList;
-if (typeof window !== 'undefined')
-    window['LinkedList'] = LinkedList;
 //# sourceMappingURL=linkedlist.js.map

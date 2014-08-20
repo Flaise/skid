@@ -35,6 +35,9 @@ class EventDispatcher {
         return remove
     }
     proc(__varargs__?) {
+        this.base_proc.apply(this, arguments)
+    }
+    base_proc(__varargs__?) {
         var args = arguments // make visible to foreach body
         this.callbacks.forEach(callback => callback.apply(null, args))
     }
@@ -63,5 +66,3 @@ class EventDispatcher {
 
 if(typeof module !== 'undefined')
     module.exports = EventDispatcher
-if(typeof window !== 'undefined')
-    window['EventDispatcher'] = EventDispatcher

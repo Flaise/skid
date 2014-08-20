@@ -154,7 +154,7 @@ var Reactant = (function () {
         // must be saved here because it might be altered during event propagation
         this.lastValue = curr;
 
-        this.super_proc(prev, curr);
+        this.base_proc(prev, curr);
     };
 
     /*
@@ -510,7 +510,6 @@ var Reactant = (function () {
     return Reactant;
 })();
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype;
-Reactant.prototype.super_proc = EventDispatcher_.prototype.proc;
 
 if (typeof module !== 'undefined')
     module.exports = Reactant;

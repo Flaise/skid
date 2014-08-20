@@ -152,6 +152,8 @@ class Reactant {
         return this.unlink
     }
     
+    base_proc:(prev:any, curr:any)=>void // implemented by superclass
+    
     /*
      * Called whenever the value of this reactant changes. It is only necessary to call this
      * externally when using setFunc with a null/undefined onMod parameter. It is typically easiest
@@ -168,7 +170,7 @@ class Reactant {
         // must be saved here because it might be altered during event propagation
         this.lastValue = curr
         
-        this.super_proc(prev, curr)
+        this.base_proc(prev, curr)
     }
     
     /*
@@ -466,7 +468,6 @@ class Reactant {
     }
 }
 Reactant.prototype['__proto__'] = EventDispatcher_.prototype
-Reactant.prototype.super_proc = EventDispatcher_.prototype.proc
 
 if(typeof module !== 'undefined')
     module.exports = Reactant

@@ -297,3 +297,21 @@ test('assignment reassignment', 1, function() {
     }
     a.value = 'a'
 })
+test('nested tuples', 4, function() {
+    var a = new Reactant('a')
+    var b = new Reactant('b')
+    var c = new Reactant(1)
+    var tuple = Reactant.tuple(Reactant.tuple(a, b), c)
+    deepEqual(tuple.value, [['a', 'b'], 1])
+    tuple.listen_pc(expectMultiSequence([
+        [undefined, [['a', 'b'], 1]],
+        [[['a', 'b'], 1], [['a', 2], 1]],
+        [[['a', 2], 1], [['a', 2], 'rrr']]
+    ]))
+    b.value = 2
+    c.value = 'rrr'
+    
+    tuple.listen(fail)
+    b.value = 2
+    c.value = 'rrr'
+})

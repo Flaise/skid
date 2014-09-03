@@ -62,6 +62,15 @@ class EventDispatcher {
 
         return result
     }
+    
+    static any(...dispatchers) {
+        if(!dispatchers.length)
+            return undefined
+        var result = dispatchers[0]
+        for(var i = 1; i < dispatchers.length; i += 1)
+            result = result.aggregate(dispatchers[i])
+        return result
+    }
 }
 
 if(typeof module !== 'undefined')

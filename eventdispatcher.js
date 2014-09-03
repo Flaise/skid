@@ -63,6 +63,19 @@ var EventDispatcher = (function () {
 
         return result;
     };
+
+    EventDispatcher.any = function () {
+        var dispatchers = [];
+        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+            dispatchers[_i] = arguments[_i + 0];
+        }
+        if (!dispatchers.length)
+            return undefined;
+        var result = dispatchers[0];
+        for (var i = 1; i < dispatchers.length; i += 1)
+            result = result.aggregate(dispatchers[i]);
+        return result;
+    };
     return EventDispatcher;
 })();
 

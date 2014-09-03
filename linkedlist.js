@@ -264,6 +264,14 @@ var LinkedList = (function () {
         });
     };
 
+    LinkedList.prototype.toArray = function () {
+        var result = [];
+        this.forEach(function (v) {
+            return result.push(v);
+        });
+        return result;
+    };
+
     Object.defineProperty(LinkedList.prototype, "empty", {
         get: function () {
             return this.head.next === this.tail;

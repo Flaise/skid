@@ -272,6 +272,14 @@ var LinkedList = (function () {
         return result;
     };
 
+    LinkedList.prototype.toNodeArray = function () {
+        var result = [];
+        this.forEachNode(function (node) {
+            return result.push(node);
+        });
+        return result;
+    };
+
     Object.defineProperty(LinkedList.prototype, "empty", {
         get: function () {
             return this.head.next === this.tail;

@@ -252,6 +252,12 @@ class LinkedList {
         return result
     }
     
+    toNodeArray() {
+        var result = []
+        this.forEachNode(node => result.push(node))
+        return result
+    }
+    
     get empty() {
         return this.head.next === this.tail
     }

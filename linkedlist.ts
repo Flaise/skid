@@ -1,75 +1,13 @@
 'use strict'
 
-class LinkedListNode {
-    _next = undefined
-    _prev = undefined
-    removeUntil = undefined
-    removed = false
-    
-    constructor(public value?) {
-    }
-    
-    insertAfter(node) {
-        node.next = this.next
-        node.prev = this
-    }
-    insertBefore(node) {
-        node.prev = this.prev
-        node.next = this
-    }
-    until(onRemove) {
-        if(this.removeUntil)
-            throw new Error('more than one call to until()')
-        this.removeUntil = onRemove.listenOnce(() => this.remove())
-    }
-    remove() {
-        if(this.removed)
-            return
-
-        var oldPrev = this.prev
-        var oldNext = this.next
-        this.removed = true
-        if(oldPrev)
-            oldPrev._next = oldNext
-        if(oldNext)
-            oldNext._prev = oldPrev
-
-        if(this.removeUntil)
-            this.removeUntil()
-    }
-    
-    get next() {
-        return this._next
-    }
-    set next(node) {
-        if(this._next)
-            this._next._prev = undefined
-        this._next = node
-        if(node) {
-            if(node._prev)
-                node._prev._next = undefined
-            node._prev = this
-        }
-    }
-    get prev() {
-        return this._prev
-    }
-    set prev(node) {
-        if(this._prev)
-            this._prev._next = undefined
-        this._prev = node
-        if(node) {
-            if(node._next)
-                node._next._prev = undefined
-            node._next = this
-        }
-    }
-}
-
+if(typeof require !== 'undefined')
+    var LinkedListNode_:any = require('./linkedlistnode')
+else
+    var LinkedListNode_:any = LinkedListNode
 
 class LinkedList {
-    head = new LinkedListNode()
-    tail = new LinkedListNode()
+    head = new LinkedListNode_()
+    tail = new LinkedListNode_()
     
     constructor() {
         this.head.next = this.tail
@@ -88,12 +26,12 @@ class LinkedList {
         return this.tail.prev
     }
     addFirst(element) {
-        var node = new LinkedListNode(element)
+        var node = new LinkedListNode_(element)
         this.head.insertAfter(node)
         return node
     }
     addLast(element) {
-        var node = new LinkedListNode(element)
+        var node = new LinkedListNode_(element)
         this.tail.insertBefore(node)
         return node
     }
@@ -261,13 +199,13 @@ class LinkedList {
     get empty() {
         return this.head.next === this.tail
     }
-    
-    get size() {
-        var result = 0
-        this.forEachNode(() => { result += 1 })
-        return result
-    }
 }
+// explicit property definition so it can be overridden
+Object.defineProperty(LinkedList.prototype, 'size', {get: function() {
+    var result = 0
+    this.forEachNode(() => { result += 1 })
+    return result
+}})
 
 if(typeof module !== 'undefined')
     module.exports = LinkedList

@@ -1,85 +1,13 @@
 'use strict';
-var LinkedListNode = (function () {
-    function LinkedListNode(value) {
-        this.value = value;
-        this._next = undefined;
-        this._prev = undefined;
-        this.removeUntil = undefined;
-        this.removed = false;
-    }
-    LinkedListNode.prototype.insertAfter = function (node) {
-        node.next = this.next;
-        node.prev = this;
-    };
-    LinkedListNode.prototype.insertBefore = function (node) {
-        node.prev = this.prev;
-        node.next = this;
-    };
-    LinkedListNode.prototype.until = function (onRemove) {
-        var _this = this;
-        if (this.removeUntil)
-            throw new Error('more than one call to until()');
-        this.removeUntil = onRemove.listenOnce(function () {
-            return _this.remove();
-        });
-    };
-    LinkedListNode.prototype.remove = function () {
-        if (this.removed)
-            return;
-
-        var oldPrev = this.prev;
-        var oldNext = this.next;
-        this.removed = true;
-        if (oldPrev)
-            oldPrev._next = oldNext;
-        if (oldNext)
-            oldNext._prev = oldPrev;
-
-        if (this.removeUntil)
-            this.removeUntil();
-    };
-
-    Object.defineProperty(LinkedListNode.prototype, "next", {
-        get: function () {
-            return this._next;
-        },
-        set: function (node) {
-            if (this._next)
-                this._next._prev = undefined;
-            this._next = node;
-            if (node) {
-                if (node._prev)
-                    node._prev._next = undefined;
-                node._prev = this;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LinkedListNode.prototype, "prev", {
-        get: function () {
-            return this._prev;
-        },
-        set: function (node) {
-            if (this._prev)
-                this._prev._next = undefined;
-            this._prev = node;
-            if (node) {
-                if (node._next)
-                    node._next._prev = undefined;
-                node._next = this;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return LinkedListNode;
-})();
+if (typeof require !== 'undefined')
+    var LinkedListNode_ = require('./linkedlistnode');
+else
+    var LinkedListNode_ = LinkedListNode;
 
 var LinkedList = (function () {
     function LinkedList() {
-        this.head = new LinkedListNode();
-        this.tail = new LinkedListNode();
+        this.head = new LinkedListNode_();
+        this.tail = new LinkedListNode_();
         this.head.next = this.tail;
         this.head.remove = undefined;
         this.tail.remove = undefined;
@@ -95,12 +23,12 @@ var LinkedList = (function () {
         return this.tail.prev;
     };
     LinkedList.prototype.addFirst = function (element) {
-        var node = new LinkedListNode(element);
+        var node = new LinkedListNode_(element);
         this.head.insertAfter(node);
         return node;
     };
     LinkedList.prototype.addLast = function (element) {
-        var node = new LinkedListNode(element);
+        var node = new LinkedListNode_(element);
         this.tail.insertBefore(node);
         return node;
     };
@@ -287,20 +215,17 @@ var LinkedList = (function () {
         enumerable: true,
         configurable: true
     });
-
-    Object.defineProperty(LinkedList.prototype, "size", {
-        get: function () {
-            var result = 0;
-            this.forEachNode(function () {
-                result += 1;
-            });
-            return result;
-        },
-        enumerable: true,
-        configurable: true
-    });
     return LinkedList;
 })();
+
+// explicit property definition so it can be overridden
+Object.defineProperty(LinkedList.prototype, 'size', { get: function () {
+        var result = 0;
+        this.forEachNode(function () {
+            result += 1;
+        });
+        return result;
+    } });
 
 if (typeof module !== 'undefined')
     module.exports = LinkedList;

@@ -21,6 +21,10 @@ var EventDispatcher = (function () {
             return node.remove();
         });
     };
+    EventDispatcher.prototype.listen_pc = function (callback) {
+        callback();
+        return this.listen(callback);
+    };
     EventDispatcher.prototype.listenOnce = function (callback) {
         if (!callback.apply)
             throw new Error();

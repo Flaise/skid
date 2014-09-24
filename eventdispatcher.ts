@@ -22,6 +22,10 @@ class EventDispatcher {
         
         return bind_until(() => node.remove())
     }
+    listen_pc(callback) {
+        callback()
+        return this.listen(callback)
+    }
     listenOnce(callback) {
         if(!callback.apply)
             throw new Error()

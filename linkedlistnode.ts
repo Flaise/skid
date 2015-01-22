@@ -9,6 +9,17 @@ class LinkedListNode {
     constructor(public value?) {
     }
     
+    insertValueAfter(value) {
+        var node = new LinkedListNode(value)
+        this.insertAfter(node)
+        return node
+    }
+    insertValueBefore(value) {
+        var node = new LinkedListNode(value)
+        this.insertBefore(node)
+        return node
+    }
+    
     insertAfter(node) {
         node.next = this.next
         node.prev = this

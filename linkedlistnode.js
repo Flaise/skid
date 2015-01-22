@@ -7,6 +7,17 @@ var LinkedListNode = (function () {
         this.removeUntil = undefined;
         this.removed = false;
     }
+    LinkedListNode.prototype.insertValueAfter = function (value) {
+        var node = new LinkedListNode(value);
+        this.insertAfter(node);
+        return node;
+    };
+    LinkedListNode.prototype.insertValueBefore = function (value) {
+        var node = new LinkedListNode(value);
+        this.insertBefore(node);
+        return node;
+    };
+
     LinkedListNode.prototype.insertAfter = function (node) {
         node.next = this.next;
         node.prev = this;

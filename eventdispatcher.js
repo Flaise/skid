@@ -13,7 +13,7 @@ var EventDispatcher = (function () {
         if (!callback.apply)
             throw new Error();
 
-        // it might break some behaviors to call listeners in reverse order, but it allows insertion
+        // it might break some behaviors to call listeners in reverse order but it allows insertion
         // during iteration
         var node = this.callbacks.addFirst(callback);
 

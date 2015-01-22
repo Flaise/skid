@@ -1,6 +1,6 @@
 'use strict'
 
-function bind_until(func, onUnbindGroup) {
+function bind_until(func) {
     var clear
     var result = function func_with_until() {
         if(clear) {
@@ -13,12 +13,7 @@ function bind_until(func, onUnbindGroup) {
         // ****************************************** TODO: it may become convenient to allow multiple calls but that's not really what this function is for right now
         if(clear)
             throw new Error('more than one call to until')
-        if(onUnbindGroup) {
-            onRemove.listenOnce(result).until(onUnbindGroup)
-            clear = onUnbindGroup.proc.bind(onUnbindGroup)
-        }
-        else
-            clear = onRemove.listenOnce(result)
+        clear = onRemove.listenOnce(result)
     }
     return result
 }

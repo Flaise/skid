@@ -1,5 +1,17 @@
 'use strict'
 
+
+/*
+ * Assumes exclusive ownership of each removal
+ */
+function until(onRemove, removals) {
+    onRemove.listenOnce(function() {
+        removals.forEach(function(removal) {
+            removal()
+        })
+    })
+}
+
 function bind_until(func) {
     var clear
     var result = function func_with_until() {
@@ -43,4 +55,5 @@ if(typeof exports !== 'undefined') {
     exports.bind_until = bind_until
     exports.setInterval_rm = setInterval_rm
     exports.setTimeout_rm = setTimeout_rm
+    exports.until = until
 }

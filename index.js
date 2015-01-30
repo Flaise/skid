@@ -7,7 +7,10 @@
 function until(onRemove, removals) {
     onRemove.listenOnce(function() {
         removals.forEach(function(removal) {
-            removal()
+            if(typeof removal === 'function')
+                removal()
+            else
+                removal.remove()
         })
     })
 }

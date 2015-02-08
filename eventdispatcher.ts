@@ -41,8 +41,7 @@ class EventDispatcher {
     proc(__varargs__?) {
         this.base_proc.apply(this, arguments)
     }
-    base_proc(__varargs__?) {
-        var args = arguments // make visible to foreach body
+    base_proc(...args) {
         this.callbacks.forEach(callback => callback.apply(null, args))
     }
     onlyWhen(reactant) {

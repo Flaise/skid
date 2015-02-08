@@ -40,8 +40,11 @@ var EventDispatcher = (function () {
     EventDispatcher.prototype.proc = function (__varargs__) {
         this.base_proc.apply(this, arguments);
     };
-    EventDispatcher.prototype.base_proc = function (__varargs__) {
-        var args = arguments;
+    EventDispatcher.prototype.base_proc = function () {
+        var args = [];
+        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+            args[_i] = arguments[_i + 0];
+        }
         this.callbacks.forEach(function (callback) {
             return callback.apply(null, args);
         });

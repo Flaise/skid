@@ -15,6 +15,9 @@ function until(onRemove, removals) {
     })
 }
 
+function emptyRemoval() {}
+emptyRemoval.until = function() {}
+
 function bind_until(func) {
     var clear
     var result = function func_with_until() {
@@ -38,6 +41,8 @@ function setInterval_rm(callback, delay) {
     return bind_until(function() { clearInterval(interval) })
 }
 function setTimeout_rm(callback, delay) {
+    if(isNaN(delay))
+        throw new Error()
     function execute() {
         var delay = dest - Date.now()
         if(delay > 0)
@@ -59,4 +64,5 @@ if(typeof exports !== 'undefined') {
     exports.setInterval_rm = setInterval_rm
     exports.setTimeout_rm = setTimeout_rm
     exports.until = until
+    exports.emptyRemoval = emptyRemoval
 }

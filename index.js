@@ -59,6 +59,14 @@ function setTimeout_rm(callback, delay) {
 }
 
 
+exports.clamp = function(value, lo, hi) {
+    if(lo > hi) return clamp(value, hi, lo)
+    if(value < lo) return lo
+    if(value > hi) return hi
+    return value
+}
+
+
 if(typeof exports !== 'undefined') {
     exports.bind_until = bind_until
     exports.setInterval_rm = setInterval_rm

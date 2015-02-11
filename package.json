@@ -1,9 +1,15 @@
 {
     "name": "esquire",
     "description": "",
+    "author": {
+        "name": "Flaise"
+    },
     "version": "0.0.0",
     "repository": {
         "type" : "git",
         "url" : "http://github.com/Flaise/esquire.git"
+    },
+    "devDependencies": {
+        "browserify": "8.1.3"
     }
 }

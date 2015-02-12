@@ -12,7 +12,7 @@ export class SegmentedTileField {
     _smoothingEnabled
     _layer = 0
     
-    constructor(public avatars, tileSize, public divisionThreshold) {
+    constructor(public root, tileSize, public divisionThreshold) {
         if(isNaN(divisionThreshold))
             throw new Error()
         this._tileSize = tileSize
@@ -24,7 +24,7 @@ export class SegmentedTileField {
     _ensureRow(y) {
         var result = this._rows[y]
         if(!result) {
-            result = new Smoothing(this.avatars)
+            result = new Smoothing(this.root)
             result.enabled = this.smoothingEnabled
             result.layer = y
             this._rows[y] = result
@@ -107,5 +107,5 @@ export class SegmentedTileField {
 export function make(camera, tileSize, maxTileSize) {
     // limit pixel size to limit redraws - maximum is roughly 8000 on Firefox
     // subtract a few for objects that aren't contained by their tiles
-    return new SegmentedTileField(camera.avatars, tileSize, Math.floor(5000 / maxTileSize) - 2)
+    return new SegmentedTileField(camera, tileSize, Math.floor(5000 / maxTileSize) - 2)
 }

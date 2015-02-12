@@ -1,14 +1,21 @@
 'use strict'
 
-var Avatars = require('../avatars')
 var Interpolands = require('../interpolands')
 var DefaultAvatar = require('../default-avatar')
+var Viewport = require('../viewport')
 
 
 describe('Avatar', function() {
     var avatars
+    var context
     beforeEach(function() {
-        avatars = new Avatars(new Interpolands())
+        context = {}
+        var canvas = {
+            getContext: function() {
+                return context
+            }
+        }
+        avatars = new Viewport(canvas)
     })
     
     it('does not sort new avatars', function() {
@@ -109,7 +116,6 @@ describe('Avatar', function() {
     })
     
     it('draws all avatars in order', function() {
-        var context = {}
         var i = 0
         
         var a = new DefaultAvatar(avatars)

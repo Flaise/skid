@@ -1,40 +1,49 @@
-'use strict';
-var Avatars = require('./avatars');
-var sanity = require('./sanity');
-var Interpolands = require('./interpolands');
-var EventDispatcher = require('./eventdispatcher');
+'use strict'
 
-var Camera = (function () {
-    function Camera(avatars) {
-        sanity.constants(this, {
-            avatars: avatars,
-            x: avatars.interpolands.make(0),
-            y: avatars.interpolands.make(0),
-            w: avatars.interpolands.make(0),
-            h: avatars.interpolands.make(0),
-            anchorX: avatars.interpolands.make(0),
-            anchorY: avatars.interpolands.make(0),
-            angle: avatars.interpolands.make(0),
-            onBeforeDraw: new EventDispatcher()
-        });
-    }
-    Camera.prototype.draw = function (context) {
-        this.onBeforeDraw.proc();
+var sanity = require('./sanity')
+var EventDispatcher = require('./eventdispatcher')
+var Group = require('./group')
 
-        var canvas = context.canvas;
 
-        context.save();
-        context.scale(canvas.width / this.w.curr, canvas.height / this.h.curr);
+function Camera(avatars) {
+    Group.call(this, avatars)
+    sanity.constants(this, {
+        x: avatars.interpolands.make(0),
+        y: avatars.interpolands.make(0),
+        w: avatars.interpolands.make(0),
+        h: avatars.interpolands.make(0),
+        anchorX: avatars.interpolands.make(0),
+        anchorY: avatars.interpolands.make(0),
+        angle: avatars.interpolands.make(0),
+        onBeforeDraw: new EventDispatcher()
+    })
+    sanity.noAccess(this, 'avatars')
+}
+Camera.prototype = Object.create(Group.prototype)
+module.exports = exports = Camera
 
-        var dx = -this.x.curr + this.w.curr * this.anchorX.curr;
-        var dy = -this.y.curr + this.h.curr * this.anchorY.curr;
-        if (dx || dy)
-            context.translate(dx, dy);
+Camera.prototype.remove = function() {
+    if(this.removed)
+        return
+    this.interpolands.remove([this.x, this.y, this.w, this.h, this.anchorX, this.anchorY,
+                              this.angle])
+    Group.prototype.remove.call(this)
+}
 
-        this.avatars.draw(context);
+Camera.prototype.draw = function(context) {
+    this.onBeforeDraw.proc()
 
-        context.restore();
-    };
-    return Camera;
-})();
-module.exports = Camera;
+    var canvas = context.canvas
+
+    context.save()
+    context.scale(canvas.width / this.w.curr, canvas.height / this.h.curr)
+
+    var dx = -this.x.curr + this.w.curr * this.anchorX.curr
+    var dy = -this.y.curr + this.h.curr * this.anchorY.curr
+    if (dx || dy)
+        context.translate(dx, dy)
+
+    Group.prototype.draw.call(this, context)
+
+    context.restore()
+}

@@ -14,7 +14,7 @@ var requestAnimFrame = (
     || window.mozRequestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
-    || function (callback) { return window.setTimeout(callback, 1000 / 60) }
+    || function(callback) { return window.setTimeout(callback, 1000 / 60) }
 )
 
 
@@ -36,7 +36,9 @@ function Viewport(canvas, clearBeforeDraw) {
 Viewport.prototype = Object.create(Group.prototype)
 module.exports = exports = Viewport
 
-Viewport.prototype.repeatDraw = function () {
+Viewport.prototype.remove = undefined
+
+Viewport.prototype.repeatDraw = function() {
     var _this = this
     function drawOnce() {
         _this.draw()
@@ -45,7 +47,7 @@ Viewport.prototype.repeatDraw = function () {
     requestAnimFrame(drawOnce)
 }
 
-Viewport.prototype.draw = function () {
+Viewport.prototype.draw = function() {
     this.onBeforeDraw.proc()
 
     this.update()
@@ -60,7 +62,7 @@ Viewport.prototype.draw = function () {
     this.onAfterDraw.proc()
 }
 
-Viewport.prototype.update = function () {
+Viewport.prototype.update = function() {
     if(is.nullish(this.lastFrame))
         this.lastFrame = Date.now()
 

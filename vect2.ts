@@ -1,7 +1,5 @@
 'use strict'
 
-var turns = require('./turns')
-
 
 class Vect2 {
     constructor(public x:number, public y:number) {
@@ -14,10 +12,10 @@ class Vect2 {
     }
     
     sum(other) {
-        if(!isNaN(other)) // assume a number is an angle
-            return this.sum(Vect2.fromAngle(other))
-        else
+        if(isNaN(other))
             return this.sumi(other.x, other.y)
+        else
+            return this.sum(turns.toVector(other))
     }
     sumi(x, y) {
         return new Vect2(this.x + x, this.y + y)
@@ -27,7 +25,7 @@ class Vect2 {
         return Math.abs(this.x - other.x) + Math.abs(this.y - other.y)
     }
     
-    rotation(angle) {
+    rotated(angle) {
         var rad = turns.toRadians(angle)
         var sin = Math.sin(rad)
         var cos = Math.cos(rad)
@@ -37,20 +35,6 @@ class Vect2 {
         return this.x + ',' + this.y
     }
     
-    static fromAngle(angle) {
-        switch(turns.wrap(angle)) {
-            case Vect2.NORTH: return new Vect2(0, -1)
-            case Vect2.EAST: return new Vect2(1, 0)
-            case Vect2.SOUTH: return new Vect2(0, 1)
-            case Vect2.WEST: return new Vect2(-1, 0)
-            default: return new Vect2(0, 0)
-        }
-    }
-    static NORTH = 0
-    static EAST = .25
-    static SOUTH = .5
-    static WEST = .75
-    
     static get ZERO() {
         return new Vect2(0, 0)
     }
@@ -59,4 +43,6 @@ class Vect2 {
         return new Vect2(-this.x, -this.y)
     }
 }
-export = Vect2
+module.exports = exports = Vect2
+
+var turns = require('./turns') // must be after exports because of circular import

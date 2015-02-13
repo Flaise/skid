@@ -11,6 +11,7 @@ function Interpoland(tweens, value) {
     this.base = value
     this.dest = value
     this.tweens = tweens
+    this.removed = false
 }
 Interpoland.prototype.mod = function(delta, duration, tweenFunc, onDone, remainder) {
     this.dest += delta
@@ -31,7 +32,7 @@ Interpoland.prototype.setTo = function(dest) {
     this.base = dest
     this.curr = dest
     this.dest = dest
-    this.tweens.removeInterpolands([this])
+    this.tweens.removeInterpolands([this]) // TODO
 }
 Interpoland.prototype.setToInitial = function(dest) {
     this.base = dest
@@ -41,13 +42,15 @@ Interpoland.prototype.setToInitial = function(dest) {
 Interpoland.prototype.mod_noDelta = function(amplitude, duration, tweenFunc, onDone, remainder) {
     return this.tweens.make(this, 0, duration, tweenFunc, onDone, remainder, amplitude)
 }
+Interpoland.prototype.remove = function() {
+    this.removed = true
+}
 sanity.noAccess(Interpoland.prototype, 'value')
 
 
 
 function Interpolands() {
     ObjectPool.call(this, Interpoland)
-    
     this.tweens = new Tweens()
 }
 Interpolands.prototype = Object.create(ObjectPool.prototype)
@@ -76,16 +79,25 @@ Interpolands.prototype.setToMany = function(interpolands, dests) {
 Interpolands.prototype.make = function(value) {
     return ObjectPool.prototype.make.call(this, this.tweens, value)
 }
-Interpolands.prototype.remove = function(removals) {
-    ObjectPool.prototype.remove.call(this, removals)
-    this.tweens.removeInterpolands(removals)
-}
+Interpolands.prototype.remove = undefined
 
 Interpolands.prototype.update = function(dt) {
+    var shiftBy = 0
     for(var i = 0; i < this.aliveCount; i += 1) {
         var interpoland = this.alive[i]
-        interpoland.curr = interpoland.base
+        
+        if(interpoland.removed) {
+            this.dead[this.deadCount] = interpoland
+            this.deadCount += 1
+            shiftBy += 1
+        }
+        else {
+            if(shiftBy && i - shiftBy >= 0)
+                this.alive[i - shiftBy] = interpoland
+            interpoland.curr = interpoland.base
+        }
     }
+    this.aliveCount -= shiftBy
     this.tweens.update(dt)
 }
 
@@ -122,14 +134,18 @@ function Tweens() {
 }
 Tweens.prototype = Object.create(ObjectPool.prototype)
 
-Tweens.prototype.removeInterpolands = function(removals) {
+Tweens.prototype.removeInterpolands = function(removals, count) {
+    if(count === 0)
+        return
+    count = count || removals.length
+    sanity(count <= removals.length)
+    
     var shiftBy = 0
-    var initialCount = this.aliveCount
-    for(var i = 0; i < initialCount; i += 1) {
+    for(var i = 0; i < this.aliveCount; i += 1) {
         var tween = this.alive[i]
         
         var deleting = false
-        for(var j = 0; j < removals.length; j += 1) {
+        for(var j = 0; j < count; j += 1) {
             if(removals[j] === tween.interpoland) {
                 deleting = true
                 break
@@ -153,7 +169,13 @@ Tweens.prototype.update = function(dt) {
         var tween = this.alive[i]
         tween.elapsed += dt
         
-        if(tween.elapsed >= tween.duration) {
+        if(tween.interpoland.removed) {
+            shiftBy += 1
+            
+            this.dead[this.deadCount] = tween
+            this.deadCount += 1
+        }
+        else if(tween.elapsed >= tween.duration) {
             shiftBy += 1
             
             if(tween.onDone) {

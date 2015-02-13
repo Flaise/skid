@@ -16,11 +16,6 @@ module.exports = exports = ObjectPool
 ObjectPool.prototype.make = function(/*varargs*/) {
     sanity(!this._iterating)
     if(this.deadCount) {
-        if(sanity.throws) {
-            for(var i = 0; i < this.aliveCount; i += 1) {
-                sanity(this.dead[this.deadCount - 1] !== this.alive[i])
-            }
-        }
         this.deadCount -= 1
         var obj = this.dead[this.deadCount]
         sanity(!obj._doNotDelete)
@@ -42,17 +37,12 @@ ObjectPool.prototype.clear = function() {
     var initialCount = this.aliveCount
     for(var i = 0; i < initialCount; i += 1) {
         var obj = this.alive[i]
-        if(sanity.throws && obj._doNotDelete)
-            continue ////////////////////////////////////// TODO
         this.dead[this.deadCount] = obj
         this.deadCount += 1
     }
     this.aliveCount = 0
 }
 ObjectPool.prototype.remove = function(removals) {
-    if(sanity.throws)
-        for(var i = 0; i < removals.length; i += 1)
-            sanity(!removals[i]._doNotDelete)
     sanity(!this._iterating)
     var shiftBy = 0
     var initialCount = this.aliveCount

@@ -19,15 +19,21 @@ module.exports = exports = Translation
 Translation.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.x, this.y])
+    this.x.remove()
+    this.y.remove()
     Group.prototype.remove.call(this)
 }
 
 Translation.prototype.draw = function(context) {
     if(this._copyOf) {
         if(this._copyOf.removed) {
-            this.remove()
-            return
+            if(this._autoDelete) {
+                this.remove()
+                return
+            }
+            else {
+                this._copyOf = undefined
+            }
         }
         else {
             // TODO: reference-counted interpolands?
@@ -42,8 +48,9 @@ Translation.prototype.draw = function(context) {
     context.translate(-this.x.curr, -this.y.curr)
 }
 
-Translation.prototype.copy = function(avatars) {
+Translation.prototype.copy = function(avatars, autoDelete) {
     var result = new Translation(avatars, this.x.curr, this.y.curr)
     result._copyOf = this
+    result._autoDelete = autoDelete
     return result
 }

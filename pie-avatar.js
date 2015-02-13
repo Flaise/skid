@@ -31,7 +31,9 @@ module.exports = exports = PieAvatar
 PieAvatar.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.breadth, this.startAngle, this.innerRadiusRel])
+    this.breadth.remove()
+    this.startAngle.remove()
+    this.innerRadiusRel.remove()
     DefaultAvatar.prototype.remove.call(this)
 }
 

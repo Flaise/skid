@@ -9,6 +9,10 @@ exports.power_fac = function(exp) {
         return exports.linear
     return function(v) { return Math.pow(v, exp) }
 }
+exports.quadratic = function(x) { return x * x }
+exports.cubic = function(x) { return x * x * x }
+exports.quartic = function(x) { return x * x * x * x }
+
 function sine(x) { return Math.sin(x * Math.PI / 2) }
 exports.sine = sine
 exports.sine_2 = function(x) { return sine(sine(x)) }

@@ -21,7 +21,8 @@ module.exports = exports = RectAvatar
 RectAvatar.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.anchorX, this.anchorY])
+    this.anchorX.remove()
+    this.anchorY.remove()
     DefaultAvatar.prototype.remove.call(this)
 }
 

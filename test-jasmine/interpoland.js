@@ -22,7 +22,8 @@ describe('Interpoland', function() {
         expect(interpolands.aliveCount).toBe(1)
         expect(interpolands.deadCount).toBe(0)
         
-        interpolands.remove([inter])
+        inter.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(0)
         expect(interpolands.deadCount).toBe(1)
         
@@ -40,7 +41,8 @@ describe('Interpoland', function() {
         expect(interpolands.aliveCount).toBe(3)
         expect(interpolands.deadCount).toBe(0)
         
-        interpolands.remove([b])
+        b.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(2)
         expect(interpolands.deadCount).toBe(1)
         expect(interpolands.alive[0]).toBe(a)
@@ -62,7 +64,9 @@ describe('Interpoland', function() {
         expect(interpolands.aliveCount).toBe(5)
         expect(interpolands.deadCount).toBe(0)
         
-        interpolands.remove([b, c])
+        b.remove()
+        c.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(3)
         expect(interpolands.deadCount).toBe(2)
         expect(interpolands.alive[0]).toBe(a)
@@ -88,7 +92,8 @@ describe('Interpoland', function() {
         expect(interpolands.tweens.deadCount).toBe(0)
         expect(onDone).not.toHaveBeenCalled()
         
-        interpolands.remove([inter])
+        inter.remove()
+        interpolands.update(0)
         expect(interpolands.tweens.aliveCount).toBe(0)
         expect(interpolands.tweens.deadCount).toBe(1)
         
@@ -302,7 +307,8 @@ describe('Interpoland', function() {
         expect(interpolands.tweens.alive[3]).toBe(td)
         expect(interpolands.tweens.alive[4]).toBe(te)
         
-        interpolands.remove([interA])
+        interA.remove()
+        interpolands.update(0)
         expect(interB.dest).toBe(8)
         expect(interpolands.aliveCount).toBe(1)
         expect(interpolands.alive[0]).toBe(interB)
@@ -322,7 +328,8 @@ describe('Interpoland', function() {
         var d = interpolands.make(4)
         var e = interpolands.make(5)
         
-        interpolands.remove([d])
+        d.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(4)
         expect(interpolands.dead[0]).toBe(d)
         
@@ -331,7 +338,8 @@ describe('Interpoland', function() {
         expect(interpolands.alive[4]).toBe(d)
         expect(d.curr).toBe(6)
         
-        interpolands.remove([a])
+        a.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(4)
         expect(interpolands.alive[0]).toBe(b)
         expect(interpolands.alive[1]).toBe(c)
@@ -344,9 +352,12 @@ describe('Interpoland', function() {
         expect(interpolands.alive[4]).toBe(a)
         expect(a.curr).toBe(7)
         
-        interpolands.remove([c])
-        interpolands.remove([b])
-        interpolands.remove([e])
+        c.remove()
+        interpolands.update(0)
+        b.remove()
+        interpolands.update(0)
+        e.remove()
+        interpolands.update(0)
         expect(interpolands.aliveCount).toBe(2)
         expect(interpolands.alive[0]).toBe(d)
         expect(interpolands.alive[1]).toBe(a)
@@ -375,14 +386,20 @@ describe('Interpoland', function() {
         for(var i = 0; i < 30; i += 1)
             interpolands.make(0)
         for(var i = 0; i < interpolands.aliveCount; i += 6)
-            interpolands.remove([interpolands.alive[i]])
+            interpolands.alive[i].remove()
+        interpolands.update(0)
         for(var i = 0; i < 30; i += 1)
             interpolands.make(0)
-        interpolands.remove([interpolands.alive[0], interpolands.alive[1], interpolands.alive[2]])
+        interpolands.alive[0].remove()
+        interpolands.alive[1].remove()
+        interpolands.alive[2].remove()
+        interpolands.update(0)
         for(var i = 0; i < 90; i += 1)
             interpolands.make(0)
-        for(var i = 0; i < 30; i += 1)
-            interpolands.remove([interpolands.alive[40]])
+        for(var i = 0; i < 30; i += 1) {
+            interpolands.alive[40].remove()
+            interpolands.update(0)
+        }
         interpolands.make(0)
         
         for(var i = 0; i < interpolands.aliveCount - 1; i += 1)

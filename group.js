@@ -8,7 +8,7 @@ var Avatar = require('./avatar')
 function Group(avatars) {
     Avatar.call(this, avatars)
     sanity.constants(this, {
-        interpolands: avatars.interpolands,
+        interpolands: avatars.interpolands, // used when adding avatars to this group
         alive: new LinkedList()
     })
 }

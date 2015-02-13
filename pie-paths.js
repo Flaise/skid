@@ -9,8 +9,7 @@ function PiePaths(avatars) {
     Avatar.call(this, avatars)
     sanity.constants(this, {
         _paths: [],
-        _interpolandGroup: avatars.interpolands,
-        _interpolands: []
+        _interpolands: avatars.interpolands
     })
 }
 PiePaths.prototype = Object.create(Avatar.prototype)
@@ -19,7 +18,9 @@ module.exports = exports = PiePaths
 PiePaths.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolandGroup.remove(this._interpolands)
+    this._paths.forEach(function(path) {
+        path.scale.remove()
+    })
     Avatar.prototype.remove.call(this)
 }
 
@@ -43,8 +44,6 @@ PiePaths.prototype.draw = function(context) {
 }
 
 PiePaths.prototype.make = function(breadth, startAngle, innerRadius, scale) {
-    var scalement = this._interpolandGroup.make(scale || 1)
-    this._interpolands.push(scalement)
     var result = {
         // Distance of second jaw from first jaw. Positive is clockwise.
         breadth: breadth,
@@ -54,7 +53,7 @@ PiePaths.prototype.make = function(breadth, startAngle, innerRadius, scale) {
         
         innerRadius: innerRadius
     }
-    sanity.constant(result, 'scale', scalement)
+    sanity.constant(result, 'scale', this._interpolands.make(scale || 1))
     this._paths.push(result)
     return result
 }

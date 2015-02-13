@@ -11,7 +11,6 @@ var turns = require('./turns')
 function DefaultAvatar(avatars) {
     Avatar.call(this, avatars)
     sanity.constants(this, {
-        _interpolands: avatars.interpolands,
         x: avatars.interpolands.make(0),
         y: avatars.interpolands.make(0),
         w: avatars.interpolands.make(0),
@@ -29,13 +28,19 @@ DefaultAvatar.prototype.doTransform = function(context) {
     if(this.angle.curr)
         context.rotate(turns.toRadians(this.angle.curr))
     // can't scale here; it breaks radii and strokes
-    context.globalAlpha = esquire.clamp(this.opacity.curr, 0, 1)
+    if(!this.skipAlpha) ////////// TODO: always use Opacity group
+        context.globalAlpha = esquire.clamp(this.opacity.curr, 0, 1)
 }
 
 DefaultAvatar.prototype._defaultAvatar_remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.x, this.y, this.w, this.h, this.angle, this.opacity])
+    this.x.remove()
+    this.y.remove()
+    this.w.remove()
+    this.h.remove()
+    this.angle.remove()
+    this.opacity.remove()
     Avatar.prototype.remove.call(this)
 }
 DefaultAvatar.prototype.remove = DefaultAvatar.prototype._defaultAvatar_remove

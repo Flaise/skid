@@ -66,6 +66,8 @@ TextAvatar.prototype.draw = function(context) {
 TextAvatar.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.x, this.y, this.opacity])
+    this.x.remove()
+    this.y.remove()
+    this.opacity.remove()
     this._avatar_remove()
 }

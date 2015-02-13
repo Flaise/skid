@@ -143,6 +143,7 @@ describe('Avatar', function() {
     
     it('leaves no interpolands behind after removal', function() {
         new DefaultAvatar(avatars).remove()
+        avatars.interpolands.update(0)
         expect(avatars.alive.size).toBe(0)
         expect(avatars.interpolands.aliveCount).toBe(0)
     })
@@ -155,6 +156,7 @@ describe('Avatar', function() {
         a.remove()
         b.remove()
         c.remove()
+        avatars.interpolands.update(0)
         expect(avatars.alive.size).toBe(0)
         expect(avatars.interpolands.aliveCount).toBe(0)
     })
@@ -170,6 +172,7 @@ describe('Avatar', function() {
         expect(avatars.interpolands.aliveCount).toBe(30)
         
         d.remove()
+        avatars.interpolands.update(0)
         expect(avatars.alive.toArray()[0]).toBe(a)
         expect(avatars.alive.toArray()[1]).toBe(b)
         expect(avatars.alive.toArray()[2]).toBe(c)
@@ -186,6 +189,7 @@ describe('Avatar', function() {
         expect(avatars.alive.toArray()[4]).toBe(d)
         
         a.remove()
+        avatars.interpolands.update(0)
         expect(avatars.alive.size).toBe(4)
         expect(avatars.interpolands.aliveCount).toBe(24)
         expect(avatars.interpolands.deadCount).toBe(6)
@@ -205,6 +209,7 @@ describe('Avatar', function() {
         c.remove()
         b.remove()
         e.remove()
+        avatars.interpolands.update(0)
         expect(avatars.alive.size).toBe(2)
         expect(avatars.interpolands.aliveCount).toBe(12)
         expect(avatars.interpolands.deadCount).toBe(18)

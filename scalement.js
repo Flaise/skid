@@ -7,11 +7,9 @@ var Group = require('./group')
 function Scalement(avatars, w, h) {
     Group.call(this, avatars)
     sanity.constants(this, {
-        _interpolands: avatars.interpolands,
         w: avatars.interpolands.make(w),
         h: avatars.interpolands.make(h)
     })
-    this._copyOf = undefined
 }
 Scalement.prototype = Object.create(Group.prototype)
 module.exports = exports = Scalement
@@ -19,7 +17,8 @@ module.exports = exports = Scalement
 Scalement.prototype.remove = function() {
     if(this.removed)
         return
-    this._interpolands.remove([this.w, this.h])
+    this.w.remove()
+    this.h.remove()
     Group.prototype.remove.call(this)
 }
 

@@ -37,7 +37,7 @@ exports.attribute = function(obj, key, value, validator) {
         })
     }
     else {
-        obj[key] = initialValue
+        obj[key] = value
     }
 }
 exports.attributes = function(obj, values, validator) {

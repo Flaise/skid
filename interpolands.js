@@ -3,6 +3,7 @@
 var ObjectPool = require('./object-pool')
 var sanity = require('./sanity')
 var is = require('./is')
+var tween = require('./tween')
 
 
 function Interpoland(tweens, value) {
@@ -15,7 +16,7 @@ function Interpoland(tweens, value) {
 }
 Interpoland.prototype.mod = function(delta, duration, tweenFunc, onDone, remainder) {
     this.dest += delta
-    return this.tweens.make(this, delta, duration, tweenFunc, onDone, remainder, delta)
+    return this.tweens.make(this, delta, delta, duration, tweenFunc, onDone, remainder)
 }
 Interpoland.prototype.modTo = function(dest, duration, tweenFunc, onDone, remainder) {
     return this.mod(dest - this.dest, duration, tweenFunc, onDone, remainder)
@@ -40,7 +41,7 @@ Interpoland.prototype.setToInitial = function(dest) {
     this.dest = dest
 }
 Interpoland.prototype.mod_noDelta = function(amplitude, duration, tweenFunc, onDone, remainder) {
-    return this.tweens.make(this, 0, duration, tweenFunc, onDone, remainder, amplitude)
+    return this.tweens.make(this, 0, amplitude, duration, tweenFunc, onDone, remainder)
 }
 Interpoland.prototype.remove = function() {
     this.removed = true
@@ -110,15 +111,26 @@ module.exports = exports = Interpolands
 
 
 
-function Tween(interpoland, dest, duration, func, onDone, remainder, amplitude) {
-    if(sanity(is.number(dest)))
-        dest = 0
-    if(sanity(is.number(amplitude)))
-        amplitude = dest
+function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) {
+    if(sanity.throws) {
+        sanity(is.object(interpoland))
+        if(sanity(is.number(dest)))
+            dest = 0
+        if(sanity(is.number(amplitude)))
+            amplitude = dest
+        if(sanity(is.number(duration)))
+            duration = 0
+        if(sanity(is.func(func)))
+            func = tween.linear
+        if(sanity(is.nullish.or.func(onDone)))
+            onDone = undefined
+        if(sanity(is.number(remainder)))
+            remainder = 0
+    }
     
     this.interpoland = interpoland
     this.curr = 0
-    this.elapsed = remainder || 0
+    this.elapsed = remainder
     this.dest = dest
     this.duration = duration
     this.func = func
@@ -131,8 +143,16 @@ function Tween(interpoland, dest, duration, func, onDone, remainder, amplitude) 
 function Tweens() {
     ObjectPool.call(this, Tween)
     this.ending = []
+    this.remainder = 0
 }
 Tweens.prototype = Object.create(ObjectPool.prototype)
+
+Tweens.prototype.make = function(interpoland, dest, amplitude, duration, func, onDone, remainder) {
+    if(is.nullish(remainder))
+        remainder = this.remainder
+    return ObjectPool.prototype.make.call(this, interpoland, dest, amplitude, duration, func,
+                                          onDone, remainder)
+}
 
 Tweens.prototype.removeInterpolands = function(removals, count) {
     if(count === 0)
@@ -200,10 +220,13 @@ Tweens.prototype.update = function(dt) {
     this.aliveCount -= shiftBy
     for(var i = 0; i < endingCount; i += 1) {
         var tween = this.ending[i]
-        tween.onDone(tween.elapsed - tween.duration)
+        
+        this.remainder = tween.elapsed - tween.duration
+        tween.onDone(this.remainder)
         tween.onDone = undefined
         this.dead[this.deadCount] = tween
         this.deadCount += 1
     }
+    this.remainder = 0
 }
 

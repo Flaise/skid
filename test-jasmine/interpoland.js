@@ -229,7 +229,7 @@ describe('Interpoland', function() {
         expect(interpolands.tweens.aliveCount).toBe(0)
     })
     
-    it('precise interpolation chaining', function() {
+    it('maintains precision when chaining interpolations', function() {
         var onDoneB = jasmine.createSpy('B').and.callFake(function(remainder) {
             expect(remainder).toBe(200)
         })
@@ -256,6 +256,40 @@ describe('Interpoland', function() {
         expect(onDoneB).toHaveBeenCalled()
         expect(inter.curr).toBe(0)
         expect(inter.dest).toBe(0)
+    })
+    
+    it('maintains precision when chaining interpolations without remainder parameter', function() {
+        var onDoneB = jasmine.createSpy('B').and.callFake(function(remainder) {
+            expect(remainder).toBe(200)
+        })
+        var onDoneA = jasmine.createSpy('A').and.callFake(function(remainder) {
+            inter.mod(-1, 1000, tween.linear, onDoneB)
+        })
+        
+        var inter = interpolands.make(0)
+        inter.mod(1, 1000, tween.linear, onDoneA)
+        expect(inter.dest).toBe(1)
+        
+        interpolands.update(100)
+        expect(onDoneA).not.toHaveBeenCalled()
+        expect(inter.dest).toBe(1)
+        
+        interpolands.update(1500)
+        expect(onDoneA).toHaveBeenCalled()
+        onDoneA.calls.reset()
+        expect(onDoneB).not.toHaveBeenCalled()
+        expect(inter.dest).toBe(0)
+        
+        interpolands.update(600)
+        expect(onDoneA).not.toHaveBeenCalled()
+        expect(onDoneB).toHaveBeenCalled()
+        expect(inter.curr).toBe(0)
+        expect(inter.dest).toBe(0)
+        
+        var tweenC = inter.modTo(1, 1000, tween.linear)
+        expect(inter.curr).toBe(0)
+        expect(inter.dest).toBe(1)
+        expect(tweenC.elapsed).toBe(0)
     })
     
     it('interpolates with no net change', function() {

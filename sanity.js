@@ -49,7 +49,7 @@ exports.attributes = function(obj, values, validator) {
             exports.attribute(obj, key, values[key], validator)
     }
     else {
-        if(typeof initialValues === 'string')
+        if(typeof values === 'string')
             exports.attribute.apply(undefined, arguments)
         else
             for(var key in values)
@@ -59,7 +59,7 @@ exports.attributes = function(obj, values, validator) {
 
 exports.constants = function(obj, values) {
     if(exports.throws) {
-        if(typeof initialValues === 'string')
+        if(typeof values === 'string')
             throw new Error()
         for(var key in values)
             Object.defineProperty(obj, key, {value: values[key], writable: false})

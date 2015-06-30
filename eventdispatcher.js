@@ -49,7 +49,7 @@ var EventDispatcher = (function () {
             return callback.apply(null, args);
         });
     };
-    EventDispatcher.prototype.onlyWhen = function (reactant) {
+    EventDispatcher.prototype.filter = function (reactant) {
         var result = new EventDispatcher();
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when result has none of its own listeners, and re-added when it does
@@ -88,4 +88,3 @@ var EventDispatcher = (function () {
 
 if (typeof module !== 'undefined')
     module.exports = EventDispatcher;
-//# sourceMappingURL=eventdispatcher.js.map

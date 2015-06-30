@@ -44,7 +44,7 @@ class EventDispatcher {
     base_proc(...args) {
         this.callbacks.forEach(callback => callback.apply(null, args))
     }
-    onlyWhen(reactant) {
+    filter(reactant) {
         var result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when result has none of its own listeners, and re-added when it does

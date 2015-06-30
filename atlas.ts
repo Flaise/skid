@@ -1,21 +1,29 @@
 'use strict'
 
-declare function require(name:string)
 var Icon = require('./icon')
-var Reactant = require('esquire/reactant')
+var Reactant = require('./reactant')
+var sanity = require('./sanity')
+
 
 class Atlas {
     image
     isLoaded
+    $emptyIcon
     
-    constructor(private layout) {
-        Object.defineProperty(this, 'isLoaded', {value: new Reactant(false)})
-        this.setSource(undefined, layout.image, undefined)
+    constructor(private layout, imagePath?) {
+        sanity.constant(this, 'isLoaded', new Reactant(false))
+        this.setSource(undefined, imagePath || layout.image, undefined)
+    }
+
+    get emptyIcon() {
+        if(!this.$emptyIcon)
+            this.$emptyIcon = new Icon()
+        return this.$emptyIcon
     }
     
     makeIcon(name:string) {
-        if(!name)
-            return new Icon()
+        if(sanity(name))
+            return this.emptyIcon
         
         var sprite = this.layout.sprites[name]
         
@@ -42,7 +50,7 @@ class Atlas {
         
         this.isLoaded.value = false
         
-        loadImage(_imageSource, (err, image) => {
+        exports.loadImage(_imageSource, (err, image) => {
             if(err)
                 return next(err)
             
@@ -81,21 +89,17 @@ class Atlas {
 }
 export = Atlas
 
-function loadImage(source, next) {
+exports.loadImage = function(source, next) {
     if(!next)
         throw new Error() // makes no sense to non-explicitly discard resulting image
     var image = new Image()
     image.onload = () => {
         image.onload = image.onerror = image.onabort = undefined
-        
-        if(next)
-            next(null, image)
+        next(null, image)
     }
     image.onerror = () => {
         image.onload = image.onerror = image.onabort = undefined
-        
-        if(next)
-            next('Unable to load image.')
+        next('Unable to load image.')
     }
     image.src = source
 }

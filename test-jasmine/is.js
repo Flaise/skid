@@ -9,6 +9,26 @@ function ok(condition, reason) {
 }
 
 describe('Is', function() {
+    it('array', function() {
+        expect(is.array(function() {})).toBe(false)
+        expect(is.array(is.func)).toBe(false)
+        expect(is.array(setTimeout)).toBe(false)
+        expect(is.array(true)).toBe(false)
+        expect(is.array(false)).toBe(false)
+        expect(is.array({})).toBe(false)
+        expect(is.array([])).toBe(true)
+        expect(is.array([1, 2])).toBe(true)
+        expect(is.array({a: 3})).toBe(false)
+        expect(is.array(9)).toBe(false)
+        expect(is.array(0)).toBe(false)
+        expect(is.array(-.1)).toBe(false)
+        expect(is.array('')).toBe(false)
+        expect(is.array('asdf')).toBe(false)
+        expect(is.array(NaN)).toBe(false)
+        expect(is.array(Infinity)).toBe(false)
+        expect(is.array(undefined)).toBe(false)
+        expect(is.array(null)).toBe(false)
+    })
     it('object', function() {
         expect(is.object(function() {})).toBe(false)
         expect(is.object(is.func)).toBe(false)

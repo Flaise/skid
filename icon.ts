@@ -1,7 +1,7 @@
 'use strict'
 
-var esquire = require('../esquire')
-var Reactant = require('esquire/reactant')
+var Reactant = require('./reactant')
+
 
 var alwaysLoaded = new Reactant(true)
 

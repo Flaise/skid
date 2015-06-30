@@ -1,16 +1,27 @@
 'use strict';
 var Icon = require('./icon');
-var Reactant = require('esquire/reactant');
+var Reactant = require('./reactant');
+var sanity = require('./sanity');
 
 var Atlas = (function () {
-    function Atlas(layout) {
+    function Atlas(layout, imagePath) {
         this.layout = layout;
-        Object.defineProperty(this, 'isLoaded', { value: new Reactant(false) });
-        this.setSource(undefined, layout.image, undefined);
+        sanity.constant(this, 'isLoaded', new Reactant(false));
+        this.setSource(undefined, imagePath || layout.image, undefined);
     }
+    Object.defineProperty(Atlas.prototype, "emptyIcon", {
+        get: function () {
+            if (!this.$emptyIcon)
+                this.$emptyIcon = new Icon();
+            return this.$emptyIcon;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
     Atlas.prototype.makeIcon = function (name) {
-        if (!name)
-            return new Icon();
+        if (sanity(name))
+            return this.emptyIcon;
 
         var sprite = this.layout.sprites[name];
 
@@ -38,7 +49,7 @@ var Atlas = (function () {
 
         this.isLoaded.value = false;
 
-        loadImage(_imageSource, function (err, image) {
+        exports.loadImage(_imageSource, function (err, image) {
             if (err)
                 return next(err);
 
@@ -76,22 +87,18 @@ var Atlas = (function () {
     return Atlas;
 })();
 
-function loadImage(source, next) {
+exports.loadImage = function (source, next) {
     if (!next)
         throw new Error();
     var image = new Image();
     image.onload = function () {
         image.onload = image.onerror = image.onabort = undefined;
-
-        if (next)
-            next(null, image);
+        next(null, image);
     };
     image.onerror = function () {
         image.onload = image.onerror = image.onabort = undefined;
-
-        if (next)
-            next('Unable to load image.');
+        next('Unable to load image.');
     };
     image.src = source;
-}
+};
 module.exports = Atlas;

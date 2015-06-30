@@ -30,6 +30,10 @@ funcs.object = function(a) {
     return !!a && typeof a === 'object'
 }
 
+funcs.array = function(a) {
+    return !!a && a.constructor === Array
+}
+
 function composeOr(r, s) {
     return addCompositorsTo(function(a) {
         return r(a) || s(a)

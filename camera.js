@@ -25,8 +25,13 @@ module.exports = exports = Camera
 Camera.prototype.remove = function() {
     if(this.removed)
         return
-    this.interpolands.remove([this.x, this.y, this.w, this.h, this.anchorX, this.anchorY,
-                              this.angle])
+    this.x.remove()
+    this.y.remove()
+    this.w.remove()
+    this.h.remove()
+    this.anchorX.remove()
+    this.anchorY.remove()
+    this.angle.remove()
     Group.prototype.remove.call(this)
 }
 

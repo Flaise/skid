@@ -144,7 +144,7 @@ test('reactant composition events', 2, function() {
 test('compose dispatcher with reactant', 1, function() {
     var a = new EventDispatcher()
     var b = new Reactant(false)
-    var result = a.onlyWhen(b)
+    var result = a.filter(b)
     var remove = result.listen(fail)
     a.proc()
     b.value = true
@@ -205,7 +205,7 @@ test('reactant transformation', 8, function() {
 })
 test('reactant event composition with itself', function() {
     var reactant = new Reactant(1)
-    var composition = reactant.onlyWhen(reactant.transform(function(a) { return a > 5 }))
+    var composition = reactant.filter(reactant.transform(function(a) { return a > 5 }))
 
     composition.listen(expectMultiSequence([
         [1, 6],

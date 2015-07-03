@@ -1,6 +1,6 @@
 'use strict'
 
-var turns = require('../turns')
+var turns = require('../index').turns
 
 
 describe('Turns', function() {

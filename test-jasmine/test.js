@@ -15,7 +15,7 @@ describe('Esquire', function() {
     
     require('./is')
     require('./turns')
-    require('./object-pool')
-    require('./interpoland')
-    require('./avatar')
+    //require('./object-pool')
+    //require('./interpoland')
+    //require('./avatar')
 })

@@ -18,4 +18,5 @@ describe('Esquire', function() {
     //require('./object-pool')
     //require('./interpoland')
     //require('./avatar')
+    require('./linked-list')
 })

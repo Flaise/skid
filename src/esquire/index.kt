@@ -83,4 +83,3 @@ fun clamp(value: Double, lo: Double, hi: Double): Double {
         else -> value
     }
 }
-

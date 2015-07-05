@@ -10,9 +10,12 @@
         "url" : "http://github.com/Flaise/esquire.git"
     },
     "devDependencies": {
-        "browserify": "10.2.4"
+        "browserify": "10.2.4",
+        "envify": "3.4.0",
+        "uglifyify": "3.0.1"
     },
     "scripts": {
-        "compile": "node ./node_modules/browserify/bin/cmd.js test-jasmine/test.js --outfile test-jasmine/test-bundle.js --debug"
+        "build": "node ./node_modules/browserify/bin/cmd.js test-jasmine/test.js --transform [envify purge --NODE_ENV browser] --outfile test-jasmine/test-bundle.js",
+        "build-minify":  "node ./node_modules/browserify/bin/cmd.js test-jasmine/test.js --transform [envify purge --NODE_ENV browser] --transform uglifyify --outfile test-jasmine/test-bundle.js"
     }
 }

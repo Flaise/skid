@@ -1,3 +1,4 @@
 node_modules/
 test-jasmine/test-bundle.js
 dist/
+*.iml

@@ -1,8 +1,12 @@
 package esquire
 
+import java.util.*
 
-class LinkedListNode<TElement>(val element: TElement) {
-    var _prev: LinkedListNode<TElement>? = null
+
+class LinkedListNode<TElement>(val value: TElement): Registration {
+    var removed = false
+
+    private var _prev: LinkedListNode<TElement>? = null
     var prev: LinkedListNode<TElement>?
         get() = _prev
         set(other) {
@@ -16,7 +20,7 @@ class LinkedListNode<TElement>(val element: TElement) {
             }
         }
 
-    var _next: LinkedListNode<TElement>? = null
+    private var _next: LinkedListNode<TElement>? = null
     var next: LinkedListNode<TElement>?
         get() = _next
         set(other) {
@@ -29,10 +33,90 @@ class LinkedListNode<TElement>(val element: TElement) {
                 _next!!._prev = this
             }
         }
+
+    fun insertValueAfter(element: TElement): LinkedListNode<TElement> {
+        val node = LinkedListNode(element)
+        insertAfter(node)
+        return node
+    }
+
+    fun insertValueBefore(element: TElement): LinkedListNode<TElement> {
+        val node = LinkedListNode(element)
+        insertBefore(node)
+        return node
+    }
+
+    fun insertAfter(node: LinkedListNode<TElement>) {
+        node.next = next
+        node.prev = this
+    }
+
+    fun insertBefore(node: LinkedListNode<TElement>) {
+        node.prev = prev
+        node.next = this
+    }
+
+    override fun until(dispatcher: EventDispatcher<*>) {
+        throw Exception()
+    }
+    override fun remove() {
+        if(removed)
+            return
+
+        val oldPrev = prev
+        val oldNext = next
+        removed = true
+        if(oldPrev != null)
+            oldPrev._next = oldNext
+        if(oldNext != null)
+            oldNext._prev = oldPrev
+    }
 }
 
-class LinkedList<TElement> {
-    fun addFirst(element: TElement) {
+class LinkedList<TElement: Any?> {
+    val head = LinkedListNode<TElement>(null)
+    val tail = LinkedListNode<TElement>(null)
 
+    init {
+        head.next = tail
+    }
+
+    fun addFirst(element: TElement) = head.insertValueAfter(element)
+    fun addLast(element: TElement) = tail.insertValueBefore(element)
+
+    fun getFirst() = getFirstNode().value
+    fun getLast() = getLastNode().value
+
+    fun getFirstNode(): LinkedListNode<TElement> {
+        if(empty)
+            throw NoSuchElementException()
+        return head.next!!
+    }
+
+    fun getLastNode(): LinkedListNode<TElement> {
+        if(empty)
+            throw NoSuchElementException()
+        return tail.prev!!
+    }
+
+    val empty: Boolean
+        get() = head.next == tail
+
+    fun clear() {
+        head.next = tail
+    }
+
+    fun forEach(callback: (TElement)->Unit) = forEachNode { node -> callback(node.value) }
+
+    fun forEachNode(callback: (LinkedListNode<TElement>)->Unit) {
+        var node = head
+        while(true) {
+            node = node.next!!
+            if(node == tail)
+                return
+            if(node.removed)
+                continue
+            callback(node)
+        }
     }
 }

@@ -211,4 +211,26 @@ describe('EventDispatcher', function() {
         dispatcher2.invoke()
         expect(dispatcher.callbacks.empty).toBe(true)
     })
+
+    it('removes one-time listener with an until binding', function() {
+        dispatcher.listenOnce(callback).until(stop)
+        stop.invoke()
+        dispatcher.invoke()
+        expect(callback.calls.count()).toBe(0)
+    })
+
+    it('leaves no listeners when manually removing one-time until-bound listener', function() {
+        var registration = dispatcher.listenOnce(callback)
+        registration.until(stop)
+        registration.remove()
+        expect(dispatcher.callbacks.empty).toBe(true)
+        expect(stop.callbacks.empty).toBe(true)
+    })
+
+    it('passes a parameter to listeners', function() {
+        dispatcher.listen(callback)
+        dispatcher.invoke(9)
+        dispatcher.invoke(2)
+        expect(callback.calls.allArgs()).toEqual([[9], [2]])
+    })
 })

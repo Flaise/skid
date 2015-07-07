@@ -56,7 +56,7 @@ class LinkedListNode<TElement>(val value: TElement): Registration {
         node.next = this
     }
 
-    override fun remove() {
+    override fun removeImpl() {
         if(removed)
             return
 
@@ -68,6 +68,8 @@ class LinkedListNode<TElement>(val value: TElement): Registration {
         if(oldNext != null)
             oldNext._prev = oldPrev
     }
+
+    override var untilRegistrations: ArrayList<Registration>? = null
 
     init {
         js("""Kotlin.modules.esquire.esquire.LinkedListNode.prototype.until =

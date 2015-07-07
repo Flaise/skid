@@ -20,8 +20,9 @@ class EventDispatcher<TEvent> {
     fun plus(other: EventDispatcher<TEvent>): EventDispatcher<TEvent> {
         val result = EventDispatcher<TEvent>()
 
-        val registrationA = listen({ result.invoke(it) })
-        val registrationB = other.listen({ result.invoke(it) })
+        // TODO: do something with these registrations
+        listen({ result.invoke(it) })
+        other.listen({ result.invoke(it) })
 
         return result
     }

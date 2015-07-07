@@ -2,6 +2,7 @@ package esquire
 
 data class Vect2(val x: Double, val y: Double) {
     fun plus(other: Vect2) = Vect2(x + other.x, y + other.y)
+    fun plusn(x: Double, y: Double) = Vect2(this.x + x, this.y + y)
 
     fun minus(other: Vect2) = Vect2(x - other.x, y - other.y)
     fun minus() = Vect2(-x, -y)
@@ -25,16 +26,3 @@ data class Vect2(val x: Double, val y: Double) {
 }
 
 val ZERO = Vect2(0.0, 0.0)
-
-//class esquire.esquire.Vect2() {
-//
-//    sum(other) {
-//        if(isNaN(other))
-//            return this.sumi(other.x, other.y)
-//        else
-//            return this.sum(turns.esquire.toVector(other))
-//    }
-//    sumi(x, y) {
-//        return new esquire.esquire.Vect2(this.x + x, this.y + y)
-//    }
-//}

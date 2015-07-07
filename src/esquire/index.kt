@@ -49,9 +49,7 @@ val setTimeout: (()->Unit, Double)->dynamic = noImpl
 native("clearTimeout")
 val clearTimeout: (dynamic)->Unit = noImpl
 
-fun now(): Int {
-    return js("Date.now()")
-}
+fun now(): Int = js("Date.now()")
 
 fun setTimeout_rm(callback: ()->Unit, delay: Double): ()->Unit {
     val dest = now() + delay

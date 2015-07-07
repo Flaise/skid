@@ -19,4 +19,5 @@ describe('Esquire', function() {
     //require('./interpoland')
     //require('./avatar')
     require('./linked-list')
+    require('./event-dispatcher')
 })

@@ -56,9 +56,6 @@ class LinkedListNode<TElement>(val value: TElement): Registration {
         node.next = this
     }
 
-    override fun until(dispatcher: EventDispatcher<*>) {
-        throw Exception()
-    }
     override fun remove() {
         if(removed)
             return
@@ -70,6 +67,11 @@ class LinkedListNode<TElement>(val value: TElement): Registration {
             oldPrev._next = oldNext
         if(oldNext != null)
             oldNext._prev = oldPrev
+    }
+
+    init {
+        js("""Kotlin.modules.esquire.esquire.LinkedListNode.prototype.until =
+              Kotlin.modules.esquire.esquire.LinkedListNode.prototype.until_exl1sk$;""")
     }
 }
 

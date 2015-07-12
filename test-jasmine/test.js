@@ -20,4 +20,5 @@ describe('Esquire', function() {
     //require('./avatar')
     require('./linked-list')
     require('./event-dispatcher')
+    require('./reactant')
 })

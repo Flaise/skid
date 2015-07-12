@@ -123,7 +123,7 @@ describe('EventDispatcher', function() {
     })
 
     it('aggregates two dispatchers', function() {
-        var aggregation = dispatcher.plus(dispatcher2)
+        var aggregation = dispatcher.aggregate(dispatcher2)
         var registration = aggregation.listen(callback)
 
         dispatcher.invoke()

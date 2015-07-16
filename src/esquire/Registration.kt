@@ -29,3 +29,13 @@ interface Registration {
             untilRegistrations!!.add(clear!!)
     }
 }
+
+
+abstract class AbstractRegistration: Registration {
+    override var untilRegistrations: ArrayList<Registration>? = null
+}
+
+
+object NullRegistration: AbstractRegistration() {
+    override fun removeImpl() { }
+}

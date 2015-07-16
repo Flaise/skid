@@ -33,7 +33,7 @@ class EventDispatcher<T> {
         return result
     }
 
-    fun toUnit() = transform({ Unit })
+    fun toUnit() = transform({ })
 
     companion object {
         fun any<T>(vararg dispatchers: EventDispatcher<T>): EventDispatcher<T> {
@@ -46,3 +46,7 @@ class EventDispatcher<T> {
         }
     }
 }
+
+fun EventDispatcher<Unit>.invoke() = this(Unit)
+fun <A, B> EventDispatcher<Pair<A, B>>.invoke(a: A, b: B) = this(Pair(a, b))
+fun <A, B, C> EventDispatcher<Triple<A, B, C>>.invoke(a: A, b: B, c: C) = this(Triple(a, b, c))

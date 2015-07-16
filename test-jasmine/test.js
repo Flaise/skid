@@ -21,4 +21,5 @@ describe('Esquire', function() {
     require('./linked-list')
     require('./event-dispatcher')
     require('./reactant')
+    require('./reactive-list')
 })

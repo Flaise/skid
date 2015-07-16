@@ -3,7 +3,7 @@
 var EventDispatcher = require('../index').EventDispatcher
 
 
-describe('EventDispatcher', function() {
+describe('Event Dispatcher', function() {
     var dispatcher
     var dispatcher2
     var dispatcher3

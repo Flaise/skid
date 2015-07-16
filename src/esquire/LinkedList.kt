@@ -3,7 +3,7 @@ package esquire
 import java.util.*
 
 
-class LinkedListNode<TElement>(val value: TElement): Registration {
+open class LinkedListNode<TElement>(val value: TElement): Registration {
     var removed = false
 
     private var _prev: LinkedListNode<TElement>? = null
@@ -70,14 +70,9 @@ class LinkedListNode<TElement>(val value: TElement): Registration {
     }
 
     override var untilRegistrations: ArrayList<Registration>? = null
-
-    init {
-        js("""Kotlin.modules.esquire.esquire.LinkedListNode.prototype.until =
-              Kotlin.modules.esquire.esquire.LinkedListNode.prototype.until_exl1sk$;""")
-    }
 }
 
-class LinkedList<TElement: Any?> {
+class LinkedList<TElement> {
     val head = LinkedListNode<TElement>(null)
     val tail = LinkedListNode<TElement>(null)
 
@@ -104,13 +99,13 @@ class LinkedList<TElement: Any?> {
     }
 
     val empty: Boolean
-        get() = head.next == tail
+        get() = head.next === tail
 
     fun clear() {
         head.next = tail
     }
 
-    fun forEach(callback: (TElement)->Unit) = forEachNode { node -> callback(node.value) }
+    fun forEach(callback: (TElement)->Unit) = forEachNode { callback(it.value) }
 
     fun forEachNode(callback: (LinkedListNode<TElement>)->Unit) {
         var node = head

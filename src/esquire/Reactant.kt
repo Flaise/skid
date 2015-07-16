@@ -5,7 +5,7 @@ data class Change<T>(val prev: T, val curr: T)
 
 class Reactant<T>(initialValue: T) {
     constructor(initialDefinition: ()->T,
-                initialOnMod: EventDispatcher<Unit>? = null): this(initialDefinition()) {
+                initialOnMod: EventDispatcher<*>? = null): this(initialDefinition()) {
         define(initialDefinition, initialOnMod)
     }
 
@@ -13,7 +13,7 @@ class Reactant<T>(initialValue: T) {
 
     private var definitionReg: Registration? = null
 
-    fun define(definition: ()->T, onMod: EventDispatcher<Unit>? = null) {
+    fun define(definition: ()->T, onMod: EventDispatcher<*>? = null) {
         this.definition = definition
 
         if(definitionReg != null)
@@ -57,7 +57,6 @@ class Reactant<T>(initialValue: T) {
     }
 
     private var changes = EventDispatcher<Change<T>>()
-    private var unitChanges = changes.toUnit()
 
     private fun changed() {
         val prev = lastValue
@@ -92,18 +91,18 @@ class Reactant<T>(initialValue: T) {
     fun onNot(target: T) = on { prev, curr -> curr != target }
 
     fun depend<U>(other: Reactant<U>, transformation: (U)->T) {
-        define({ transformation(other.value) }, other.unitChanges)
+        define({ transformation(other.value) }, other.changes)
     }
     fun echo(other: Reactant<T>) {
-        define({ other.value }, other.unitChanges)
+        define({ other.value }, other.changes)
     }
 
     fun compose<U, V>(other: Reactant<U>, transformation: (T, U)->V): Reactant<V> {
         return Reactant<V>({ transformation(this.value, other.value) },
-                unitChanges aggregate other.unitChanges)
+                           changes aggregate other.changes)
     }
 
-    fun transform<U>(transformation: (T)->U) = Reactant<U>({ transformation(value) }, unitChanges)
+    fun transform<U>(transformation: (T)->U) = Reactant<U>({ transformation(value) }, changes)
 
     // TODO
 //    companion object {

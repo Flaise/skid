@@ -21,8 +21,17 @@ class EventDispatcher<T> {
         val result = EventDispatcher<T>()
 
         // TODO: do something with these registrations
-        listen({ result.invoke(it) })
-        other.listen({ result.invoke(it) })
+        listen({ result(it) })
+        other.listen({ result(it) })
+
+        return result
+    }
+    fun aggregate<U>(other: EventDispatcher<U>): EventDispatcher<Unit> {
+        val result = EventDispatcher<Unit>()
+
+        // TODO: do something with these registrations
+        listen({ result() })
+        other.listen({ result() })
 
         return result
     }
@@ -32,8 +41,6 @@ class EventDispatcher<T> {
         listen({ result.invoke(transformation(it)) })
         return result
     }
-
-    fun toUnit() = transform({ })
 
     companion object {
         fun any<T>(vararg dispatchers: EventDispatcher<T>): EventDispatcher<T> {

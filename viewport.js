@@ -18,11 +18,7 @@ var requestAnimFrame = (
 )
 
 
-/*
- * Turning off clearBeforeDraw can mitigate rendering artifacts caused by tiling alpha blended
- * background images.
- */
-function Viewport(canvas, clearBeforeDraw) {
+function Viewport(canvas) {
     sanity(canvas)
     sanity.constants(this, {
         interpolands: new Interpolands(),
@@ -31,12 +27,8 @@ function Viewport(canvas, clearBeforeDraw) {
         onBeforeDraw: new EventDispatcher(),
         onAfterDraw: new EventDispatcher()
     })
-    this.clearBeforeDraw = clearBeforeDraw
 }
-Viewport.prototype = Object.create(Group.prototype)
 module.exports = exports = Viewport
-
-Viewport.prototype.remove = undefined
 
 Viewport.prototype.repeatDraw = function() {
     var _this = this
@@ -47,18 +39,29 @@ Viewport.prototype.repeatDraw = function() {
     requestAnimFrame(drawOnce)
 }
 
+/*
+ * Leaving this unused can mitigate rendering artifacts caused by tiling alpha blended
+ * background images.
+ */
+Viewport.prototype.clearBeforeDraw = function() {
+    var _this = this
+    return this.onBeforeDraw.listen(function(context) {
+        context.clearRect(0, 0, _this.canvas.width, _this.canvas.height)
+    })
+}
+
 Viewport.prototype.draw = function() {
-    this.onBeforeDraw.proc()
-
-    this.update()
-
+    if(!this.canvas)
+        return
+    
     // Firefox bugs in some situations if context is reused
     var context = this.canvas.getContext('2d')
-
-    if(this.clearBeforeDraw)
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    Group.prototype.draw.call(this, context)
-
+    
+    this.onBeforeDraw.proc(context)
+    this.update()
+    this.alive.forEach(function(avatar) {
+        avatar.draw(context)
+    })
     this.onAfterDraw.proc()
 }
 

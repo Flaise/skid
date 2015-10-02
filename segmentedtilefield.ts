@@ -12,14 +12,14 @@ export class SegmentedTileField {
     _smoothingEnabled
     _layer = 0
     
-    constructor(public root, tileSize, public divisionThreshold) {
-        if(isNaN(divisionThreshold))
+    constructor(public root, tileSize, public tilesPerSegment) {
+        if(isNaN(tilesPerSegment))
             throw new Error()
         this._tileSize = tileSize
     }
     
     _indexOf(x, y) {
-        return Math.floor(x / this.divisionThreshold) + ',' + Math.floor(y)
+        return Math.floor(x / this.tilesPerSegment) + ',' + Math.floor(y)
     }
     _ensureRow(y) {
         var result = this._rows[y]

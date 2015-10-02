@@ -15,7 +15,7 @@ funcs.nullish = function(a) {
 }
 
 funcs.integer = function(a) {
-    return a === Math.floor(a)
+    return typeof a === 'number' && a === Math.floor(a)
 }
 
 funcs.boolean = function(a) {
@@ -32,6 +32,14 @@ funcs.object = function(a) {
 
 funcs.array = function(a) {
     return !!a && a.constructor === Array
+}
+
+funcs.string = function(a) {
+    return typeof a === 'string'
+}
+
+funcs.iterable = function(a) {
+    return !!(a && a[Symbol.iterator])
 }
 
 function composeOr(r, s) {

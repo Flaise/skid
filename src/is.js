@@ -1,4 +1,5 @@
 const funcs = {}
+export default funcs
 
 funcs.number = function(a) {
     return (typeof a === 'number') && a !== Infinity && !isNaN(a)
@@ -59,5 +60,3 @@ function addCompositorsTo(func) {
 }
 for(var key in funcs)
     addCompositorsTo(funcs[key])
-
-export default funcs

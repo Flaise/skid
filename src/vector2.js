@@ -1,4 +1,4 @@
-import * as turns from './turns'
+import {toRadians, toVector} from './turns'
 
 
 export default class Vec2 {
@@ -17,7 +17,7 @@ export default class Vec2 {
         if(isNaN(other))
             return this.sumXY(other.x, other.y)
         else
-            return this.sum(turns.toVector(other))
+            return this.sum(toVector(other))
     }
     sumXY(x, y) {
         return new Vec2(this.x + x, this.y + y)
@@ -27,12 +27,13 @@ export default class Vec2 {
         return distance4(this.x, this.y, other.x, other.y)
     }
     
-    rotated(angle) {
-        const rad = turns.toRadians(angle)
-        const sin = Math.sin(rad)
-        const cos = Math.cos(rad)
-        return new Vec2(this.x * cos - this.y * sin, this.x * sin + this.y * cos)
+    rotatedTurns(angle) {
+        return rotatedXYTurns(this.x, this.y, angle)
     }
+    rotatedRadians(angle) {
+        return rotatedXYRadians(this.x, this.y, angle)
+    }
+    
     toString() {
         return this.x + ',' + this.y
     }
@@ -50,4 +51,15 @@ export function distance(x1, y1, x2, y2) {
 }
 export function distance4(x1, y1, x2, y2) {
     return Math.abs(this.x - other.x) + Math.abs(this.y - other.y)
+}
+export function distance8(x1, y1, x2, y2) {
+    return Math.max(Math.abs(this.x - other.x), Math.abs(this.y - other.y))
+}
+export function rotatedXYTurns(x, y, angle) {
+    return rotatedXYRadians(x, y, toRadians(angle))
+}
+export function rotatedXYRadians(x, y, angle) {
+    const s = Math.sin(angle)
+    const c = Math.cos(angle)
+    return new Vec2(x * c - y * s, x * s + y * c)
 }

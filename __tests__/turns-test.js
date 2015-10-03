@@ -1,7 +1,5 @@
-'use strict'
-
-var turns = require('../turns')
-
+jest.dontMock('../src/turns')
+const turns = require('../src/turns')
 
 describe('Turns', function() {
     it('wraps angles', function() {

@@ -1,35 +1,31 @@
-'use strict'
-
-var Vect2 = require('./vect2')
+import Vec2 from './vector2'
 
 
-exports.wrap = function(a) {
-    var b = a - Math.ceil(a)
+export function wrap(a) {
+    const b = a - Math.ceil(a)
     return b && (b + 1)
 }
-exports.toRadians = function(a) {
+export function toRadians(a) {
     return a * 2 * Math.PI
 }
-exports.fromRadians = function(a) {
+export function fromRadians(a) {
     return a / 2 / Math.PI
 }
-exports.shortestOffset = function(from, to) {
-    return exports.wrap(exports.wrap(to) - exports.wrap(from) + 1.5) - .5
+export function shortestOffset(from, to) {
+    return wrap(wrap(to) - wrap(from) + 1.5) - .5
 }
 
-var north = new Vect2(0, -1)
-exports.toVector = function(a) {
-    a = exports.wrap(a)
+export function toVector(a) {
+    a = wrap(a)
     switch(a) {
-        case exports.NORTH: return new Vect2(0, -1)
-        case exports.EAST: return new Vect2(1, 0)
-        case exports.SOUTH: return new Vect2(0, 1)
-        case exports.WEST: return new Vect2(-1, 0)
-        default: return north.rotated(a)
+        case NORTH: return new Vec2(0, -1)
+        case EAST:  return new Vec2(1, 0)
+        case SOUTH: return new Vec2(0, 1)
+        case WEST:  return new Vec2(-1, 0)
+        default:    return new Vec2(0, -1).rotated(a)
     }
 }
-exports.NORTH = 0
-exports.EAST = .25
-exports.SOUTH = .5
-exports.WEST = .75
-
+export const NORTH = 0
+export const EAST = .25
+export const SOUTH = .5
+export const WEST = .75

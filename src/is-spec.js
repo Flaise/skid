@@ -1,17 +1,14 @@
-'use strict'
-
-var is = require('../is')
-
+import is from '../src/is'
 
 // for porting from QUnit
-function ok(condition, reason) {
+functiontion ok(condition, reason) {
     expect(condition).toBe(true)
 }
 
-describe('Is', function() {
-    it('array', function() {
-        expect(is.array(function() {})).toBe(false)
-        expect(is.array(is.func)).toBe(false)
+describe('Is', functiontion() {
+    it('array', functiontion() {
+        expect(is.array(functiontion() {})).toBe(false)
+        expect(is.array(is.function)).toBe(false)
         expect(is.array(setTimeout)).toBe(false)
         expect(is.array(true)).toBe(false)
         expect(is.array(false)).toBe(false)
@@ -29,9 +26,9 @@ describe('Is', function() {
         expect(is.array(undefined)).toBe(false)
         expect(is.array(null)).toBe(false)
     })
-    it('object', function() {
-        expect(is.object(function() {})).toBe(false)
-        expect(is.object(is.func)).toBe(false)
+    it('object', functiontion() {
+        expect(is.object(functiontion() {})).toBe(false)
+        expect(is.object(is.function)).toBe(false)
         expect(is.object(setTimeout)).toBe(false)
         expect(is.object(true)).toBe(false)
         expect(is.object(false)).toBe(false)
@@ -49,27 +46,27 @@ describe('Is', function() {
         expect(is.object(undefined)).toBe(false)
         expect(is.object(null)).toBe(false)
     })
-    it('function', function() {
-        expect(is.func(function() {})).toBe(true)
-        expect(is.func(is.func)).toBe(true)
-        expect(is.func(setTimeout)).toBe(true)
-        expect(is.func(true)).toBe(false)
-        expect(is.func(false)).toBe(false)
-        expect(is.func({})).toBe(false)
-        expect(is.func([])).toBe(false)
-        expect(is.func([1, 2])).toBe(false)
-        expect(is.func({a: 3})).toBe(false)
-        expect(is.func(9)).toBe(false)
-        expect(is.func(0)).toBe(false)
-        expect(is.func(-.1)).toBe(false)
-        expect(is.func('')).toBe(false)
-        expect(is.func('asdf')).toBe(false)
-        expect(is.func(NaN)).toBe(false)
-        expect(is.func(Infinity)).toBe(false)
-        expect(is.func(undefined)).toBe(false)
-        expect(is.func(null)).toBe(false)
+    it('functiontion', functiontion() {
+        expect(is.function(functiontion() {})).toBe(true)
+        expect(is.function(is.function)).toBe(true)
+        expect(is.function(setTimeout)).toBe(true)
+        expect(is.function(true)).toBe(false)
+        expect(is.function(false)).toBe(false)
+        expect(is.function({})).toBe(false)
+        expect(is.function([])).toBe(false)
+        expect(is.function([1, 2])).toBe(false)
+        expect(is.function({a: 3})).toBe(false)
+        expect(is.function(9)).toBe(false)
+        expect(is.function(0)).toBe(false)
+        expect(is.function(-.1)).toBe(false)
+        expect(is.function('')).toBe(false)
+        expect(is.function('asdf')).toBe(false)
+        expect(is.function(NaN)).toBe(false)
+        expect(is.function(Infinity)).toBe(false)
+        expect(is.function(undefined)).toBe(false)
+        expect(is.function(null)).toBe(false)
     })
-    it('boolean', function() {
+    it('boolean', functiontion() {
         expect(is.boolean(true)).toBe(true)
         expect(is.boolean(false)).toBe(true)
         expect(is.boolean({})).toBe(false)
@@ -85,9 +82,9 @@ describe('Is', function() {
         expect(is.boolean(Infinity)).toBe(false)
         expect(is.boolean(undefined)).toBe(false)
         expect(is.boolean(null)).toBe(false)
-        expect(is.boolean(function() {})).toBe(false)
+        expect(is.boolean(functiontion() {})).toBe(false)
     })
-    it('actually a number', function() {
+    it('actually a number', functiontion() {
         ok(is.number(1))
         ok(is.number(100))
         ok(is.number(100.001))
@@ -97,12 +94,12 @@ describe('Is', function() {
         ok(is.number(1 / 100000000 / 1000000 / 1000000))
         ok(is.number(100 * 100 * 100 * 100 * 100 * 100))
     })
-    it('not pretending to be a number', function() {
+    it('not pretending to be a number', functiontion() {
         ok(!is.number(null))
         ok(!is.number(NaN))
         ok(!is.number(Infinity))
     })
-    it('nullish', function() {
+    it('nullish', functiontion() {
         ok(is.nullish(null), 'null')
         ok(is.nullish(undefined), undefined)
         ok(!is.nullish(''), 'empty string')
@@ -110,9 +107,9 @@ describe('Is', function() {
         ok(!is.nullish([]), 'empty list')
         ok(!is.nullish({}), 'empty hash')
         ok(!is.nullish(NaN), 'NaN')
-        expect(is.nullish(function() {})).toBe(false)
+        expect(is.nullish(functiontion() {})).toBe(false)
     })
-    it('defined', function() {
+    it('defined', functiontion() {
         ok(is.defined({}), 'empty hash')
         ok(is.defined([]), 'empty list')
         ok(is.defined(''), 'empty string')
@@ -120,9 +117,9 @@ describe('Is', function() {
         ok(is.defined(NaN), 'NaN')
         ok(!is.defined(undefined), 'undefined')
         ok(!is.defined(null), 'null')
-        expect(is.defined(function() {})).toBe(true)
+        expect(is.defined(functiontion() {})).toBe(true)
     })
-    it('integer', function() {
+    it('integer', functiontion() {
         ok(!is.integer({}), 'empty hash')
         ok(!is.integer([]), 'empty list')
         ok(!is.integer(''), 'empty string')
@@ -140,9 +137,9 @@ describe('Is', function() {
         ok(!is.integer(NaN), 'NaN')
         ok(!is.integer(undefined), 'undefined')
         ok(!is.integer(null), 'null')
-        expect(is.integer(function() {})).toBe(false)
+        expect(is.integer(functiontion() {})).toBe(false)
     })
-    it('composes functions', function() {
+    it('composes functiontions', functiontion() {
         expect(is.integer.or.nullish(null)).toBe(true)
         expect(is.integer.or.nullish(undefined)).toBe(true)
         expect(is.integer.or.nullish(1)).toBe(true)
@@ -162,4 +159,3 @@ describe('Is', function() {
         expect(is.integer.or.number.or.nullish(-5)).toBe(true)
     })
 })
-

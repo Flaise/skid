@@ -1,15 +1,22 @@
 {
     "name": "skid",
-    "description": "",
+    "description": "2d game engine for Node/HTML5",
+    "version": "0.0.0",
+    "license": "MIT",
     "author": {
         "name": "Flaise"
     },
-    "version": "0.0.0",
     "repository": {
         "type" : "git",
         "url" : "http://github.com/Flaise/skid.git"
     },
     "devDependencies": {
-        "browserify": "8.1.3"
+        "babel": "4.7.13",
+        "sigh": "0.12.22",
+        "sigh-cli": "0.2.8",
+        "jest-cli": "0.5.8"
+    },
+    "jest": {
+        "scriptPreprocessor": "./_preprocessor.js"
     }
 }

@@ -1,6 +1,4 @@
-'use strict'
-
-var funcs = {}
+const funcs = {}
 
 funcs.number = function(a) {
     return (typeof a === 'number') && a !== Infinity && !isNaN(a)
@@ -15,14 +13,15 @@ funcs.nullish = function(a) {
 }
 
 funcs.integer = function(a) {
-    return typeof a === 'number' && a === Math.floor(a)
+    // return typeof a === 'number' && 
+    return a === Math.floor(a)
 }
 
 funcs.boolean = function(a) {
     return !!a === a
 }
 
-funcs.func = function(a) {
+funcs.function = function(a) {
     return typeof a === 'function'
 }
 
@@ -49,13 +48,9 @@ function composeOr(r, s) {
 }
 
 function makeCompositions(func, compositor) {
-    var result = {}
-    for(var key in funcs)
-        (function(key) {
-            Object.defineProperty(result, key, {get: function() {
-                return compositor(func, funcs[key])
-            }})
-        })(key)
+    const result = {}
+    for(let key in funcs)
+        Object.defineProperty(result, key, {get: () => compositor(func, funcs[key])})
     return result
 }
 
@@ -66,4 +61,4 @@ function addCompositorsTo(func) {
 for(var key in funcs)
     addCompositorsTo(funcs[key])
 
-module.exports = funcs
+export default funcs

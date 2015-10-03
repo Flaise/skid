@@ -1,4 +1,21 @@
-'use strict'
+function bind_until(func) {
+    var clear
+    var result = function func_with_until() {
+        if(clear) {
+            clear()
+            clear = undefined
+        }
+        func()
+    }
+    result.until = function until(onRemove) {
+        // ****************************************** TODO: it may become convenient to allow multiple calls but that's not really what this function is for right now
+        if(clear)
+            throw new Error('more than one call to until')
+        clear = onRemove.listenOnce(result)
+    }
+    return result
+}
+
 
 if(typeof require !== 'undefined') {
     var LinkedList_:any = require('./linkedlist')

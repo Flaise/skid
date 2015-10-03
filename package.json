@@ -1,7 +1,7 @@
 {
     "name": "skid",
     "description": "2d game engine for Node/HTML5",
-    "version": "0.0.0",
+    "version": "0.0.0-alpha.1",
     "license": "MIT",
     "author": {
         "name": "Flaise"
@@ -18,7 +18,8 @@
     "scripts": {
         "test": "./node_modules/jest-cli/bin/jest.js",
         "test-coverage": "npm test -- --coverage",
-        "build": "./node_modules/sigh-cli/bin/sigh"
+        "build": "./node_modules/sigh-cli/bin/sigh",
+        "prepublish": "npm run build && npm test"
     },
     "devDependencies": {
         "sigh": "0.12.22",

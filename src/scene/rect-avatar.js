@@ -1,57 +1,51 @@
-'use strict'
+import DefaultAvatar from './default-avatar'
 
-var DefaultAvatar = require('./default-avatar')
-var sanity = require('./sanity')
-
-
-function RectAvatar(avatars) {
-    DefaultAvatar.call(this, avatars)
-    sanity.constants(this, {
-        anchorX: avatars.interpolands.make(0),
-        anchorY: avatars.interpolands.make(0)
-    })
-    this.fillStyle = undefined
-    this.strokeStyle = undefined
-    this.lineWidth = undefined
-    this.radius = undefined
-}
-RectAvatar.prototype = Object.create(DefaultAvatar.prototype)
-module.exports = exports = RectAvatar
-
-RectAvatar.prototype.remove = function() {
-    if(this.removed)
-        return
-    this.anchorX.remove()
-    this.anchorY.remove()
-    DefaultAvatar.prototype.remove.call(this)
-}
-
-RectAvatar.prototype.draw = function(context) {
-    context.save()
-    this.doTransform(context)
-    if(this.anchorX.curr || this.anchorY.curr)
-        context.translate(-this.w.curr * this.anchorX.curr, -this.h.curr * this.anchorY.curr)
-
-    if(this.radius)
-        doRoundRectPath(context, 0, 0, this.w.curr, this.h.curr, this.radius)
-
-    if(this.fillStyle) {
-        context.fillStyle = this.fillStyle
-        if(this.radius)
-            context.fill()
-        else
-            context.fillRect(0, 0, this.w.curr, this.h.curr)
+export default class RectAvatar extends DefaultAvatar {
+    constructor(avatars) {
+        super(avatars)
+        this.anchorX = avatars.interpolands.make(0)
+        this.anchorY = avatars.interpolands.make(0)
+        this.fillStyle = undefined
+        this.strokeStyle = undefined
+        this.lineWidth = undefined
+        this.radius = undefined
     }
-    if(this.strokeStyle) {
-        context.strokeStyle = this.strokeStyle
-        context.lineWidth = this.lineWidth
-        if(this.radius)
-            context.stroke()
-        else
-            context.strokeRect(0, 0, this.w.curr, this.h.curr)
-    }
+    
+    draw(context) {
+        context.save()
+        this.doTransform(context)
+        if(this.anchorX.curr || this.anchorY.curr)
+            context.translate(-this.w.curr * this.anchorX.curr, -this.h.curr * this.anchorY.curr)
 
-    context.restore()
+        if(this.radius)
+            doRoundRectPath(context, 0, 0, this.w.curr, this.h.curr, this.radius)
+
+        if(this.fillStyle) {
+            context.fillStyle = this.fillStyle
+            if(this.radius)
+                context.fill()
+            else
+                context.fillRect(0, 0, this.w.curr, this.h.curr)
+        }
+        if(this.strokeStyle) {
+            context.strokeStyle = this.strokeStyle
+            context.lineWidth = this.lineWidth
+            if(this.radius)
+                context.stroke()
+            else
+                context.strokeRect(0, 0, this.w.curr, this.h.curr)
+        }
+
+        context.restore()
+    }
+    
+    remove() {
+        if(this.removed)
+            return
+        this.anchorX.remove()
+        this.anchorY.remove()
+        super.remove()
+    }
 }
 
 function doRoundRectPath(context, x, y, w, h, radius) {

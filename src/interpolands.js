@@ -120,9 +120,9 @@ function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) 
             amplitude = dest
         if(sanity(is.number(duration)))
             duration = 0
-        if(sanity(is.func(func)))
+        if(sanity(is.function(func)))
             func = tween.linear
-        if(sanity(is.nullish.or.func(onDone)))
+        if(sanity(is.nullish.or.function(onDone)))
             onDone = undefined
         if(sanity(is.number(remainder)))
             remainder = 0
@@ -229,4 +229,3 @@ Tweens.prototype.update = function(dt) {
     }
     this.remainder = 0
 }
-

@@ -18,8 +18,8 @@ export default class Atlas {
         return icon
     }
     
-    has(name) {
-        return !!(this.icons[name] || (this.layout && this.layout[name]))
+    hasData(name) {
+        return !!(this.layout && this.layout[name])
     }
     
     loadImage(source, next) {

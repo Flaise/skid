@@ -13,8 +13,7 @@ funcs.nullish = function(a) {
 }
 
 funcs.integer = function(a) {
-    // return typeof a === 'number' && 
-    return a === Math.floor(a)
+    return Math.abs(a) !== Infinity && a === Math.floor(a)
 }
 
 funcs.boolean = function(a) {

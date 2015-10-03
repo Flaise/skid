@@ -26,6 +26,9 @@ export default class Vec2 {
     distance4(other) {
         return distance4(this.x, this.y, other.x, other.y)
     }
+    distance8(other) {
+        return distance8(this.x, this.y, other.x, other.y)
+    }
     
     rotatedTurns(angle) {
         return rotatedXYTurns(this.x, this.y, angle)

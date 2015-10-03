@@ -38,7 +38,7 @@ funcs.string = function(a) {
 }
 
 funcs.iterable = function(a) {
-    return !!(a && a[Symbol.iterator])
+    return !!(a != null && a[Symbol.iterator])
 }
 
 function composeOr(r, s) {

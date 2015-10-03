@@ -1,4 +1,4 @@
-import Vec2 from './vector2'
+import {default as Vec2, rotatedXYTurns} from './vector2'
 
 
 export function wrap(a) {
@@ -12,7 +12,7 @@ export function fromRadians(a) {
     return a / 2 / Math.PI
 }
 export function shortestOffset(from, to) {
-    return wrap(wrap(to) - wrap(from) + 1.5) - .5
+    return wrap(wrap(to) - wrap(from) + .5) - .5
 }
 
 export function toVector(a) {
@@ -22,7 +22,7 @@ export function toVector(a) {
         case EAST:  return new Vec2(1, 0)
         case SOUTH: return new Vec2(0, 1)
         case WEST:  return new Vec2(-1, 0)
-        default:    return new Vec2(0, -1).rotated(a)
+        default:    return rotatedXYTurns(0, -1, a)
     }
 }
 export const NORTH = 0

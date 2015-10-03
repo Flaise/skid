@@ -1,105 +1,66 @@
-'use strict'
-
-var Icon = require('./icon')
-var Reactant = require('./reactant')
-var sanity = require('./sanity')
+import {default as Icon} from './icon'
 
 
-class Atlas {
-    image
-    isLoaded
-    $emptyIcon
-    
-    constructor(private layout, imagePath?) {
-        sanity.constant(this, 'isLoaded', new Reactant(false))
-        this.setSource(undefined, imagePath || layout.image, undefined)
-    }
-
-    get emptyIcon() {
-        if(!this.$emptyIcon)
-            this.$emptyIcon = new Icon()
-        return this.$emptyIcon
+export default class Atlas {
+    constructor() {
+        this.icons = Object.create(null)
+        this.layout = undefined
     }
     
-    makeIcon(name:string) {
-        if(sanity(name))
-            return this.emptyIcon
-        
-        var sprite = this.layout.sprites[name]
-        
-        if(!sprite) {
-            console.warn('Icon "' + name + '" not found.')
-            return new Icon()
+    get(name) {
+        let icon = this.icons[name]
+        if(!icon) {
+            const sprite = (this.layout && this.layout.sprites &&
+                            this.layout.sprites[name])
+            icon = new Icon(this, sprite)
+            this.icons[name] = icon
         }
-        
-        if(!sprite.icon)
-            sprite.icon = new Icon(this, sprite)
-        return sprite.icon
+        return icon
     }
     
-    iconExists(name:string) {
-        return !!this.layout.sprites[name]
+    has(name) {
+        return !!(this.icons[name] || (this.layout && this.layout[name]))
     }
     
-    setSource(_layout, _imageSource, next) {
-        if(!next)
-            next = (err) => {
-                if(err)
-                    console.error(err.stack || err)
-            }
-        
-        this.isLoaded.value = false
-        
-        exports.loadImage(_imageSource, (err, image) => {
+    loadImage(source, next) {
+        loadImageObject(source, (err, image) => {
             if(err)
-                return next(err)
+                return next && next(err)
             
-            try {
-                if(_layout) {
-                    Object.keys(_layout.sprites).forEach(spriteName => {
-                        var newSprite = _layout.sprites[spriteName]
-                        var oldSprite = this.layout.sprites[spriteName]
-                        if(!oldSprite) {
-                            console.warn('New sprite "' + spriteName + '" has no old sprite.')
-                            return 
-                        }
-                        var icon = oldSprite.icon
-                        if(icon) {
-                            newSprite.icon = icon
-                            icon.data = newSprite
-                            if(icon._hFlip)
-                                icon._hFlip.data = newSprite
-                            if(icon._vFlip)
-                                icon._vFlip.data = newSprite
-                        }
-                    })
-                    this.layout = _layout
-                }
-                
-                this.image = image
-                
-                this.isLoaded.value = true
-                next(null)
-            }
-            catch(err) {
-                next(err)
-            }
+            this.image = image
+            next()
         })
     }
+    
+    load(data, next) {
+        const oldImage = this.layout && this.layout.image
+        
+        for(let spriteName of Object.keys(data.sprites)) {
+            const icon = this.icons[spriteName]
+            if(icon)
+                icon.load(data.sprites[spriteName])
+        }
+        this.layout = data
+        
+        if(data.image && data.image !== oldImage) {
+            this.image = undefined
+            this.loadImage(data.image, next)
+        }
+        else {
+            setTimeout(next)
+        }
+    }
 }
-export = Atlas
 
-exports.loadImage = function(source, next) {
-    if(!next)
-        throw new Error() // makes no sense to non-explicitly discard resulting image
-    var image = new Image()
+function loadImageObject(source, next) {
+    const image = new window.Image()
     image.onload = () => {
         image.onload = image.onerror = image.onabort = undefined
-        next(null, image)
+        next && next(undefined, image)
     }
     image.onerror = () => {
         image.onload = image.onerror = image.onabort = undefined
-        next('Unable to load image.')
+        next && next(new Error('Unable to load image.'))
     }
     image.src = source
 }

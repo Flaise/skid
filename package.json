@@ -10,13 +10,20 @@
         "type" : "git",
         "url" : "http://github.com/Flaise/skid.git"
     },
+    "keywords": [
+        "game engine", "engine", "game", "graphics", "canvas", "2d", "image", "tweens", "HTML5",
+        "keyboard", "mouse", "input"
+    ],
+    "bugs": "https://github.com/Flaise/skid/issues",
     "scripts": {
-        "test": "./node_modules/jest-cli/bin/jest.js"
+        "test": "./node_modules/jest-cli/bin/jest.js",
+        "build": "./node_modules/sigh-cli/bin/sigh"
     },
     "devDependencies": {
-        "babel": "5.8.23",
         "sigh": "0.12.22",
         "sigh-cli": "0.2.8",
+        "sigh-babel": "0.11.6",
+        "babel": "5.8.23",
         "jest-cli": "0.5.8"
     },
     "jest": {

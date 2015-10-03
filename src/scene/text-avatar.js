@@ -3,6 +3,7 @@
 var Avatar = require('./avatar')
 var sanity = require('./sanity')
 var esquire = require('./index')
+import is from '../is'
 
 
 function TextAvatar(avatars, camera) {
@@ -34,7 +35,7 @@ TextAvatar.prototype.draw = function(context) {
     context.save()
     context.globalAlpha = esquire.clamp(this.opacity.curr, 0, 1)
     
-    if(typeof(this.font) === 'function')
+    if(is.function(this.font))
         context.font = this.font(cw, ch)
     else
         context.font = this.font
@@ -48,7 +49,7 @@ TextAvatar.prototype.draw = function(context) {
     context.textBaseline = this.textBaseline
     
     if(this.strokeStyle) {
-        if(typeof(this.lineWidth) === 'function')
+        if(is.function(this.lineWidth))
             context.lineWidth = this.lineWidth(cw, ch)
         else
             context.lineWidth = this.lineWidth

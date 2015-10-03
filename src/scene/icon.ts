@@ -3,7 +3,7 @@
 var Reactant = require('./reactant')
 
 
-var alwaysLoaded = new Reactant(true)
+export const blank = new Icon()
 
 class Icon {
     _hFlip
@@ -12,8 +12,18 @@ class Icon {
     flipY = 1
     isLoaded
     constructor(public atlas, public data) {
-        this.isLoaded = this.atlas? this.atlas.isLoaded: alwaysLoaded
     }
+    
+    load(data) {
+        this.data = data
+        if(this._hFlip)
+            this._hFlip.data = data
+        if(this._vFlip)
+            this._vFlip.data = data
+    }
+    
+    // TODO: this.atlas.sprites[this.name] instead of load(data)
+    // Easier for debugging introspection too
     
     // TODO: flippedHorizontally().flippedVertically().flippedHorizontally().flippedVertically()
     //       does not return original

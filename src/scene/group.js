@@ -1,32 +1,21 @@
-'use strict'
+import LinkedList from '../linked-list'
+import Avatar from './avatar'
 
-var sanity = require('./sanity')
-var LinkedList = require('./linkedlist')
-var Avatar = require('./avatar')
-
-
-function Group(avatars) {
-    Avatar.call(this, avatars)
-    sanity.constants(this, {
-        interpolands: avatars.interpolands, // used when adding avatars to this group
-        alive: new LinkedList()
-    })
+export default class Group extends Avatar {
+    constructor(avatars) {
+        super(avatars)
+        this.interpolands = avatars.interpolands // used when adding avatars to this group
+        this.alive = new LinkedList
+    }
+    
+    draw(context) {
+        this.alive.forEach(avatar => avatar.draw(context))
+    }
+    
+    remove() {
+        if(this.removed)
+            return
+        this.alive.forEach(avatar => avatar.remove())
+        super.remove()
+    }
 }
-Group.prototype = Object.create(Avatar.prototype)
-module.exports = exports = Group
-
-Group.prototype.draw = function(context) {
-    this.alive.forEach(function(avatar) {
-        avatar.draw(context)
-    })
-}
-
-Group.prototype.remove = function() {
-    if(this.removed)
-        return
-    this.alive.forEach(function(avatar) {
-        avatar.remove()
-    })
-    Avatar.prototype.remove.call(this)
-}
-

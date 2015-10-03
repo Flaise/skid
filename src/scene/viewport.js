@@ -16,7 +16,6 @@ const requestAnimFrame = (
 export default class Viewport {
     constructor(canvas) {
         this.canvas = canvas
-        this.context = canvas.getContext('2d')
         this.interpolands = new Interpolands()
         this.alive = new LinkedList()
         this.onBeforeDraw = new EventDispatcher()
@@ -28,6 +27,8 @@ export default class Viewport {
     changed() {
         if(this.animFrame)
             return
+        if(is.nullish(this.lastFrame))
+            this.lastFrame = Date.now()
         requestAnimFrame(() => {
             this.animFrame = false
             this.draw()
@@ -40,20 +41,11 @@ export default class Viewport {
         this.onAfterDraw.listen(() => this.changed())
     }
     
-    /*
-     * Leaving this unused can mitigate rendering artifacts caused by tiling alpha blended
-     * background images.
-     */
-    clearBeforeDraw() {
-        return this.onBeforeDraw.listen(context => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        })
-    }
-    
     draw() {
         if(!this.canvas)
             return
-        
+            
+        const context = this.canvas.getContext('2d')
         this.onBeforeDraw.proc(context)
         this.update()
         this.alive.forEach(avatar => avatar.draw(context))
@@ -62,10 +54,7 @@ export default class Viewport {
     
     update() {
         const currentFrame = Date.now()
-        if(is.nullish(this.lastFrame))
-            this.interpolands.update(0)
-        else
-            this.interpolands.update(currentFrame - this.lastFrame)
+        this.interpolands.update(currentFrame - this.lastFrame)
         this.lastFrame = currentFrame
     }
 }

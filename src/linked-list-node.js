@@ -1,21 +1,18 @@
-'use strict'
-
-class LinkedListNode {
-    _next = undefined
-    _prev = undefined
-    removeUntil = undefined
-    removed = false
-    
-    constructor(public value?) {
+export default class LinkedListNode {
+    constructor(value) {
+        this.value = value
+        this._next = undefined
+        this._prev = undefined
+        this.removed = false
     }
     
     insertValueAfter(value) {
-        var node = new LinkedListNode(value)
+        const node = new LinkedListNode(value)
         this.insertAfter(node)
         return node
     }
     insertValueBefore(value) {
-        var node = new LinkedListNode(value)
+        const node = new LinkedListNode(value)
         this.insertBefore(node)
         return node
     }
@@ -28,25 +25,17 @@ class LinkedListNode {
         node.prev = this.prev
         node.next = this
     }
-    until(onRemove) {
-        if(this.removeUntil)
-            throw new Error('more than one call to until()')
-        this.removeUntil = onRemove.listenOnce(() => this.remove())
-    }
     base_remove() {
         if(this.removed)
             return
 
-        var oldPrev = this.prev
-        var oldNext = this.next
+        const oldPrev = this.prev
+        const oldNext = this.next
         this.removed = true
         if(oldPrev)
             oldPrev._next = oldNext
         if(oldNext)
             oldNext._prev = oldPrev
-
-        if(this.removeUntil)
-            this.removeUntil()
     }
     remove() {
         this.base_remove()
@@ -79,6 +68,3 @@ class LinkedListNode {
         }
     }
 }
-
-if(typeof module !== 'undefined')
-    module.exports = LinkedListNode

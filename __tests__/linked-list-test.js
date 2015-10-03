@@ -1,17 +1,24 @@
+jest.dontMock('../src/linked-list')
+jest.dontMock('../src/linked-list-node')
+const LinkedList = require('../src/linked-list')
+const LinkedListNode = require('../src/linked-list-node')
 
-module('LinkedListNode')
-test('setting next node', function() {
-    var nodeA = new LinkedListNode('a')
-    var nodeB = new LinkedListNode('b')
-    var nodeC = new LinkedListNode('c')
-    nodeA.next = nodeB
-    strictEqual(nodeA.next, nodeB)
-    strictEqual(nodeB.prev, nodeA)
-    nodeA.next = nodeC
-    strictEqual(nodeA.next, nodeC)
-    strictEqual(nodeC.prev, nodeA)
-    strictEqual(nodeB.prev, undefined)
+describe('LinkedListNode', () => {
+    it('sets next node', () => {
+        const nodeA = new LinkedListNode('a')
+        const nodeB = new LinkedListNode('b')
+        const nodeC = new LinkedListNode('c')
+        nodeA.next = nodeB
+        expect(nodeA.next).toBe(nodeB)
+        expect(nodeB.prev).toBe(nodeA)
+        nodeA.next = nodeC
+        expect(nodeA.next).toBe(nodeC)
+        expect(nodeC.prev).toBe(nodeA)
+        expect(nodeB.prev).not.toBeDefined()
+    })
 })
+
+/*
 test('setting prev node', function() {
     var nodeA = new LinkedListNode('a')
     var nodeB = new LinkedListNode('b')
@@ -311,3 +318,4 @@ test('search for element', function() {
     strictEqual(list.strictlyContains({}), false)
     strictEqual(list.strictlyContains(obj), true)
 })
+*/

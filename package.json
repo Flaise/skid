@@ -17,6 +17,7 @@
     "bugs": "https://github.com/Flaise/skid/issues",
     "scripts": {
         "test": "./node_modules/jest-cli/bin/jest.js",
+        "test-coverage": "npm test -- --coverage",
         "build": "./node_modules/sigh-cli/bin/sigh"
     },
     "devDependencies": {

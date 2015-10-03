@@ -1,14 +1,10 @@
-'use strict'
-
-var EventDispatcher = require('./eventdispatcher')
-var is = require('./is')
-var Interpolands = require('./interpolands')
-var Group = require('./group')
-var sanity = require('./sanity')
-var LinkedList = require('./linkedlist')
+import EventDispatcher from '../event-dispatcher'
+import is from '../is'
+import Interpolands from '../interpolands'
+import LinkedList from '../linked-list'
 
 
-var requestAnimFrame = (
+const requestAnimFrame = (
     window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.mozRequestAnimationFrame
@@ -17,61 +13,59 @@ var requestAnimFrame = (
     || function(callback) { return window.setTimeout(callback, 1000 / 60) }
 )
 
-
-function Viewport(canvas) {
-    sanity(canvas)
-    sanity.constants(this, {
-        interpolands: new Interpolands(),
-        alive: new LinkedList(),
-        canvas: canvas,
-        onBeforeDraw: new EventDispatcher(),
-        onAfterDraw: new EventDispatcher()
-    })
-}
-module.exports = exports = Viewport
-
-Viewport.prototype.repeatDraw = function() {
-    var _this = this
-    function drawOnce() {
-        _this.draw()
-        requestAnimFrame(drawOnce)
+export default class Viewport {
+    constructor(canvas) {
+        this.canvas = canvas
+        this.context = canvas.getContext('2d')
+        this.interpolands = new Interpolands()
+        this.alive = new LinkedList()
+        this.onBeforeDraw = new EventDispatcher()
+        this.onAfterDraw = new EventDispatcher()
+        this.lastFrame = undefined
+        this.animFrame = false
     }
-    requestAnimFrame(drawOnce)
-}
-
-/*
- * Leaving this unused can mitigate rendering artifacts caused by tiling alpha blended
- * background images.
- */
-Viewport.prototype.clearBeforeDraw = function() {
-    var _this = this
-    return this.onBeforeDraw.listen(function(context) {
-        context.clearRect(0, 0, _this.canvas.width, _this.canvas.height)
-    })
-}
-
-Viewport.prototype.draw = function() {
-    if(!this.canvas)
-        return
     
-    // Firefox bugs in some situations if context is reused
-    var context = this.canvas.getContext('2d')
+    changed() {
+        if(this.animFrame)
+            return
+        requestAnimFrame(() => {
+            this.animFrame = false
+            this.draw()
+        })
+        this.animFrame = true
+    }
     
-    this.onBeforeDraw.proc(context)
-    this.update()
-    this.alive.forEach(function(avatar) {
-        avatar.draw(context)
-    })
-    this.onAfterDraw.proc()
-}
-
-Viewport.prototype.update = function() {
-    if(is.nullish(this.lastFrame))
-        this.lastFrame = Date.now()
-
-    var currentFrame = Date.now()
-    var dt = currentFrame - this.lastFrame
-    this.lastFrame = currentFrame
+    repeatDraw() {
+        this.changed()
+        this.onAfterDraw.listen(() => this.changed())
+    }
     
-    this.interpolands.update(dt)
+    /*
+     * Leaving this unused can mitigate rendering artifacts caused by tiling alpha blended
+     * background images.
+     */
+    clearBeforeDraw() {
+        return this.onBeforeDraw.listen(context => {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        })
+    }
+    
+    draw() {
+        if(!this.canvas)
+            return
+        
+        this.onBeforeDraw.proc(context)
+        this.update()
+        this.alive.forEach(avatar => avatar.draw(context))
+        this.onAfterDraw.proc(context)
+    }
+    
+    update() {
+        const currentFrame = Date.now()
+        if(is.nullish(this.lastFrame))
+            this.interpolands.update(0)
+        else
+            this.interpolands.update(currentFrame - this.lastFrame)
+        this.lastFrame = currentFrame
+    }
 }

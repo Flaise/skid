@@ -1,33 +1,8 @@
-function bind_until(func) {
-    var clear
-    var result = function func_with_until() {
-        if(clear) {
-            clear()
-            clear = undefined
-        }
-        func()
-    }
-    result.until = function until(onRemove) {
-        // ****************************************** TODO: it may become convenient to allow multiple calls but that's not really what this function is for right now
-        if(clear)
-            throw new Error('more than one call to until')
-        clear = onRemove.listenOnce(result)
-    }
-    return result
-}
+import LinkedList from './linked-list'
 
-
-if(typeof require !== 'undefined') {
-    var LinkedList_:any = require('./linkedlist')
-    var bind_until = require('./index').bind_until
-}
-else
-    var LinkedList_:any = LinkedList
-
-class EventDispatcher {
-    callbacks = new LinkedList_()
-    
+export default class EventDispatcher {
     constructor() {
+        this.callbacks = new LinkedList()
     }
     listen(callback) {
         if(!callback.apply)
@@ -35,9 +10,9 @@ class EventDispatcher {
         
         // it might break some behaviors to call listeners in reverse order but it allows insertion
         // during iteration
-        var node = this.callbacks.addFirst(callback)
+        const node = this.callbacks.addFirst(callback)
         
-        return bind_until(() => node.remove())
+        return () => node.remove()
     }
     listen_pc(callback) {
         callback()
@@ -62,10 +37,10 @@ class EventDispatcher {
         this.callbacks.forEach(callback => callback.apply(null, args))
     }
     filter(reactant) {
-        var result = new EventDispatcher()
+        const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when result has none of its own listeners, and re-added when it does
-        var remove = this.listen(__varargs__ => {
+        const remove = this.listen(__varargs__ => {
             if(reactant.value)
                 result.proc.apply(result, arguments)
         })
@@ -73,12 +48,12 @@ class EventDispatcher {
         return result
     }
     aggregate(other) {
-        var result = new EventDispatcher()
+        const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: These listeners need to be removed when result has none of its own listeners, and re-added when it does
         // using bind() to retain argument list
-        var removeA = this.listen(result.proc.bind(result))
-        var removeB = other.listen(result.proc.bind(result))
+        const removeA = this.listen(result.proc.bind(result))
+        const removeB = other.listen(result.proc.bind(result))
 
         return result
     }
@@ -86,12 +61,9 @@ class EventDispatcher {
     static any(...dispatchers) {
         if(!dispatchers.length)
             return undefined
-        var result = dispatchers[0]
-        for(var i = 1; i < dispatchers.length; i += 1)
+        let result = dispatchers[0]
+        for(let i = 1; i < dispatchers.length; i += 1)
             result = result.aggregate(dispatchers[i])
         return result
     }
 }
-
-if(typeof module !== 'undefined')
-    module.exports = EventDispatcher

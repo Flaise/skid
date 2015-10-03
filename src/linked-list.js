@@ -1,15 +1,9 @@
-'use strict'
+import LinkedListNode from './linked-list-node'
 
-if(typeof require !== 'undefined')
-    var LinkedListNode_:any = require('./linkedlistnode')
-else
-    var LinkedListNode_:any = LinkedListNode
-
-class LinkedList {
-    head = new LinkedListNode_()
-    tail = new LinkedListNode_()
-    
+export default class LinkedList {
     constructor() {
+        this.head = new LinkedListNode()
+        this.tail = new LinkedListNode()
         this.head.next = this.tail
         this.head.remove = undefined
         this.tail.remove = undefined
@@ -26,12 +20,12 @@ class LinkedList {
         return this.tail.prev
     }
     addFirst(element) {
-        var node = new LinkedListNode_(element)
+        var node = new LinkedListNode(element)
         this.head.insertAfter(node)
         return node
     }
     addLast(element) {
-        var node = new LinkedListNode_(element)
+        var node = new LinkedListNode(element)
         this.tail.insertBefore(node)
         return node
     }
@@ -206,6 +200,3 @@ Object.defineProperty(LinkedList.prototype, 'size', {get: function() {
     this.forEachNode(() => { result += 1 })
     return result
 }})
-
-if(typeof module !== 'undefined')
-    module.exports = LinkedList

@@ -1,9 +1,9 @@
-jest.dontMock('../src/linked-list')
-jest.dontMock('../src/linked-list-node')
+// jest.dontMock('../src/linked-list')
+// jest.dontMock('../src/linked-list-node')
 const LinkedList = require('../src/linked-list')
 const LinkedListNode = require('../src/linked-list-node')
 
-describe('LinkedListNode', () => {
+describe.skip('LinkedListNode', () => {
     it('sets next node', () => {
         const nodeA = new LinkedListNode('a')
         const nodeB = new LinkedListNode('b')

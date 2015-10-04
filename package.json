@@ -1,34 +1,42 @@
 {
-    "name": "skid",
-    "description": "2d game engine for Node/HTML5",
-    "version": "0.0.0-alpha.1",
-    "license": "MIT",
-    "author": {
-        "name": "Flaise"
-    },
-    "repository": {
-        "type" : "git",
-        "url" : "http://github.com/Flaise/skid.git"
-    },
-    "keywords": [
-        "game engine", "engine", "game", "graphics", "canvas", "2d", "image", "tweens", "HTML5",
-        "keyboard", "mouse", "input"
-    ],
-    "bugs": "https://github.com/Flaise/skid/issues",
-    "scripts": {
-        "test": "./node_modules/jest-cli/bin/jest.js",
-        "test-coverage": "npm test -- --coverage",
-        "build": "./node_modules/sigh-cli/bin/sigh",
-        "prepublish": "npm run build && npm test"
-    },
-    "devDependencies": {
-        "sigh": "0.12.22",
-        "sigh-cli": "0.2.8",
-        "sigh-babel": "0.11.6",
-        "babel": "5.8.23",
-        "jest-cli": "0.5.8"
-    },
-    "jest": {
-        "scriptPreprocessor": "./_preprocessor.js"
-    }
+  "name": "skid",
+  "description": "2d game engine for Node/HTML5",
+  "version": "0.0.0-alpha.1",
+  "license": "MIT",
+  "author": {
+    "name": "Flaise"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Flaise/skid.git"
+  },
+  "keywords": [
+    "game engine",
+    "engine",
+    "game",
+    "graphics",
+    "canvas",
+    "2d",
+    "image",
+    "tweens",
+    "HTML5",
+    "keyboard",
+    "mouse",
+    "input"
+  ],
+  "bugs": "https://github.com/Flaise/skid/issues",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min",
+    "test-watch": "npm run test -- --growl --watch",
+    "build": "./node_modules/sigh-cli/bin/sigh",
+    "prepublish": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "mocha": "2.3.3",
+    "espower-babel": "3.3.0",
+    "power-assert": "1.1.0",
+    "sigh": "0.12.22",
+    "sigh-babel": "0.11.6",
+    "sigh-cli": "0.2.8"
+  }
 }

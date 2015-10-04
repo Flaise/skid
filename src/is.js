@@ -2,7 +2,7 @@ const funcs = {}
 export default funcs
 
 funcs.number = function(a) {
-    return (typeof a === 'number') && a !== Infinity && !isNaN(a)
+    return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a)
 }
 
 funcs.defined = function(a) {
@@ -14,7 +14,7 @@ funcs.nullish = function(a) {
 }
 
 funcs.integer = function(a) {
-    return Math.abs(a) !== Infinity && a === Math.floor(a)
+    return a !== Infinity && a !== -Infinity && a === Math.floor(a)
 }
 
 funcs.boolean = function(a) {
@@ -26,7 +26,7 @@ funcs.function = function(a) {
 }
 
 funcs.object = function(a) {
-    return !!a && typeof a === 'object'
+    return typeof a === 'string' || (!!a && typeof a === 'object')
 }
 
 funcs.array = function(a) {

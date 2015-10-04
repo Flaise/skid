@@ -28,13 +28,15 @@
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min",
     "test-watch": "npm run test -- --growl --watch",
-    "build": "./node_modules/sigh-cli/bin/sigh",
+    "build": "node ./node_modules/sigh-cli/bin/sigh",
     "build-watch": "npm run build -- --watch",
-    "prepublish": "npm run build && npm test"
+    "prepublish": "npm run build && npm test",
+    "coverage": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --compilers js:espower-babel/guess --ui qunit"
   },
   "devDependencies": {
     "babel": "5.8.23",
     "espower-babel": "3.3.0",
+    "istanbul": "0.3.21",
     "mocha": "2.3.3",
     "power-assert": "1.1.0",
     "sigh": "0.12.22",

@@ -1,25 +1,124 @@
+jest.dontMock('../src/reactant')
+jest.dontMock('../src/event-dispatcher')
+jest.dontMock('../src/linked-list')
+jest.dontMock('../src/linked-list-node')
+const Reactant = require('../src/reactant')
 
-module('Reactant')
-test('set/retrieve simple value', 2, function() {
-    var reactant = new Reactant()
-    reactant.value = 1
-    deepEqual(reactant.value, 1)
-    reactant.value = 5
-    deepEqual(reactant.value, 5)
+describe('Reactant', () => {
+    let reactant, reactantA, reactantB, listener
+    beforeEach(() => {
+        reactant = new Reactant()
+        reactantA = new Reactant()
+        reactantB = new Reactant()
+        listener = jest.genMockFunction()
+    })
+    
+    it('sets/retrieves simple value', () => {
+        reactant.value = 1
+        expect(reactant.value).toEqual(1)
+        reactant.value = 5
+        expect(reactant.value).toEqual(5)
+    })
+    
+    it('truthy events', () => {
+        let counter = 0
+        reactant.value = 0
+        reactant.anyTruthy.listen(() => { counter += 1 })
+        reactant.value = 1
+        expect(counter).toBe(1)
+        reactant.value = 2
+        expect(counter).toBe(2)
+        reactant.value = 0
+        expect(counter).toBe(2)
+        reactant.value = false
+        expect(counter).toBe(2)
+        reactant.value = true
+        expect(counter).toBe(3)
+        reactant.value = 'asdf'
+        expect(counter).toBe(4)
+        reactant.value = ''
+        expect(counter).toBe(4)
+        reactant.value = [1]
+        expect(counter).toBe(5)
+        reactant.value = null
+        expect(counter).toBe(5)
+    })
+    
+    it('falsy events', () => {
+        let counter = 0
+        reactant.value = 0
+        reactant.anyFalsy.listen(() => { counter += 1 })
+        reactant.value = 1
+        expect(counter).toBe(0)
+        reactant.value = 2
+        expect(counter).toBe(0)
+        reactant.value = 0
+        expect(counter).toBe(1)
+        reactant.value = false
+        expect(counter).toBe(2)
+        reactant.value = true
+        expect(counter).toBe(2)
+        reactant.value = 'asdf'
+        expect(counter).toBe(2)
+        reactant.value = ''
+        expect(counter).toBe(3)
+        reactant.value = [1]
+        expect(counter).toBe(3)
+        reactant.value = null
+        expect(counter).toBe(4)
+    })
+    
+    it('composition polling', 4, function() {
+        reactantA.value = true
+        reactantB.value = true
+        const result = reactantA.and(reactantB)
+        expect(result.value).toBe(true)
+        reactantA.value = false
+        expect(result.value).toBe(false)
+        reactantB.value = false
+        reactantA.value = true
+        expect(result.value).toBe(false)
+        reactantB.value = true
+        expect(result.value).toBe(true)
+    })
+    
+    describe('Tuples', () => {
+        it('...', () => {
+            reactantA.value = 1
+            reactantB.value = 5
+            
+            const tuple = Reactant.tuple(reactantA, reactantB)
+            expect(tuple.value).toEqual([1, 5])
+            
+            tuple.listen_pc(listener)
+            reactantA.value = 4
+            reactantB.value = 3
+            
+            reactantA.value = 4
+            reactantB.value = 3
+            
+            expect(listener.mock.calls).toEqual([
+                [undefined, [1, 5]],
+                [[1, 5], [4, 5]],
+                [[4, 5], [4, 3]]
+            ])
+        })
+    })
 })
+/*
 test('set/retrieve computed value', 2, function() {
     var reactant = new Reactant()
     reactant.setFunc(function() { return 4 })
-    deepEqual(reactant.value, 4)
+    expect(reactant.value).toEqual(4)
     reactant.setFunc(function() { return 'a' })
-    deepEqual(reactant.value, 'a')
+    expect(reactant.value).toEqual('a')
 })
 test('register/unregister callback', 2, function() {
     var reactant = new Reactant()
     reactant.value = 1
     var removal = reactant.listen(function(prev, curr) {
-        strictEqual(prev, 1)
-        strictEqual(curr, 4)
+        expect(prev).toBe(1)
+        expect(curr).toBe(4)
     })
     reactant.value = 4
     removal()
@@ -31,12 +130,12 @@ test('multiple instance reaction', 4, function() {
     reactantA.value = 'a'
     reactantB.value = 'b'
     reactantA.listen(function(prev, curr) {
-        deepEqual(prev, 'a')
-        deepEqual(curr, 'az')
+        expect(prev).toEqual('a')
+        expect(curr).toEqual('az')
     })
     reactantB.listen(function(prev, curr) {
-        deepEqual(prev, 'b')
-        deepEqual(curr, 'bq')
+        expect(prev).toEqual('b')
+        expect(curr).toEqual('bq')
     })
     reactantA.value = 'az'
     reactantB.value = 'bq'
@@ -54,22 +153,12 @@ test('on(value) reactant equality filter', 1, function() {
 test('only proc when value changes', 2, function() {
     var reactant = new Reactant(5)
     reactant.listen(function(prev, curr) {
-        strictEqual(prev, 5)
-        strictEqual(curr, 4)
+        expect(prev).toBe(5)
+        expect(curr).toBe(4)
     })
     reactant.value = 4
     reactant.value = 4
 })
-/*test('only proc when nonprimitive value changes', 2, function() {
-	var reactant = new Reactant({ x:1, y:2 })
-	reactant.value = { x:1, y:2 }
-	reactant.listen(function(prev, curr) {
-		deepEqual(prev, { x:1, y:2 })
-		deepEqual(curr, { x:3, y:4 })
-	})
-	reactant.value = { x:3, y:4 }
-	reactant.value = { x:3, y:4 }
-})*/
 test('use strict equality for objects by default', 2, function() {
     var reactant = new Reactant({ a:1 })
     reactant.listen(pass)
@@ -108,20 +197,6 @@ test('discard multiple procs for function-derived reactant', 1, function() {
     removal = a.listen(fail)
     a.proc()
 })
-test('reactant composition polling', 4, function() {
-    var a = new Reactant(true)
-    var b = new Reactant(true)
-    var result = a.and(b)
-    strictEqual(result.value, true)
-    a.value = false
-    strictEqual(result.value, false)
-    b.value = false
-    a.value = true
-    strictEqual(result.value, false)
-
-    b.value = true // result: false -> true, calls pass
-    strictEqual(result.value, true)
-})
 test('reactant composition events', 2, function() {
     var a = new Reactant(true)
     //a.listen(pass)
@@ -152,21 +227,14 @@ test('compose dispatcher with reactant', 1, function() {
     result.listen(pass)
     a.proc()
 })
-/*test('set value of computed reactant', function() {
-	var reactant = new Reactant()
-	var closureValue = 1
-	reactant.setFunc(function() { return closureValue }, function(x) { closureValue = x })
-	strictEqual(reactant.value, 1)
-	reactant.value =  // <- altering the behavior of this operation with setFunc() doesn't seem to make sense
-})*/
 test('optionally proc current value when registering listener', 4, function() {
     var reactant = new Reactant('a')
     var impl = function(prev, curr) {
-        strictEqual(prev, undefined)
-        strictEqual(curr, 'a')
+        expect(prev).toBe(undefined)
+        expect(curr).toBe('a')
         impl = function(prev, curr) {
-            strictEqual(prev, 'a')
-            strictEqual(curr, 'b')
+            expect(prev).toBe('a')
+            expect(curr).toBe('b')
         }
     }
     reactant.listen_pc(function(prev, curr) { impl(prev, curr) })
@@ -175,33 +243,33 @@ test('optionally proc current value when registering listener', 4, function() {
 test('decrement repeatedly', function() { // invincibility bug (this wasn't the problem)
     for(var i = 0; i < 10; i += 1) {
         var reactant = new Reactant(2)
-        strictEqual(reactant.value, 2)
+        expect(reactant.value).toBe(2)
         reactant.value -= 1
-        strictEqual(reactant.value, 1)
+        expect(reactant.value).toBe(1)
         reactant.value -= 1
-        strictEqual(reactant.value, 0)
+        expect(reactant.value).toBe(0)
     }
 })
 test('reactant transformation', 8, function() {
     var source = new Reactant(4)
     var transformation = source.transform(function(a) { return a > 4 })
-    strictEqual(transformation.value, false)
+    expect(transformation.value).toBe(false)
     transformation.listenOnce(function(prev, curr) {
-        strictEqual(prev, false)
-        strictEqual(curr, true)
+        expect(prev).toBe(false)
+        expect(curr).toBe(true)
     })
     source.value = 5
-    strictEqual(transformation.value, true)
+    expect(transformation.value).toBe(true)
     var removal = transformation.listen(fail)
     source.value = 6
-    strictEqual(transformation.value, true)
+    expect(transformation.value).toBe(true)
     removal()
     transformation.listenOnce(function(prev, curr) {
-        strictEqual(prev, true)
-        strictEqual(curr, false)
+        expect(prev).toBe(true)
+        expect(curr).toBe(false)
     })
     source.value = 3
-    strictEqual(transformation.value, false)
+    expect(transformation.value).toBe(false)
 })
 test('reactant event composition with itself', function() {
     var reactant = new Reactant(1)
@@ -223,77 +291,10 @@ test('reactant event composition with itself', function() {
     reactant.value = 5
     reactant.value = 6
 })
-test('truthy events', function() {
-    var counter = 0
-    var reactant = new Reactant(0)
-    reactant.anyTruthy.listen(function() {
-        counter += 1
-    })
-    reactant.value = 1
-    strictEqual(counter, 1)
-    reactant.value = 2
-    strictEqual(counter, 2)
-    reactant.value = 0
-    strictEqual(counter, 2)
-    reactant.value = false
-    strictEqual(counter, 2)
-    reactant.value = true
-    strictEqual(counter, 3)
-    reactant.value = 'asdf'
-    strictEqual(counter, 4)
-    reactant.value = ''
-    strictEqual(counter, 4)
-    reactant.value = [1]
-    strictEqual(counter, 5)
-    reactant.value = null
-    strictEqual(counter, 5)
-})
-test('falsy events', function() {
-    var counter = 0
-    var reactant = new Reactant(0)
-    reactant.anyFalsy.listen(function() {
-        counter += 1
-    })
-    reactant.value = 1
-    strictEqual(counter, 0)
-    reactant.value = 2
-    strictEqual(counter, 0)
-    reactant.value = 0
-    strictEqual(counter, 1)
-    reactant.value = false
-    strictEqual(counter, 2)
-    reactant.value = true
-    strictEqual(counter, 2)
-    reactant.value = 'asdf'
-    strictEqual(counter, 2)
-    reactant.value = ''
-    strictEqual(counter, 3)
-    reactant.value = [1]
-    strictEqual(counter, 3)
-    reactant.value = null
-    strictEqual(counter, 4)
-})
-test('tuples', 4, function() {
-    var a = new Reactant(1)
-    var b = new Reactant(5)
-    var tuple = Reactant.tuple(a, b)
-    deepEqual(tuple.value, [1, 5])
-    tuple.listen_pc(expectMultiSequence([
-        [undefined, [1, 5]],
-        [[1, 5], [4, 5]],
-        [[4, 5], [4, 3]]
-    ]))
-    a.value = 4
-    b.value = 3
-    
-    tuple.listen(fail)
-    a.value = 4
-    b.value = 3
-})
 test('assignment reassignment', 1, function() {
     var a = new Reactant(1)
     a.setValue = function(v) {
-        strictEqual(v, 'a')
+        expect(v).toBe('a')
     }
     a.value = 'a'
 })
@@ -315,3 +316,4 @@ test('nested tuples', 4, function() {
     b.value = 2
     c.value = 'rrr'
 })
+*/

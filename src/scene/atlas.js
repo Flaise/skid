@@ -9,16 +9,19 @@ export default class Atlas {
     get(name) {
         let icon = this.icons[name]
         if(!icon) {
-            const sprite = (this.layout && this.layout.sprites &&
-                            this.layout.sprites[name])
+            const sprite = this._sprite(name)
             icon = new Icon(this, sprite)
             this.icons[name] = icon
         }
         return icon
     }
     
+    _sprite(name) {
+        return this.layout && this.layout.sprites && this.layout.sprites[name]
+    }
+    
     hasData(name) {
-        return !!(this.layout && this.layout[name])
+        return !!this._sprite(name)
     }
     
     loadImage(source, next) {

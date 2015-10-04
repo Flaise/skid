@@ -1,19 +1,18 @@
-'use strict'
+import Group from './group'
+import is from '../is'
 
-var sanity = require('./sanity')
-var Group = require('./group')
-var is = require('./is')
-
-
-function Smoothing(avatars) {
-    Group.call(this, avatars)
-    sanity.attribute(this, 'enabled', false, is.boolean)
-}
-Smoothing.prototype = Object.create(Group.prototype)
-module.exports = exports = Smoothing
-
-Smoothing.prototype.draw = function(context) {
-    context.webkitImageSmoothingEnabled = this.enabled
-    context.mozImageSmoothingEnabled = this.enabled
-    Group.prototype.draw.call(this, context)
+export default class Smoothing extends Group {
+    constructor(avatars) {
+        super(avatars)
+        this.enabled = false
+    }
+    
+    draw(context) {
+        if(is.defined(this.enabled)) {
+            context.webkitImageSmoothingEnabled = this.enabled // TODO: is this needed on Chromium?
+            context.imageSmoothingEnabled = this.enabled
+            context.mozImageSmoothingEnabled = this.enabled
+        }
+        super.draw(context)
+    }
 }

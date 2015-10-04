@@ -1,5 +1,4 @@
-import {default as Icon} from './icon'
-
+import Icon from './icon'
 
 export default class Atlas {
     constructor() {

@@ -1,13 +1,10 @@
-'use strict'
+import Vec2 from '../vector2'
+import is from '../is'
+import Avatar from './avatar'
 
-var Vect2 = require('./vect2')
-var esquire = require('../esquire')
-var is = require('./is')
-var sanity = require('./sanity')
-var Avatar = require('./avatar')
+function sanity() {} // TODO: find another solution for sanity checks when refactoring this file
 
-
-function TileFieldAvatar(avatars, tileSize) {
+export default function TileFieldSegment(avatars, tileSize) {
     Avatar.call(this, avatars)
 
     this._canv = document.createElement('canvas')
@@ -17,7 +14,7 @@ function TileFieldAvatar(avatars, tileSize) {
     this._context.webkitImageSmoothingEnabled = true
     this._context.mozImageSmoothingEnabled = true
     
-    sanity.attribute(this, 'fieldGroup', this, is.object)
+    this.fieldGroup = this
     this._drawOperations = []
     this._altered = false
     this._minX = undefined
@@ -30,19 +27,16 @@ function TileFieldAvatar(avatars, tileSize) {
     // maps types to sets of positions
     this._type2tiles = {}
     
-    sanity.attributes(this, {
-        _x: 0,
-        _y: 0,
-        _w: 0,
-        _h: 0
-    }, is.number)
+    this._x = 0
+    this._y = 0
+    this._w = 0
+    this._h = 0
     
     this.tileSize = tileSize // assign to property for type checking
 }
-TileFieldAvatar.prototype = Object.create(Avatar.prototype)
-module.exports = exports = TileFieldAvatar
+TileFieldSegment.prototype = Object.create(Avatar.prototype)
 
-Object.defineProperty(TileFieldAvatar.prototype, 'tileSize', {
+Object.defineProperty(TileFieldSegment.prototype, 'tileSize', {
     get: function() { return this._tileSize },
     set: function(value) {
         if(sanity(is.number(value)))
@@ -55,11 +49,11 @@ Object.defineProperty(TileFieldAvatar.prototype, 'tileSize', {
     }
 })
 
-TileFieldAvatar.prototype._alter = function() {
+TileFieldSegment.prototype._alter = function() {
     this._altered = true
 }
 
-TileFieldAvatar.prototype.draw = function(context) {
+TileFieldSegment.prototype.draw = function(context) {
     if(this._altered) {
         this._altered = false
         
@@ -83,20 +77,20 @@ TileFieldAvatar.prototype.draw = function(context) {
                       this._x, this._y, this._w, this._h)
 }
 
-TileFieldAvatar.prototype._recordTile = function(type, position) {
+TileFieldSegment.prototype._recordTile = function(type, position) {
     if(!this._type2tiles[type])
         this._type2tiles[type] = {}
     this._type2tiles[type][position] = true
 }
-TileFieldAvatar.prototype._derecordTile = function(type, position) {
+TileFieldSegment.prototype._derecordTile = function(type, position) {
     if(this._type2tiles[type])
         delete this._type2tiles[type][position]
 }
-TileFieldAvatar.prototype.hasTile = function(position, type) {
+TileFieldSegment.prototype.hasTile = function(position, type) {
     return this._type2tiles[type] && this._type2tiles[type][position]
 }
 
-TileFieldAvatar.prototype._excribe = function(x, y, w, h) {
+TileFieldSegment.prototype._excribe = function(x, y, w, h) {
     if(isNaN(x) || isNaN(y) || isNaN(w) || isNaN(h))
         return
     
@@ -124,20 +118,20 @@ TileFieldAvatar.prototype._excribe = function(x, y, w, h) {
     this._h = (this._maxY - this._minY) / this._tileSize
 }
 
-TileFieldAvatar.prototype._excribeIcon = function(icon, x, y, w, h) {
+TileFieldSegment.prototype._excribeIcon = function(icon, x, y, w, h) {
     if(icon.atlas)
         this._excribe.apply(this, icon.bounds(x, y, w, h))
 }
-TileFieldAvatar.prototype._excribeTileIcon = function(icon, x, y) {
+TileFieldSegment.prototype._excribeTileIcon = function(icon, x, y) {
     this._excribeIcon(icon, x * this._tileSize, y * this._tileSize, this._tileSize, this._tileSize)
 }
-TileFieldAvatar.prototype._excribeAll = function() {
+TileFieldSegment.prototype._excribeAll = function() {
     this._drawOperations.forEach(function(op) {
         op.excribe()
     })
 }
 
-TileFieldAvatar.prototype._addAtlas = function(atlas) {
+TileFieldSegment.prototype._addAtlas = function(atlas) {
     if(is.defined(this._atlas)) {
         sanity(atlas === this._atlas)
         return
@@ -150,14 +144,12 @@ TileFieldAvatar.prototype._addAtlas = function(atlas) {
     })
 }
 
-TileFieldAvatar.prototype._drawIcon = function(icon, x, y, w, h) {
-    if(sanity.throws) {
-        if(sanity(is.number(x))
-                || sanity(is.number(y))
-                || sanity(is.number(w))
-                || sanity(is.number(h)))
-            return
-    }
+TileFieldSegment.prototype._drawIcon = function(icon, x, y, w, h) {
+    if(sanity(is.number(x))
+            || sanity(is.number(y))
+            || sanity(is.number(w))
+            || sanity(is.number(h)))
+        return
     if(!icon || !icon.atlas)
         return
     this._addAtlas(icon.atlas)
@@ -169,7 +161,7 @@ TileFieldAvatar.prototype._drawIcon = function(icon, x, y, w, h) {
 var xs = [-.25, .25, -.25, .25]
 var ys = [-.25, -.25, .25, .25]
 
-TileFieldAvatar.prototype.drawSelectedTile = function(selector, type, x, y, layer, observedTypes) {
+TileFieldSegment.prototype.drawSelectedTile = function(selector, type, x, y, layer, observedTypes) {
     var _this = this
     
     if(sanity(is.defined(layer)))
@@ -177,7 +169,7 @@ TileFieldAvatar.prototype.drawSelectedTile = function(selector, type, x, y, laye
     if(!observedTypes)
         observedTypes = [type]
 
-    var here = new Vect2(x, y)
+    var here = new Vec2(x, y)
     this._recordTile(type, here)
 
     function hasTilei(dx, dy) {
@@ -223,7 +215,7 @@ TileFieldAvatar.prototype.drawSelectedTile = function(selector, type, x, y, laye
     }
 }
 
-TileFieldAvatar.prototype.drawTile = function(icon, x, y, layer, type) {
+TileFieldSegment.prototype.drawTile = function(icon, x, y, layer, type) {
     var _this = this
     
     if(sanity(icon))
@@ -232,7 +224,7 @@ TileFieldAvatar.prototype.drawTile = function(icon, x, y, layer, type) {
         layer = 0
     
     if(type) {
-        var here = new Vect2(x, y) // make visible to returned removal
+        var here = new Vec2(x, y) // make visible to returned removal
         this._recordTile(type, here)
     }
     

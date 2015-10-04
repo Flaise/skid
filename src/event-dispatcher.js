@@ -22,27 +22,24 @@ export default class EventDispatcher {
         if(!callback.apply)
             throw new Error()
             
-        var remove = this.listen(__varargs__ => {
+        var remove = this.listen((...args) => {
             // remove will be initialized by the time this closure is called because there is no
             // event for 'listener-added'
             remove()
-            callback.apply(null, arguments)
+            callback(...args)
         })
         return remove
     }
-    proc(__varargs__?) {
-        this.base_proc.apply(this, arguments)
-    }
-    base_proc(...args) {
-        this.callbacks.forEach(callback => callback.apply(null, args))
+    proc(...args) {
+        this.callbacks.forEach(callback => callback(...args))
     }
     filter(reactant) {
         const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when result has none of its own listeners, and re-added when it does
-        const remove = this.listen(__varargs__ => {
+        const remove = this.listen((...args) => {
             if(reactant.value)
-                result.proc.apply(result, arguments)
+                result.proc(...args)
         })
 
         return result
@@ -51,9 +48,8 @@ export default class EventDispatcher {
         const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: These listeners need to be removed when result has none of its own listeners, and re-added when it does
-        // using bind() to retain argument list
-        const removeA = this.listen(result.proc.bind(result))
-        const removeB = other.listen(result.proc.bind(result))
+        const removeA = this.listen((...args) => result.proc(...args))
+        const removeB = other.listen((...args) => result.proc(...args))
 
         return result
     }

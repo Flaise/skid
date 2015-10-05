@@ -1,49 +1,43 @@
-'use strict'
+import Reactant from './reactant'
+import is from './is'
 
-var Reactant = require('./reactant')
+const depressed = true
+const unpressed = false
 
+export default class Keyboard {
+    constructor(element) {
+        this.states = Object.create(null)
+        
+        element.addEventListener('keydown', (e) => {
+            const type = window.document.activeElement.type
+            if(type === 'textarea' || type === 'text' || type === 'password' || type === 'number')
+                return // TODO: this doesn't account for holding the button while switching focus
 
-function isReactant(stuff) {
-    return stuff && stuff !== true
-}
-
-// depressed = true
-// unpressed = false
-function Keyboard(element) {
-    this.states = {}
-    
-    element.addEventListener('keydown', (function(e) {
-        var type = document.activeElement.type
-        if(type === 'textarea' || type === 'text' || type === 'password' || type === 'number')
-            return // TODO: this doesn't account for holding the button while switching focus
-
-        // entry is one of: [ undefined, true, false, {Reactant} ]
-        if(isReactant(this.states[e.keyCode]))
-            this.states[e.keyCode].value = true
+            // entry is one of: [ undefined, true, false, {Reactant} ]
+            if(is.object(this.states[e.keyCode]))
+                this.states[e.keyCode].value = depressed
+            else
+                this.states[e.keyCode] = depressed
+        })
+        element.addEventListener('keyup', (e) => {
+            if(is.object(this.states[e.keyCode]))
+                this.states[e.keyCode].value = unpressed
+            else
+                this.states[e.keyCode] = unpressed
+        })
+    }
+    keyState(keyCode) {
+        if(is.object(this.states[keyCode]))
+            return this.states[keyCode].value
         else
-            this.states[e.keyCode] = true
-    }).bind(this))
-    element.addEventListener('keyup', (function(e) {
-        if(isReactant(this.states[e.keyCode]))
-            this.states[e.keyCode].value = false
-        else
-            this.states[e.keyCode] = false
-    }).bind(this))
-}
-module.exports = exports = Keyboard
-
-Keyboard.prototype.getKeyState = function(keyCode) {
-    if(isReactant(this.states[keyCode]))
-        return this.states[keyCode].value
-    else
-        return !!this.states[keyCode]
-}
-Keyboard.prototype.getKey = function(keyCode) {
-    var state = this.states[keyCode]
-    if(isReactant(state))
+            return !!this.states[keyCode]
+    }
+    key(keyCode) {
+        let state = this.states[keyCode]
+        if(is.object(state))
+            return state
+        state = new Reactant(!!state)
+        this.states[keyCode] = state
         return state
-    state = new Reactant(!!state)
-    this.states[keyCode] = state
-    return state
+    }
 }
-

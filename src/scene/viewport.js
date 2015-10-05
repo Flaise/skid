@@ -5,12 +5,13 @@ import LinkedList from '../linked-list'
 
 
 const requestAnimFrame = (
-    window.requestAnimationFrame
-    || window.webkitRequestAnimationFrame
-    || window.mozRequestAnimationFrame
-    || window.oRequestAnimationFrame
-    || window.msRequestAnimationFrame
-    || function(callback) { return window.setTimeout(callback, 1000 / 60) }
+    (typeof window !== 'undefined' && (
+        window.requestAnimationFrame
+        || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame
+        || window.oRequestAnimationFrame
+        || window.msRequestAnimationFrame
+    )) || function(callback) { return window.setTimeout(callback, 1000 / 60) }
 )
 
 export default class Viewport {

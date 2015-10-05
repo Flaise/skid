@@ -5,7 +5,7 @@ export default class Group extends Avatar {
     constructor(avatars) {
         super(avatars)
         this.interpolands = avatars.interpolands // used when adding avatars to this group
-        this.alive = new LinkedList
+        this.alive = new LinkedList()
     }
     
     draw(context) {

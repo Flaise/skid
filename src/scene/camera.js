@@ -27,7 +27,7 @@ export default class Camera extends Group {
         super.remove()
     }
     
-    draw() {
+    draw(context) {
         this.onBeforeDraw.proc()
 
         const canvas = context.canvas

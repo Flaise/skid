@@ -1,59 +1,50 @@
-'use strict'
+import Avatar from './avatar'
+import turns from '../turns'
 
-var Avatar = require('./avatar')
-var sanity = require('./sanity')
-var turns = require('./turns')
-
-
-function PiePaths(avatars) {
-    Avatar.call(this, avatars)
-    sanity.constants(this, {
-        _paths: [],
-        _interpolands: avatars.interpolands
-    })
-}
-PiePaths.prototype = Object.create(Avatar.prototype)
-module.exports = exports = PiePaths
-
-PiePaths.prototype.remove = function() {
-    if(this.removed)
-        return
-    this._paths.forEach(function(path) {
-        path.scale.remove()
-    })
-    Avatar.prototype.remove.call(this)
-}
-
-PiePaths.prototype.draw = function(context) {
-    for(var i = 0; i < this._paths.length; i += 1) {
-        var path = this._paths[i]
-        
-        if(!path.scale.curr)
-            continue
-        
-        var startAngle = path.startAngle - .25
-        var endAngle = startAngle + path.breadth
-        startAngle = turns.toRadians(startAngle)
-        endAngle = turns.toRadians(endAngle)
-        
-        context.moveTo(0, 0)
-        context.arc(0, 0, path.scale.curr / 2 * path.innerRadius, endAngle, startAngle,
-                    path.breadth >= 0)
-        context.arc(0, 0, path.scale.curr / 2, startAngle, endAngle, path.breadth < 0)
+export default class PiePaths extends Avatar {
+    constructor(avatars) {
+        super(avatars)
+        this._paths = []
+        this._interpolands = avatars.interpolands
     }
-}
-
-PiePaths.prototype.make = function(breadth, startAngle, innerRadius, scale) {
-    var result = {
-        // Distance of second jaw from first jaw. Positive is clockwise.
-        breadth: breadth,
-        
-        // Distance of first jaw from north. Positive is clockwise.
-        startAngle: startAngle,
-        
-        innerRadius: innerRadius
+    
+    draw(context) {
+        for(let path of this._paths) {
+            if(!path.scale.curr)
+                continue
+            
+            let startAngle = path.startAngle - .25
+            let endAngle = startAngle + path.breadth
+            startAngle = turns.toRadians(startAngle)
+            endAngle = turns.toRadians(endAngle)
+            
+            context.moveTo(0, 0)
+            context.arc(0, 0, path.scale.curr / 2 * path.innerRadius, endAngle, startAngle,
+                        path.breadth >= 0)
+            context.arc(0, 0, path.scale.curr / 2, startAngle, endAngle, path.breadth < 0)
+        }
     }
-    sanity.constant(result, 'scale', this._interpolands.make(scale || 1))
-    this._paths.push(result)
-    return result
+    
+    make(breadth, startAngle, innerRadius, scale) {
+        const result = {
+            // Distance of second jaw from first jaw. Positive is clockwise.
+            breadth: breadth,
+            
+            // Distance of first jaw from north. Positive is clockwise.
+            startAngle: startAngle,
+            
+            innerRadius: innerRadius,
+            scale: this._interpolands.make(scale || 1)
+        }
+        this._paths.push(result)
+        return result
+    }
+    
+    remove() {
+        if(this.removed)
+            return
+        for(let path of this._paths)
+            path.scale.remove()
+        super.remove()
+    }
 }

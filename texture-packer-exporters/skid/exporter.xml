@@ -1,0 +1,20 @@
+<exporter version="1.0">
+    <name>skid</name>
+    <displayName>Skid</displayName>
+    <description>Exporter for the Skid engine</description>
+    <version>0.0.0</version>
+    <files>
+        <file>
+            <name>layout</name>
+            <displayName>Layout File</displayName>
+            <fileExtension>json</fileExtension>
+            <template>exporter.txt</template>
+        </file>
+    </files>
+    <supportsTrimming>yes</supportsTrimming>
+    <supportsRotation>no</supportsRotation>
+    <rotationDirection>cw</rotationDirection>
+    <supportsNPOT>yes</supportsNPOT>
+    <supportsTrimSpriteNames>yes</supportsTrimSpriteNames>
+    <supportsTextureSubPath>no</supportsTextureSubPath>
+</exporter>

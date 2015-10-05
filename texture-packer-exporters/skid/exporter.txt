@@ -1,0 +1,6 @@
+{% load skid %}
+{
+"sprites": {{allSprites|skid}},
+"image": "{{texture.fullName}}",
+"updateKey": "{{smartUpdateKey}}"
+}

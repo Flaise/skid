@@ -1,43 +1,37 @@
 import Reactant from './reactant'
 import is from './is'
 
-const depressed = true
-const unpressed = false
+const states = Object.create(null)
 
-export default class Keyboard {
-    constructor(element) {
-        this.states = Object.create(null)
-        
-        element.addEventListener('keydown', (e) => {
-            const type = window.document.activeElement.type
-            if(type === 'textarea' || type === 'text' || type === 'password' || type === 'number')
-                return // TODO: this doesn't account for holding the button while switching focus
+window.addEventListener('keydown', (e) => {
+    const type = window.document.activeElement.type
+    if(type === 'textarea' || type === 'text' || type === 'password' || type === 'number')
+        return // TODO: this doesn't account for holding the button while switching focus
 
-            // entry is one of: [ undefined, true, false, {Reactant} ]
-            if(is.object(this.states[e.keyCode]))
-                this.states[e.keyCode].value = depressed
-            else
-                this.states[e.keyCode] = depressed
-        })
-        element.addEventListener('keyup', (e) => {
-            if(is.object(this.states[e.keyCode]))
-                this.states[e.keyCode].value = unpressed
-            else
-                this.states[e.keyCode] = unpressed
-        })
-    }
-    keyState(keyCode) {
-        if(is.object(this.states[keyCode]))
-            return this.states[keyCode].value
-        else
-            return !!this.states[keyCode]
-    }
-    key(keyCode) {
-        let state = this.states[keyCode]
-        if(is.object(state))
-            return state
+    // entry is one of: [ undefined, true, false, {Reactant} ]
+    if(is.object(states[e.keyCode]))
+        states[e.keyCode].value = true
+    else
+        states[e.keyCode] = true
+})
+window.addEventListener('keyup', (e) => {
+    if(is.object(states[e.keyCode]))
+        states[e.keyCode].value = false
+    else
+        states[e.keyCode] = false
+})
+
+export function stateOf(keyCode) {
+    if(is.object(states[keyCode]))
+        return states[keyCode].value
+    else
+        return !!states[keyCode]
+}
+export function keyOf(keyCode) {
+    let state = states[keyCode]
+    if(!is.object(state)) {
         state = new Reactant(!!state)
-        this.states[keyCode] = state
-        return state
+        states[keyCode] = state
     }
+    return state
 }

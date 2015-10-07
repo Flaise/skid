@@ -1,23 +1,15 @@
 import Vec2 from '../vector2'
-import Avatar from './avatar'
 import Group from './group'
 import Translation from './translation'
 import Scalement from './scalement'
+import IconAvatar from './icon-avatar'
 
-
-
-    // if(this.field._lastImage !== this.icons.atlas.image) {
-    //     // TODO: update when current segment changes, when adjacent segment changes, or when atlas changes
-    // }
-    
-
-export default class TileFieldSegment extends Avatar {
+export default class TileFieldSegment extends Group {
     constructor(container, tileSize) {
         super(container)
         this._tileSize = tileSize
         this._canvas = document.createElement('canvas')
         this._context = this._canvas.getContext('2d')
-        this._field = this
         this._altered = false
         this._minX = 0
         this._minY = 0
@@ -26,13 +18,14 @@ export default class TileFieldSegment extends Avatar {
         this._width = 0
         this._height = 0
         this._excribed = false
-        this.root = new Scalement(undefined, tileSize, tileSize)
+        this.root = new Scalement(this, tileSize, tileSize) // attached to this so changed() works
         this.translation = new Translation(this.root)
         this.group = this.translation
     }
     
-    alter() {
+    changed() {
         this._altered = true
+        super.changed()
     }
     
     draw(context) {
@@ -55,7 +48,6 @@ export default class TileFieldSegment extends Avatar {
     
     makeTile(icon, x, y, layer) {
         new SimpleTile(this.group, icon, x, y, layer)
-        this.alter()
     }
     
     excribeAll() {
@@ -89,21 +81,6 @@ export default class TileFieldSegment extends Avatar {
         }
     }
 }
-
-
-TileFieldSegment.prototype._addAtlas = function(atlas) {
-    if(is.defined(this._atlas)) {
-        sanity(atlas === this._atlas)
-        return
-    }
-    this._atlas = atlas
-    var _this = this
-    this._atlas.isLoaded.on_pc(true, function() {
-        _this._isLoaded = true
-        _this._alter()
-    })
-}
-
 
 var xs = [-.25, .25, -.25, .25]
 var ys = [-.25, -.25, .25, .25]
@@ -165,68 +142,20 @@ TileFieldSegment.prototype.drawSelectedTile = function(selector, type, x, y, lay
 }
 
 
-class SimpleTile extends Avatar {
+class SimpleTile extends IconAvatar {
     constructor(container, icon, x, y, layer) {
-        super(container)
-        this.icon = icon
+        super(container, icon)
         this.x = x
         this.y = y
         this.layer = layer
     }
-    
+
     draw(context) {
-        this.icon.draw(context, this.x, this.y, 1, 1)
+        this.drawi(context, this.x, this.y, 1, 1)
     }
-    
+
     bounds() {
-        return this.icon.bounds(this.x, this.y, 1, 1)
-    }
-    
-    get image() {
-        return this.icon && this.icon.atlas && this.icon.atlas.image
+        // TODO: changing method signature may not be a good idea
+        return super.bounds(this.x, this.y, 1, 1)
     }
 }
-
-
-
-// TileFieldSegment.prototype.drawTile = function(icon, x, y, layer, type) {
-//     new SimpleTile(this.group, icon, x, y, layer)
-//     this.alter()
-    
-    // TODO: do something with type externally
-    // TODO: return result for removal
-    
-    // var _this = this
-    //
-    // if(sanity(icon))
-    //     return function() {}
-    // if(sanity(is.defined(layer)))
-    //     layer = 0
-    //
-    // if(type) {
-    //     var here = new Vec2(x, y) // make visible to returned removal
-    //     this._recordTile(type, here)
-    // }
-    //
-    // var op = {
-    //     name: 'drawTile: ' + (icon && icon.data && icon.data.name),
-    //     layer: y + layer,
-    //     execute: function() {
-    //         _this._drawIcon(icon, Math.floor(x * _this._tileSize - _this._minX),
-    //                         Math.floor(y * _this._tileSize - _this._minY),
-    //                         _this._tileSize, _this._tileSize)
-    //     },
-    //     excribe: function() {
-    //         _this._excribeTileIcon(icon, x, y)
-    //     }
-    // }
-    // this._drawOperations.push(op)
-    // this._alter()
-    //
-    // return function() {
-    //     if(type)
-    //         _this._derecordTile(type, here)
-    //     removeFromArray(_this._drawOperations, op)
-    //     _this._alter()
-    // }
-// }

@@ -2,22 +2,22 @@ import is from '../is'
 
 export default class Avatar {
     constructor(container) {
-        this.container = container
-        this._node = container && container.alive.addLast(this)
         this._layer = undefined
         this._removed = false
-        
-        // breaks unit tests involving Viewport if calling this.changed()
-        if(this.container)
+        this.container = container
+        if(this.container) {
+            this._node = this.container.alive.addLast(this)
             this.container.changed()
+        }
+        else {
+            this._node = undefined
+        }
     }
     
     get layer() {
         return this._layer
     }
     set layer(value) {
-        // SANITY(!(this._avatars && this._avatars._iterating)) // TODO
-        // SANITY(is.number(value))
         if(value === this._layer)
             return
         this._layer = value
@@ -50,8 +50,7 @@ export default class Avatar {
     }
     
     _shift() {
-        // SANITY(!this.removed) // TODO
-        if(!this._node)
+        if(!this._node || is.nullish(this._layer))
             return
         
         while(true) {

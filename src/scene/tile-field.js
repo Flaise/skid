@@ -29,7 +29,6 @@ export default class TileField {
         let result = this._segments[key]
         if(!result) {
             result = new TileFieldSegment(this._ensureRow(y), this._tileSize)
-            result._field = this
             result.layer = x
             this._segments[key] = result
         }
@@ -38,7 +37,7 @@ export default class TileField {
     _modifyAt(x, y) {
         const segment = this._segments[this._keyOf(x, y)]
         if(segment)
-            segment.alter()
+            segment.changed()
     }
     _modifyAround(x, y) {
         this._modifyAt(x - 1, y - 1)
@@ -69,6 +68,11 @@ export default class TileField {
         this._modifyAround(x, y)
     }
     remove() {
+        this.clear()
+    }
+    clear() {
         Object.keys(this._rows).forEach(key => this._rows[key].remove())
+        this._rows = Object.create(null)
+        this._segments = Object.create(null)
     }
 }

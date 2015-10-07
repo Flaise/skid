@@ -1,5 +1,7 @@
 import TileFieldSegment from './tile-field-segment'
 import Group from './group'
+import IconAvatar from './icon-avatar'
+import Icon4Avatar from './icon-4-avatar'
 
 export default class TileField {
     constructor(root, tileSize) {
@@ -48,23 +50,14 @@ export default class TileField {
         this._changedOne(x + 1, y + 1)
     }
     
-    // hasTile(position, type) {
-    //     const segment = this._segments[this._keyOf(position.x, position.y)]
-    //     if(!segment)
-    //         return false
-    //     return segment.hasTile(position, type)
-    // }
-    drawSelectedTile(selector, type, x, y, layer, observedTypes) {
-        // const removal = this._ensureSegment(x, y).drawSelectedTile(selector, type, x, y, layer,
-        //                                                            observedTypes)
-        // this._modifyAround(x, y)
-        // return () => {
-        //     removal()
-        //     this._modifyAround(x, y)
-        // }
+    makeTile4(nw, ne, sw, se, x, y, layer) {
+        const avatar = new Icon4Avatar(this._ensureSegment(x, y), nw, ne, sw, se, x, y, 1, 1)
+        avatar.layer = layer
+        this.changedAt(x, y)
     }
     makeTile(icon, x, y, layer) {
-        this._ensureSegment(x, y).makeTile(icon, x, y, layer)
+        const avatar = new IconAvatar(this._ensureSegment(x, y), icon, x, y, 1, 1)
+        avatar.layer = layer
         this.changedAt(x, y)
     }
     remove() {

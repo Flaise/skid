@@ -1,13 +1,14 @@
 import Group from './group'
+import is from '../is'
 
 export default class Opacity extends Group {
-    constructor(avatars, alpha) {
-        super(avatars)
-        this.alpha = avatars.interpolands.make(alpha)
+    constructor(group, alpha) {
+        super(group)
+        this.alpha = group.interpolands.make(is.defined(alpha)? alpha: 1)
     }
     
     draw(context) {
-        if(!this.alive.size || !this.alpha.curr)
+        if(this.empty || !this.alpha.curr)
             return
         
         const prev = context.globalAlpha
@@ -18,10 +19,7 @@ export default class Opacity extends Group {
             context.globalAlpha = prev
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.alpha.remove()
-        super.remove()
     }
 }

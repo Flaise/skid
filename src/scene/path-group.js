@@ -9,7 +9,7 @@ export default class PathGroup extends Group {
     }
     
     draw(context) {
-        if(!this.alive.size || !(this.fillStyle || this.strokeStyle))
+        if(this.empty || !(this.fillStyle || this.strokeStyle))
             return
         
         context.beginPath()

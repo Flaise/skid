@@ -62,12 +62,9 @@ export default class PieAvatar extends DefaultAvatar {
         context.restore()
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.breadth.remove()
         this.startAngle.remove()
         this.innerRadiusRel.remove()
-        super.remove()
     }
 }

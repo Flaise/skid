@@ -1,22 +1,18 @@
-import EventDispatcher from '../event-dispatcher'
 import Group from './group'
 
 export default class Camera extends Group {
-    constructor(avatars) {
-        super(avatars)
-        this.x = avatars.interpolands.make(0)
-        this.y = avatars.interpolands.make(0)
-        this.w = avatars.interpolands.make(0)
-        this.h = avatars.interpolands.make(0)
-        this.anchorX = avatars.interpolands.make(0)
-        this.anchorY = avatars.interpolands.make(0)
-        this.angle = avatars.interpolands.make(0)
-        this.onBeforeDraw = new EventDispatcher()
+    constructor(group) {
+        super(group)
+        this.x = group.interpolands.make(0)
+        this.y = group.interpolands.make(0)
+        this.w = group.interpolands.make(0)
+        this.h = group.interpolands.make(0)
+        this.anchorX = group.interpolands.make(0)
+        this.anchorY = group.interpolands.make(0)
+        this.angle = group.interpolands.make(0)
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.x.remove()
         this.y.remove()
         this.w.remove()
@@ -24,12 +20,9 @@ export default class Camera extends Group {
         this.anchorX.remove()
         this.anchorY.remove()
         this.angle.remove()
-        super.remove()
     }
     
     draw(context) {
-        this.onBeforeDraw.proc()
-
         const canvas = context.canvas
 
         context.save()

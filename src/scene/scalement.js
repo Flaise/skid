@@ -1,14 +1,15 @@
 import Group from './group'
+import is from '../is'
 
-class Scalement extends Group {
+export default class Scalement extends Group {
     constructor(avatars, w, h) {
         super(avatars)
-        this.w = avatars.interpolands.make(w)
-        this.h = avatars.interpolands.make(h)
+        this.w = this.interpolands.make(is.defined(w)? w: 1)
+        this.h = this.interpolands.make(is.defined(h)? h: 1)
     }
     
     draw(context) {
-        if(!this.alive.size || !this.w.curr || !this.h.curr)
+        if(this.empty || !this.w.curr || !this.h.curr)
             return
         
         if(this.w.curr !== 1 || this.h.curr !== 1)
@@ -20,11 +21,8 @@ class Scalement extends Group {
             context.scale(1 / this.w.curr, 1 / this.h.curr)
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.w.remove()
         this.h.remove()
-        super.remove()
     }
 }

@@ -1,9 +1,15 @@
 import is from '../is'
 
 export default class Avatar {
-    constructor(avatars) {
+    constructor(container) {
+        this.container = container
+        this._node = container && container.alive.addLast(this)
         this._layer = undefined
-        this._node = avatars.alive.addLast(this)
+        this._removed = false
+        
+        // breaks unit tests involving Viewport if calling this.changed()
+        if(this.container)
+            this.container.changed()
     }
     
     get layer() {
@@ -19,18 +25,34 @@ export default class Avatar {
     }
     
     get removed() {
-        return this._node.removed
+        return this._removed
     }
     remove() {
-        this._node.remove()
+        if(this.removed)
+            return
+        this._node && this._node.remove()
+        this.subremove()
+        this.changed()
     }
+    subremove() {}
     
     draw(context) {
-        console.warn('Called abstract function Avatar.draw().')
+        console.warn('Called abstract function Avatar.draw()')
+    }
+    
+    walk(callback) {
+        callback(this)
+    }
+    
+    changed() {
+        if(this.container)
+            this.container.changed()
     }
     
     _shift() {
         // SANITY(!this.removed) // TODO
+        if(!this._node)
+            return
         
         while(true) {
             const prev = this._node.prev

@@ -9,7 +9,6 @@ export default class Smoothing extends Group {
     
     draw(context) {
         if(is.defined(this.enabled)) {
-            context.webkitImageSmoothingEnabled = this.enabled // TODO: is this needed on Chromium?
             context.imageSmoothingEnabled = this.enabled
             context.mozImageSmoothingEnabled = this.enabled
         }

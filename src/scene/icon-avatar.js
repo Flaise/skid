@@ -1,7 +1,6 @@
 import DefaultAvatar from './default-avatar'
-import is from '../is'
 
-export default class ImageAvatar extends DefaultAvatar {
+export default class IconAvatar extends DefaultAvatar {
     constructor(avatars, icon, w, h) {
         super(avatars)
         this.icon = icon

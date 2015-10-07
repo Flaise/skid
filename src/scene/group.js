@@ -32,4 +32,33 @@ export default class Group extends Avatar {
     get empty() {
         return this.alive.empty
     }
+    
+    bounds() {
+        let first = true
+        let left, top, right, bottom
+        this.walkContents(avatar => {
+            const rect = avatar.bounds()
+            if(!rect)
+                return
+                
+            let [left2, top2, width2, height2] = rect
+            let right2 = left2 + width2
+            let bottom2 = top2 + height2
+                
+            if(first) {
+                first = false
+                ;[left, top, right, bottom] = [left2, top2, right2, bottom2]
+                return
+            }
+            
+            left = Math.min(left, left2)
+            top = Math.min(top, top2)
+            right = Math.max(right, right2)
+            bottom = Math.max(bottom, bottom2)
+        })
+        if(first)
+            return undefined
+        
+        return [left, top, right - left, bottom - top]
+    }
 }

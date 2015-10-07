@@ -49,6 +49,10 @@ export default class Avatar {
             this.container.changed()
     }
     
+    bounds() {
+        return undefined
+    }
+    
     _shift() {
         if(!this._node || is.nullish(this._layer))
             return

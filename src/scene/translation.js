@@ -20,6 +20,12 @@ export default class Translation extends Group {
         this.y.remove()
     }
     
+    bounds() {
+        // TODO
+        console.warn('Not implemented')
+        return undefined
+    }
+    
     static draw(context, x, y, impl) {
         if(x || y)
             context.translate(x, y)

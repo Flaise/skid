@@ -26,6 +26,12 @@ export default class Scalement extends Group {
         this.h.remove()
     }
     
+    bounds() {
+        // TODO
+        console.warn('Not implemented')
+        return undefined
+    }
+    
     static draw(context, w, h, impl) {
         if(!w || !h)
             return

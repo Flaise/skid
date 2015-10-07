@@ -1,7 +1,6 @@
 import TileFieldSegment from './tile-field-segment'
 import Group from './group'
 import IconAvatar from './icon-avatar'
-import Icon4Avatar from './icon-4-avatar'
 
 export default class TileField {
     constructor(root, tileSize) {
@@ -51,8 +50,17 @@ export default class TileField {
     }
     
     makeTile4(nw, ne, sw, se, x, y, layer) {
-        const avatar = new Icon4Avatar(this._ensureSegment(x, y), nw, ne, sw, se, x, y, 1, 1)
-        avatar.layer = layer
+        const segment = this._ensureSegment(x, y)
+        
+        const w2 = 1 / 2
+        const h2 = 1 / 2
+        const w4 = 1 / 4
+        const h4 = 1 / 4
+        new IconAvatar(segment, nw, x - w4, y - h4, w2, h2).layer = layer
+        new IconAvatar(segment, ne, x + w4, y - h4, w2, h2).layer = layer
+        new IconAvatar(segment, sw, x - w4, y + h4, w2, h2).layer = layer
+        new IconAvatar(segment, se, x + w4, y + h4, w2, h2).layer = layer
+        
         this.changedAt(x, y)
     }
     makeTile(icon, x, y, layer) {

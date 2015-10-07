@@ -1,8 +1,12 @@
 import Avatar from './avatar'
 
 export default class IconAvatar extends Avatar {
-    constructor(container, icon) {
+    constructor(container, icon, x, y, w, h) {
         super(container)
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
         this._icon = icon
         this._add()
     }
@@ -16,6 +20,7 @@ export default class IconAvatar extends Avatar {
             this._icon.removeAvatar(this)
     }
     
+    // TODO: is this function necessary?
     set icon(value) {
         if(this._icon === value)
             return
@@ -29,18 +34,14 @@ export default class IconAvatar extends Avatar {
         this._remove()
     }
     
-    drawi(context, x, y, w, h) {
-        if(this._icon)
-            this._icon.draw(context, x, y, w, h)
-    }
-    
     draw(context) {
-        this.drawi(context, 0, 0, 1, 1)
+        if(this._icon)
+            this._icon.draw(context, this.x, this.y, this.w, this.h)
     }
     
-    bounds(x, y, w, h) {
+    bounds() {
         if(!this._icon)
-            return [x, y, 0, 0]
-        return this._icon.bounds(x, y, w, h)
+            return [this.x, this.y, 0, 0]
+        return this._icon.bounds(this.x, this.y, this.w, this.h)
     }
 }

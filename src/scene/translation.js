@@ -19,4 +19,14 @@ export default class Translation extends Group {
         this.x.remove()
         this.y.remove()
     }
+    
+    static draw(context, x, y, impl) {
+        if(x || y)
+            context.translate(x, y)
+        
+        impl(context)
+        
+        if(x || y)
+            context.translate(-x, -y)
+    }
 }

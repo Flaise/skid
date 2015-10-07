@@ -25,4 +25,16 @@ export default class Scalement extends Group {
         this.w.remove()
         this.h.remove()
     }
+    
+    static draw(context, w, h, impl) {
+        if(!w || !h)
+            return
+        if(w !== 1 || h !== 1)
+            context.scale(w, h)
+        
+        impl(context)
+        
+        if(w !== 1 || h !== 1)
+            context.scale(1 / w, 1 / h)
+    }
 }

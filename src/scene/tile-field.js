@@ -34,18 +34,18 @@ export default class TileField {
         }
         return result
     }
-    _modifyAt(x, y) {
+    _changedOne(x, y) {
         const segment = this._segments[this._keyOf(x, y)]
         if(segment)
             segment.changed()
     }
-    _modifyAround(x, y) {
-        this._modifyAt(x - 1, y - 1)
-        this._modifyAt(x + 1, y - 1)
-        this._modifyAt(x - 1, y)
-        this._modifyAt(x + 1, y)
-        this._modifyAt(x - 1, y + 1)
-        this._modifyAt(x + 1, y + 1)
+    changedAt(x, y) {
+        this._changedOne(x - 1, y - 1)
+        this._changedOne(x + 1, y - 1)
+        this._changedOne(x - 1, y)
+        this._changedOne(x + 1, y)
+        this._changedOne(x - 1, y + 1)
+        this._changedOne(x + 1, y + 1)
     }
     
     // hasTile(position, type) {
@@ -65,7 +65,7 @@ export default class TileField {
     }
     makeTile(icon, x, y, layer) {
         this._ensureSegment(x, y).makeTile(icon, x, y, layer)
-        this._modifyAround(x, y)
+        this.changedAt(x, y)
     }
     remove() {
         this.clear()

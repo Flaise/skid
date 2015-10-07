@@ -1,135 +1,95 @@
 import Vec2 from '../vector2'
-import is from '../is'
 import Avatar from './avatar'
+import Group from './group'
+import Translation from './translation'
+import Scalement from './scalement'
 
-function sanity() {} // TODO: find another solution for sanity checks when refactoring this file
 
-export default function TileFieldSegment(avatars, tileSize) {
-    Avatar.call(this, avatars)
 
-    this._canv = document.createElement('canvas')
-    this._canv.width = 0
-    this._canv.height = 0
-    this._context = this._canv.getContext('2d')
-    this._context.webkitImageSmoothingEnabled = true
-    this._context.mozImageSmoothingEnabled = true
+    // if(this.field._lastImage !== this.icons.atlas.image) {
+    //     // TODO: update when current segment changes, when adjacent segment changes, or when atlas changes
+    // }
     
-    this.fieldGroup = this
-    this._drawOperations = []
-    this._altered = false
-    this._minX = undefined
-    this._minY = undefined
-    this._maxX = undefined
-    this._maxY = undefined
-    this._atlas = undefined
-    this._isLoaded = false
-    
-    // maps types to sets of positions
-    this._type2tiles = {}
-    
-    this._x = 0
-    this._y = 0
-    this._w = 0
-    this._h = 0
-    
-    this.tileSize = tileSize // assign to property for type checking
-}
-TileFieldSegment.prototype = Object.create(Avatar.prototype)
 
-Object.defineProperty(TileFieldSegment.prototype, 'tileSize', {
-    get: function() { return this._tileSize },
-    set: function(value) {
-        if(sanity(is.number(value)))
-            return
-        sanity(is.integer(value))
-        this._tileSize = value
-        this._minX = undefined
-        this._excribeAll()
-        this._alter()
-    }
-})
-
-TileFieldSegment.prototype._alter = function() {
-    this._altered = true
-}
-
-TileFieldSegment.prototype.draw = function(context) {
-    if(this._altered) {
+export default class TileFieldSegment extends Avatar {
+    constructor(container, tileSize) {
+        super(container)
+        this._tileSize = tileSize
+        this._canvas = document.createElement('canvas')
+        this._context = this._canvas.getContext('2d')
+        this._field = this
         this._altered = false
-        
-        // shape of selected tile changes when adjacent tile field is altered
-        this._excribeAll()
-        
-        this._canv.width = this._maxX - this._minX
-        this._canv.height = this._maxY - this._minY
-        if(!this._canv.width || !this._canv.height)
+        this._minX = 0
+        this._minY = 0
+        this._maxX = 0
+        this._maxY = 0
+        this._width = 0
+        this._height = 0
+        this._excribed = false
+        this.root = new Scalement(undefined, tileSize, tileSize)
+        this.translation = new Translation(this.root)
+        this.group = this.translation
+    }
+    
+    alter() {
+        this._altered = true
+    }
+    
+    draw(context) {
+        if(this._altered) {
+            this._altered = false
+            
+            this.excribeAll()
+            
+            if(!this._canvas.width || !this._canvas.height)
+                return
+            
+            this.root.draw(this._context)
+        }
+        else if(!this._canvas.width || !this._canvas.height)
             return
         
-        this._drawOperations.sort(function(a, b) { return a.layer - b.layer })
-        this._drawOperations.forEach(function(op) { op.execute() })
+        context.drawImage(this._canvas, 0, 0, this._canvas.width, this._canvas.height,
+                          this._minX, this._minY, this._width, this._height)
+    }
+    
+    makeTile(icon, x, y, layer) {
+        new SimpleTile(this.group, icon, x, y, layer)
+        this.alter()
+    }
+    
+    excribeAll() {
+        this._excribed = false
+        this.group.walkContents(avatar => this.excribe(...avatar.bounds()))
         
-        sanity(!this._drawOperations.length || this._atlas)
-    }
-    else if(!this._canv.width || !this._canv.height)
-        return
-    
-    context.drawImage(this._canv, 0, 0, this._canv.width, this._canv.height,
-                      this._x, this._y, this._w, this._h)
-}
-
-TileFieldSegment.prototype._recordTile = function(type, position) {
-    if(!this._type2tiles[type])
-        this._type2tiles[type] = {}
-    this._type2tiles[type][position] = true
-}
-TileFieldSegment.prototype._derecordTile = function(type, position) {
-    if(this._type2tiles[type])
-        delete this._type2tiles[type][position]
-}
-TileFieldSegment.prototype.hasTile = function(position, type) {
-    return this._type2tiles[type] && this._type2tiles[type][position]
-}
-
-TileFieldSegment.prototype._excribe = function(x, y, w, h) {
-    if(isNaN(x) || isNaN(y) || isNaN(w) || isNaN(h))
-        return
-    
-    x = Math.floor(x)
-    y = Math.floor(y)
-    w = Math.ceil(w)
-    h = Math.ceil(h)
-    
-    if(this._minX === undefined) {
-        this._minX = x
-        this._minY = y
-        this._maxX = x + w
-        this._maxY = y + h
-    }
-    else {
-        this._minX = Math.min(this._minX, x)
-        this._minY = Math.min(this._minY, y)
-        this._maxX = Math.max(this._maxX, x + w)
-        this._maxY = Math.max(this._maxY, y + h)
+        // TODO: This will never interpolate so this could be done without Interpoland objects
+        this.translation.x.setToInitial(-this._minX)
+        this.translation.y.setToInitial(-this._minY)
+        
+        this._width = this._maxX - this._minX
+        this._height = this._maxY - this._minY
+        
+        this._canvas.width = Math.ceil(this._width * this._tileSize)
+        this._canvas.height = Math.ceil(this._height * this._tileSize)
     }
     
-    this._x = this._minX / this._tileSize
-    this._y = this._minY / this._tileSize
-    this._w = (this._maxX - this._minX) / this._tileSize
-    this._h = (this._maxY - this._minY) / this._tileSize
+    excribe(x, y, w, h) {
+        if(this._excribed) {
+            this._minX = Math.min(this._minX, x)
+            this._minY = Math.min(this._minY, y)
+            this._maxX = Math.max(this._maxX, x + w)
+            this._maxY = Math.max(this._maxY, y + h)
+        }
+        else {
+            this._excribed = true
+            this._minX = x
+            this._minY = y
+            this._maxX = x + w
+            this._maxY = y + h
+        }
+    }
 }
 
-TileFieldSegment.prototype._excribeIcon = function(icon, x, y, w, h) {
-    if(icon.atlas)
-        this._excribe.apply(this, icon.bounds(x, y, w, h))
-}
-TileFieldSegment.prototype._excribeTileIcon = function(icon, x, y) {
-    this._excribeIcon(icon, x * this._tileSize, y * this._tileSize, this._tileSize, this._tileSize)
-}
-TileFieldSegment.prototype._excribeAll = function() {
-    this._drawOperations.forEach(function(op) {
-        op.excribe()
-    })
-}
 
 TileFieldSegment.prototype._addAtlas = function(atlas) {
     if(is.defined(this._atlas)) {
@@ -144,117 +104,129 @@ TileFieldSegment.prototype._addAtlas = function(atlas) {
     })
 }
 
-TileFieldSegment.prototype._drawIcon = function(icon, x, y, w, h) {
-    if(sanity(is.number(x))
-            || sanity(is.number(y))
-            || sanity(is.number(w))
-            || sanity(is.number(h)))
-        return
-    if(!icon || !icon.atlas)
-        return
-    this._addAtlas(icon.atlas)
-    if(this._isLoaded)
-        icon.draw(this._context, x, y, w, h)
-}
-
 
 var xs = [-.25, .25, -.25, .25]
 var ys = [-.25, -.25, .25, .25]
 
 TileFieldSegment.prototype.drawSelectedTile = function(selector, type, x, y, layer, observedTypes) {
-    var _this = this
+    // TODO
     
-    if(sanity(is.defined(layer)))
-        layer = 0
-    if(!observedTypes)
-        observedTypes = [type]
-
-    var here = new Vec2(x, y)
-    this._recordTile(type, here)
-
-    function hasTilei(dx, dy) {
-        var dest = here.sumi(dx, dy)
-        return observedTypes.some(function(t) { return _this.fieldGroup.hasTile(dest, t) })
-    }
-    
-    function select() {
-        return selector(hasTilei(-1, -1), hasTilei(0, -1), hasTilei(1, -1),
-                        hasTilei(-1, 0), hasTilei(1, 0),
-                        hasTilei(-1, 1), hasTilei(0, 1), hasTilei(1, 1))
-    }
-    
-    var op = {
-        name: 'drawSelectedTile: ' + type,
-        layer: y + layer,
-        execute: function() {
-            select().forEach(function(icon, index) {
-                if(!icon)
-                    return
-                _this._drawIcon(icon, Math.floor((x + xs[index]) * _this._tileSize - _this._minX),
-                                Math.floor((y + ys[index]) * _this._tileSize - _this._minY),
-                                _this._tileSize / 2, _this._tileSize / 2)
-            })
-        },
-        excribe: function() {
-            select().forEach(function(icon, index) {
-                if(!icon)
-                    return
-                _this._excribeIcon(icon, (x + xs[index]) * _this._tileSize,
-                                   (y + ys[index]) * _this._tileSize,
-                                   _this._tileSize / 2, _this._tileSize / 2)
-            })
-        }
-    }
-    this._drawOperations.push(op)
-    this._alter()
-    
-    return function() {
-        _this._derecordTile(type, here)
-        removeFromArray(_this._drawOperations, op)
-        _this._alter()
-    }
+    // var _this = this
+    //
+    // if(sanity(is.defined(layer)))
+    //     layer = 0
+    // if(!observedTypes)
+    //     observedTypes = [type]
+    //
+    // var here = new Vec2(x, y)
+    // this._recordTile(type, here)
+    //
+    // function hasTileXY(dx, dy) {
+    //     var dest = here.sumXY(dx, dy)
+    //     return observedTypes.some(function(t) { return _this.fieldGroup.hasTile(dest, t) })
+    // }
+    //
+    // function select() {
+    //     return selector(hasTileXY(-1, -1), hasTileXY(0, -1), hasTileXY(1, -1),
+    //                     hasTileXY(-1, 0), hasTileXY(1, 0),
+    //                     hasTileXY(-1, 1), hasTileXY(0, 1), hasTileXY(1, 1))
+    // }
+    //
+    // var op = {
+    //     name: 'drawSelectedTile: ' + type,
+    //     layer: y + layer,
+    //     execute: function() {
+    //         select().forEach(function(icon, index) {
+    //             if(!icon)
+    //                 return
+    //             _this._drawIcon(icon, Math.floor((x + xs[index]) * _this._tileSize - _this._minX),
+    //                             Math.floor((y + ys[index]) * _this._tileSize - _this._minY),
+    //                             _this._tileSize / 2, _this._tileSize / 2)
+    //         })
+    //     },
+    //     excribe: function() {
+    //         select().forEach(function(icon, index) {
+    //             if(!icon)
+    //                 return
+    //             _this._excribeIcon(icon, (x + xs[index]) * _this._tileSize,
+    //                                (y + ys[index]) * _this._tileSize,
+    //                                _this._tileSize / 2, _this._tileSize / 2)
+    //         })
+    //     }
+    // }
+    // this._drawOperations.push(op)
+    // this._alter()
+    //
+    // return function() {
+    //     _this._derecordTile(type, here)
+    //     removeFromArray(_this._drawOperations, op)
+    //     _this._alter()
+    // }
 }
 
-TileFieldSegment.prototype.drawTile = function(icon, x, y, layer, type) {
-    var _this = this
-    
-    if(sanity(icon))
-        return function() {}
-    if(sanity(is.defined(layer)))
-        layer = 0
-    
-    if(type) {
-        var here = new Vec2(x, y) // make visible to returned removal
-        this._recordTile(type, here)
+
+class SimpleTile extends Avatar {
+    constructor(container, icon, x, y, layer) {
+        super(container)
+        this.icon = icon
+        this.x = x
+        this.y = y
+        this.layer = layer
     }
     
-    var op = {
-        name: 'drawTile: ' + (icon && icon.data && icon.data.name),
-        layer: y + layer,
-        execute: function() {
-            _this._drawIcon(icon, Math.floor(x * _this._tileSize - _this._minX),
-                            Math.floor(y * _this._tileSize - _this._minY),
-                            _this._tileSize, _this._tileSize)
-        },
-        excribe: function() {
-            _this._excribeTileIcon(icon, x, y)
-        }
+    draw(context) {
+        this.icon.draw(context, this.x, this.y, 1, 1)
     }
-    this._drawOperations.push(op)
-    this._alter()
     
-    return function() {
-        if(type)
-            _this._derecordTile(type, here)
-        removeFromArray(_this._drawOperations, op)
-        _this._alter()
+    bounds() {
+        return this.icon.bounds(this.x, this.y, 1, 1)
+    }
+    
+    get image() {
+        return this.icon && this.icon.atlas && this.icon.atlas.image
     }
 }
 
 
-function removeFromArray(array, element) {
-    var index = array.indexOf(element)
-    if(index >= 0)
-        array.splice(index, 1)
-    return index
-}
+
+// TileFieldSegment.prototype.drawTile = function(icon, x, y, layer, type) {
+//     new SimpleTile(this.group, icon, x, y, layer)
+//     this.alter()
+    
+    // TODO: do something with type externally
+    // TODO: return result for removal
+    
+    // var _this = this
+    //
+    // if(sanity(icon))
+    //     return function() {}
+    // if(sanity(is.defined(layer)))
+    //     layer = 0
+    //
+    // if(type) {
+    //     var here = new Vec2(x, y) // make visible to returned removal
+    //     this._recordTile(type, here)
+    // }
+    //
+    // var op = {
+    //     name: 'drawTile: ' + (icon && icon.data && icon.data.name),
+    //     layer: y + layer,
+    //     execute: function() {
+    //         _this._drawIcon(icon, Math.floor(x * _this._tileSize - _this._minX),
+    //                         Math.floor(y * _this._tileSize - _this._minY),
+    //                         _this._tileSize, _this._tileSize)
+    //     },
+    //     excribe: function() {
+    //         _this._excribeTileIcon(icon, x, y)
+    //     }
+    // }
+    // this._drawOperations.push(op)
+    // this._alter()
+    //
+    // return function() {
+    //     if(type)
+    //         _this._derecordTile(type, here)
+    //     removeFromArray(_this._drawOperations, op)
+    //     _this._alter()
+    // }
+// }

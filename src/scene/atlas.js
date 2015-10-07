@@ -4,6 +4,8 @@ export default class Atlas {
     constructor() {
         this.icons = Object.create(null)
         this.layout = undefined
+        this.image = undefined
+        this._loadingCounter = 0
     }
     
     get(name) {
@@ -11,8 +13,7 @@ export default class Atlas {
         
         let icon = this.icons[name]
         if(!icon) {
-            const sprite = this._sprite(name)
-            icon = new Icon(this, sprite)
+            icon = new Icon(this, name)
             this.icons[name] = icon
         }
         return icon
@@ -27,12 +28,24 @@ export default class Atlas {
     }
     
     loadImage(source, next) {
+        this.image = undefined
+        this._loadingCounter += 1
+        const loadingCounter = this._loadingCounter
+        
         loadImageObject(source, (err, image) => {
-            if(err)
-                return next && next(err)
+            if(loadingCounter !== this._loadingCounter)
+                return
+            
+            if(err) {
+                if(next)
+                    next(err)
+                else
+                    console.error(err)
+                return
+            }
             
             this.image = image
-            next()
+            next && next()
         })
     }
     
@@ -47,7 +60,6 @@ export default class Atlas {
         this.layout = data
         
         if(data.image && data.image !== oldImage) {
-            this.image = undefined
             this.loadImage(data.image, next)
         }
         else {

@@ -2,8 +2,8 @@ import Group from './group'
 import is from '../is'
 
 export default class Smoothing extends Group {
-    constructor(avatars, enabled) {
-        super(avatars)
+    constructor(container, enabled) {
+        super(container)
         this.enabled = enabled
     }
     

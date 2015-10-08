@@ -20,7 +20,6 @@ export default class IconAvatar extends Avatar {
             this._icon.removeAvatar(this)
     }
     
-    // TODO: is this property necessary?
     set icon(value) {
         if(this._icon === value)
             return

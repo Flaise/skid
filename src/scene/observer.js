@@ -2,8 +2,8 @@ import Avatar from './avatar'
 import is from '../is'
 
 export default class Observer extends Avatar {
-    constructor(avatars, target, onUpdate, onRemove) {
-        super(avatars)
+    constructor(container, target, onUpdate, onRemove) {
+        super(container)
         
         if(is.function(target)) {
             onRemove = onUpdate

@@ -1,8 +1,8 @@
 import Group from './group'
 
 export default class PathGroup extends Group {
-    constructor(avatars) {
-        super(avatars)
+    constructor(container) {
+        super(container)
         this.fillStyle = undefined
         this.strokeStyle = undefined
         this.lineWidth = undefined

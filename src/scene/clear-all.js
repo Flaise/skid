@@ -6,8 +6,8 @@ import Avatar from './avatar'
  * by tiling alpha-blended images on some rendering engines, such as Firefox.
  */
 export default class ClearAll extends Avatar {
-    constructor(avatars) {
-        super(avatars)
+    constructor(container) {
+        super(container)
     }
     
     draw(context) {

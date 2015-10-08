@@ -1,5 +1,6 @@
 let func
 if(typeof window === 'undefined')
+    // for unit testing in Node
     func = (callback => setTimeout(callback, 1000 / 60))
 else
     func = (

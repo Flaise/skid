@@ -30,7 +30,7 @@ export default class Camera extends Group {
 
         const dx = -this.x.curr + this.w.curr * this.anchorX.curr
         const dy = -this.y.curr + this.h.curr * this.anchorY.curr
-        if (dx || dy)
+        if(dx || dy)
             context.translate(dx, dy)
 
         super.draw(context)

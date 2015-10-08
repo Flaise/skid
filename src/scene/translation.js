@@ -21,9 +21,7 @@ export default class Translation extends Group {
     }
     
     bounds() {
-        // TODO
-        console.warn('Not implemented')
-        return undefined
+        console.warn('Not implemented') // TODO
     }
     
     static draw(context, x, y, impl) {

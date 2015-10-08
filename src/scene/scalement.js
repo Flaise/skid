@@ -2,8 +2,8 @@ import Group from './group'
 import is from '../is'
 
 export default class Scalement extends Group {
-    constructor(avatars, w, h) {
-        super(avatars)
+    constructor(container, w, h) {
+        super(container)
         this.w = this.interpolands.make(is.defined(w)? w: 1)
         this.h = this.interpolands.make(is.defined(h)? h: 1)
     }
@@ -27,9 +27,7 @@ export default class Scalement extends Group {
     }
     
     bounds() {
-        // TODO
-        console.warn('Not implemented')
-        return undefined
+        console.warn('Not implemented') // TODO
     }
     
     static draw(context, w, h, impl) {

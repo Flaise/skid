@@ -1,6 +1,5 @@
 import {toRadians, toVector} from './turns'
 
-
 export default class Vec2 {
     constructor(x, y) {
         this.x = x

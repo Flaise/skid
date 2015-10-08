@@ -2,55 +2,80 @@ import Icon from './icon'
 
 export default class Atlas {
     constructor() {
-        this.icons = Object.create(null)
-        this.layout = undefined
+        this._icons = Object.create(null)
+        this._layout = undefined
+        this._image = undefined
+        this._loadingCounter = 0
     }
     
     get(name) {
-        let icon = this.icons[name]
+        let icon = this._icons[name]
         if(!icon) {
-            const sprite = this._sprite(name)
-            icon = new Icon(this, sprite)
-            this.icons[name] = icon
+            icon = new Icon(this.image, this.layoutOf(name))
+            this._icons[name] = icon
         }
         return icon
     }
     
-    _sprite(name) {
+    set image(value) {
+        this._image = value
+        for(let key of Object.keys(this._icons))
+            this._icons[key].image = value
+    }
+    get image() {
+        return this._image
+    }
+    
+    set layout(value) {
+        this._layout = value
+        for(let key of Object.keys(this._icons))
+            this._icons[key].layout = this.layoutOf(key)
+    }
+    get layout() {
+        return this._layout
+    }
+    
+    layoutOf(name) {
         return this.layout && this.layout.sprites && this.layout.sprites[name]
     }
     
     hasData(name) {
-        return !!this._sprite(name)
+        return !!this.layoutOf(name)
     }
     
     loadImage(source, next) {
+        this.image = undefined
+        if(!source)
+            return next && next()
+        
+        this._loadingCounter += 1
+        const loadingCounter = this._loadingCounter
+        
         loadImageObject(source, (err, image) => {
-            if(err)
-                return next && next(err)
+            if(loadingCounter !== this._loadingCounter)
+                return
+            
+            if(err) {
+                if(next)
+                    next(err)
+                else
+                    console.error(err)
+                return
+            }
             
             this.image = image
-            next()
+            next && next()
         })
     }
     
     load(data, next) {
         const oldImage = this.layout && this.layout.image
-        
-        for(let spriteName of Object.keys(data.sprites)) {
-            const icon = this.icons[spriteName]
-            if(icon)
-                icon.load(data.sprites[spriteName])
-        }
         this.layout = data
         
-        if(data.image && data.image !== oldImage) {
-            this.image = undefined
+        if(data.image && data.image !== oldImage)
             this.loadImage(data.image, next)
-        }
-        else {
+        else
             setTimeout(next)
-        }
     }
 }
 

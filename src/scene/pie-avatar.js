@@ -4,13 +4,13 @@ import {clamp} from '../scalars'
 
 
 export default class PieAvatar extends DefaultAvatar {
-    constructor(avatars) {
-        super(avatars)
+    constructor(container) {
+        super(container)
         // Distance of second jaw from first jaw. Positive is clockwise.
-        this.breadth = avatars.interpolands.make(0)
+        this.breadth = container.interpolands.make(0)
         // Distance of first jaw from north. Positive is clockwise.
-        this.startAngle = avatars.interpolands.make(0)
-        this.innerRadiusRel = avatars.interpolands.make(0)
+        this.startAngle = container.interpolands.make(0)
+        this.innerRadiusRel = container.interpolands.make(0)
         this.fillStyle = undefined
         this.strokeStyle = undefined
         this.lineWidth = undefined
@@ -62,12 +62,9 @@ export default class PieAvatar extends DefaultAvatar {
         context.restore()
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.breadth.remove()
         this.startAngle.remove()
         this.innerRadiusRel.remove()
-        super.remove()
     }
 }

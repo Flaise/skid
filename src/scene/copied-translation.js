@@ -6,6 +6,8 @@ export default class CopiedTranslation extends Translation {
         this.target = target
         this.autoDelete = autoDelete
     }
+    // TODO: use Observer
+    // TODO: is autoDelete necessary?
     
     draw(context) {
         if(this.target) {

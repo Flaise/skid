@@ -2,17 +2,20 @@ import Group from './group'
 import is from '../is'
 
 export default class Smoothing extends Group {
-    constructor(avatars) {
-        super(avatars)
-        this.enabled = false
+    constructor(container, enabled) {
+        super(container)
+        this.enabled = enabled
     }
     
     draw(context) {
         if(is.defined(this.enabled)) {
-            context.webkitImageSmoothingEnabled = this.enabled // TODO: is this needed on Chromium?
+            context.save()
             context.imageSmoothingEnabled = this.enabled
             context.mozImageSmoothingEnabled = this.enabled
         }
         super.draw(context)
+        if(is.defined(this.enabled)) {
+            context.restore()
+        }
     }
 }

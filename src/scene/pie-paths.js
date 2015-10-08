@@ -40,11 +40,8 @@ export default class PiePaths extends Avatar {
         return result
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         for(let path of this._paths)
             path.scale.remove()
-        super.remove()
     }
 }

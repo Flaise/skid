@@ -1,65 +1,67 @@
 export default class Icon {
-    constructor(atlas) {
-        this.atlas = atlas
-        this._hFlip = undefined
-        this._vFlip = undefined
-        this.flipX = 1
-        this.flipY = 1
+    constructor(image, layout) {
+        this._image = image
+        this._layout = layout
+        this._avatars = []
     }
     
-    // TODO: flippedHorizontally().flippedVertically().flippedHorizontally().flippedVertically()
-    //       does not return original
-    flippedHorizontally() {
-        if(!this._hFlip) {
-            this._hFlip = new Icon(this.atlas)
-            this._hFlip.flipX = -this.flipX
-            this._hFlip._hFlip = this
-        }
-        return this._hFlip
+    addAvatar(avatar) {
+        this._avatars.push(avatar)
+    }
+    removeAvatar(avatar) {
+        const index = this._avatars.indexOf(avatar)
+        if(index >= 0)
+            this._avatars.splice(index, 1)
+    }
+    changed() {
+        for(let avatar of this._avatars)
+            avatar.changed()
+    }
+    
+    get layout() {
+        return this._layout
+    }
+    set layout(value) {
+        this._layout = value
+        this.changed()
+    }
+    
+    get image() {
+        return this._image
+    }
+    set image(value) {
+        this._image = value
+        this.changed()
     }
     
     draw(context, x, y, w, h) {
-        if(!this.atlas)
+        if(w === 0 || h === 0)
             return
-        else if(!this.atlas.image)
-            return
-        else if(w === 0 || h === 0)
-            return
-        else if(!w || !h)
-            console.warn('Invalid destination size ' + w + ', ' + h)
-        else if(!this.atlas.image.width || !this.atlas.image.height)
-            return // if missing, Firefox throws and Chrome (sometimes?) has performance issues
+        if(!w || !h)
+            return console.warn('Invalid destination size ' + w + ', ' + h)
         
-        const data = this.atlas.sprites[this.name]
+        const data = this.layout
         if(!data)
             return
+        
+        const image = this.image
+        if(!image)
+            return
+        if(!image.width || !image.height)
+            return // if missing, Firefox throws and Chrome (sometimes?) has performance issues
+        
         if(data.solid) {
-            if((this.flipX !== 1) || (this.flipY !== 1)) {
-                ////////////////////////////////////// TODO: precompute flipped atlas
-                context.save()
-                context.scale(this.flipX, this.flipY)
-            }
-            context.drawImage(this.atlas.image, data.x, data.y, data.w, data.h,
-                              this.flipX * x - data.axRel * w * data.sx,
-                              this.flipY * y - data.ayRel * h * data.sy,
+            context.drawImage(image, data.x, data.y, data.w, data.h,
+                              x - data.axRel * w * data.sx,
+                              y - data.ayRel * h * data.sy,
                               w * data.sx, h * data.sy)
-            if((this.flipX !== 1) || (this.flipY !== 1)) {
-                context.restore()
-            }
         }
         else {
-            if((this.flipX !== 1) || (this.flipY !== 1)) {
-                context.save()
-                context.scale(this.flipX, this.flipY)
-            }
-            context.drawImage(this.atlas.image, data.x, data.y, data.w, data.h,
-                              this.flipX * x + (data.insetXRel - data.axRel) * w * data.sx,
-                              this.flipY * y + (data.insetYRel - data.ayRel) * h * data.sy,
+            context.drawImage(image, data.x, data.y, data.w, data.h,
+                              x + (data.insetXRel - data.axRel) * w * data.sx,
+                              y + (data.insetYRel - data.ayRel) * h * data.sy,
                               (w + data.insetWRel * w) * data.sx,
                               (h + data.insetHRel * h) * data.sy)
-            if((this.flipX !== 1) || (this.flipY !== 1)) {
-                context.restore()
-            }
         }
     }
     
@@ -68,10 +70,10 @@ export default class Icon {
      * will be taken up when this icon is drawn on a tile of the dimensions given.
      */
     bounds(x, y, w, h) {
-        const data = this.atlas.sprites[this.name]
+        const data = this.layout
         if(!data)
-            return [0, 0, 0, 0]
-        if(data.solid)
+            return [x, y, 0, 0]
+        else if(data.solid)
             return [x - data.axRel * w * data.sx, y - data.ayRel * h * data.sy,
                     w * data.sx, h * data.sy]
         else
@@ -81,5 +83,3 @@ export default class Icon {
                     (h + data.insetHRel * h) * data.sy]
     }
 }
-
-export const blank = new Icon()

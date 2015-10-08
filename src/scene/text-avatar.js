@@ -2,8 +2,8 @@ import Avatar from './avatar'
 import is from '../is'
 
 export default class TextAvatar extends Avatar {
-    constructor(avatars, camera) {
-        super(avatars)
+    constructor(container, camera) {
+        super(container)
         this.camera = camera
         this.font = undefined
         this.text = ''

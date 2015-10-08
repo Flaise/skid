@@ -4,16 +4,16 @@ import {clamp} from '../scalars'
 
 
 export default class DefaultAvatar extends Avatar {
-    constructor(avatars) {
-        super(avatars)
-        this.x = avatars.interpolands.make(0)
-        this.y = avatars.interpolands.make(0)
-        this.w = avatars.interpolands.make(0)
-        this.h = avatars.interpolands.make(0)
-        this.angle = avatars.interpolands.make(0)
+    constructor(group) {
+        super(group)
+        this.x = group.interpolands.make(0)
+        this.y = group.interpolands.make(0)
+        this.w = group.interpolands.make(0)
+        this.h = group.interpolands.make(0)
+        this.angle = group.interpolands.make(0)
         
         // TODO: use Opacity node
-        this.opacity = avatars.interpolands.make(1)
+        this.opacity = group.interpolands.make(1)
         this.skipAlpha = undefined
     }
     
@@ -27,15 +27,12 @@ export default class DefaultAvatar extends Avatar {
             context.globalAlpha = clamp(this.opacity.curr, 0, 1)
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.x.remove()
         this.y.remove()
         this.w.remove()
         this.h.remove()
         this.angle.remove()
         this.opacity.remove()
-        super.remove()
     }
 }

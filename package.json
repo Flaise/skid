@@ -26,8 +26,8 @@
   ],
   "bugs": "https://github.com/Flaise/skid/issues",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min",
-    "test-watch": "npm run test -- --growl --watch",
+    "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter progress",
+    "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min --growl --watch",
     "build": "node ./node_modules/sigh-cli/bin/sigh",
     "build-watch": "npm run build -- --watch",
     "prepublish": "npm run build && npm test",

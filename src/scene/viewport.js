@@ -1,61 +1,42 @@
-import EventDispatcher from '../event-dispatcher'
-import is from '../is'
-import Interpolands from '../interpolands'
-import LinkedList from '../linked-list'
+import Group from './group'
+import requestAnimationFrame from './request-animation-frame'
 
-
-const requestAnimFrame = (
-    (typeof window !== 'undefined' && (
-        window.requestAnimationFrame
-        || window.webkitRequestAnimationFrame
-        || window.mozRequestAnimationFrame
-        || window.oRequestAnimationFrame
-        || window.msRequestAnimationFrame
-    )) || function(callback) { return window.setTimeout(callback, 1000 / 60) }
-)
-
-export default class Viewport {
+export default class Viewport extends Group {
     constructor(canvas) {
+        super()
         this.canvas = canvas
-        this.interpolands = new Interpolands()
-        this.alive = new LinkedList()
-        this.onBeforeDraw = new EventDispatcher()
-        this.onAfterDraw = new EventDispatcher()
-        this.lastFrame = undefined
+        this.lastFrame = Date.now()
         this.animFrame = false
+        
+        this.animationFrame = () => {
+            this.animFrame = false
+            this.draw()
+        }
+        
+        this.resize = () => this.changed()
+        if(typeof window !== 'undefined') // for unit testing
+            window.addEventListener('resize', this.resize)
+    }
+    
+    subremove() {
+        window.removeEventListener('resize', this.resize)
     }
     
     changed() {
         if(this.animFrame)
             return
-        if(is.nullish(this.lastFrame))
-            this.lastFrame = Date.now()
-        requestAnimFrame(() => {
-            this.animFrame = false
-            this.draw()
-        })
         this.animFrame = true
-    }
-    
-    repeatDraw() {
-        this.changed()
-        this.onAfterDraw.listen(() => this.changed())
+        requestAnimationFrame(this.animationFrame)
     }
     
     draw() {
         if(!this.canvas)
             return
             
-        const context = this.canvas.getContext('2d')
-        this.onBeforeDraw.proc(context)
-        this.update()
-        this.alive.forEach(avatar => avatar.draw(context))
-        this.onAfterDraw.proc(context)
-    }
-    
-    update() {
         const currentFrame = Date.now()
         this.interpolands.update(currentFrame - this.lastFrame)
         this.lastFrame = currentFrame
+        
+        super.draw(this.canvas.getContext('2d'))
     }
 }

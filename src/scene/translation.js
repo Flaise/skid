@@ -1,10 +1,10 @@
 import Group from './group'
 
 export default class Translation extends Group {
-    constructor(avatars, x, y) {
-        super(avatars)
-        this.x = avatars.interpolands.make(x)
-        this.y = avatars.interpolands.make(y)
+    constructor(container, x, y) {
+        super(container)
+        this.x = this.interpolands.make(x || 0)
+        this.y = this.interpolands.make(y || 0)
     }
     
     draw(context) {
@@ -15,11 +15,22 @@ export default class Translation extends Group {
             context.translate(-this.x.curr, -this.y.curr)
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.x.remove()
         this.y.remove()
-        super.remove()
+    }
+    
+    bounds() {
+        console.warn('Not implemented') // TODO
+    }
+    
+    static draw(context, x, y, impl) {
+        if(x || y)
+            context.translate(x, y)
+        
+        impl(context)
+        
+        if(x || y)
+            context.translate(-x, -y)
     }
 }

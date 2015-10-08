@@ -16,6 +16,7 @@ beforeEach(function() {
         }
     }
     avatars = new Viewport(canvas)
+    avatars.changed = () => {} // disable autoredraw
 })
 
 test('does not sort new avatars', function() {

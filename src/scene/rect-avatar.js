@@ -1,10 +1,10 @@
 import DefaultAvatar from './default-avatar'
 
 export default class RectAvatar extends DefaultAvatar {
-    constructor(avatars) {
-        super(avatars)
-        this.anchorX = avatars.interpolands.make(0)
-        this.anchorY = avatars.interpolands.make(0)
+    constructor(group) {
+        super(group)
+        this.anchorX = group.interpolands.make(0)
+        this.anchorY = group.interpolands.make(0)
         this.fillStyle = undefined
         this.strokeStyle = undefined
         this.lineWidth = undefined
@@ -39,12 +39,9 @@ export default class RectAvatar extends DefaultAvatar {
         context.restore()
     }
     
-    remove() {
-        if(this.removed)
-            return
+    subremove() {
         this.anchorX.remove()
         this.anchorY.remove()
-        super.remove()
     }
 }
 

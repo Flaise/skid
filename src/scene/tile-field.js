@@ -1,6 +1,5 @@
 import TileFieldSegment from './tile-field-segment'
 import Group from './group'
-import IconAvatar from './icon-avatar'
 
 export default class TileField {
     constructor(root, tileSize) {
@@ -25,7 +24,7 @@ export default class TileField {
         }
         return result
     }
-    _ensureSegment(x, y) {
+    nodeAt(x, y) {
         const key = this._keyOf(x, y)
         let result = this._segments[key]
         if(!result) {
@@ -34,42 +33,6 @@ export default class TileField {
             this._segments[key] = result
         }
         return result
-    }
-    _changedOne(x, y) {
-        const segment = this._segments[this._keyOf(x, y)]
-        if(segment)
-            segment.changed()
-    }
-    changedAt(x, y) {
-        this._changedOne(x - 1, y - 1)
-        this._changedOne(x + 1, y - 1)
-        this._changedOne(x - 1, y)
-        this._changedOne(x + 1, y)
-        this._changedOne(x - 1, y + 1)
-        this._changedOne(x + 1, y + 1)
-    }
-    
-    makeTile4(nw, ne, sw, se, x, y, layer) {
-        const segment = this._ensureSegment(x, y)
-        
-        const w2 = 1 / 2
-        const h2 = 1 / 2
-        const w4 = 1 / 4
-        const h4 = 1 / 4
-        new IconAvatar(segment, nw, x - w4, y - h4, w2, h2).layer = layer
-        new IconAvatar(segment, ne, x + w4, y - h4, w2, h2).layer = layer
-        new IconAvatar(segment, sw, x - w4, y + h4, w2, h2).layer = layer
-        new IconAvatar(segment, se, x + w4, y + h4, w2, h2).layer = layer
-        
-        this.changedAt(x, y)
-    }
-    makeTile(icon, x, y, layer) {
-        const avatar = new IconAvatar(this._ensureSegment(x, y), icon, x, y, 1, 1)
-        avatar.layer = layer
-        this.changedAt(x, y)
-    }
-    remove() {
-        this.clear()
     }
     clear() {
         Object.keys(this._rows).forEach(key => this._rows[key].remove())

@@ -4,7 +4,12 @@
   "version": "0.0.1",
   "license": "MIT",
   "author": {
-    "name": "Flaise"
+    "name": "Flaise",
+    "email": "x.Flaise@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/Flaise/skid/issues",
+    "email": "x.Flaise@gmail.com"
   },
   "repository": {
     "type": "git",
@@ -22,9 +27,11 @@
     "HTML5",
     "keyboard",
     "mouse",
-    "input"
+    "input",
+    "scene graph",
+    "scene",
+    "graph"
   ],
-  "bugs": "https://github.com/Flaise/skid/issues",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter progress",
     "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min --growl --watch",

@@ -12,6 +12,8 @@ class Interpoland {
     }
     
     mod(delta, duration, tweenFunc, onDone, remainder) {
+        if(!delta && !onDone)
+            return
         this.dest += delta
         return this.tweens.make(this, delta, delta, duration, tweenFunc, onDone, remainder)
     }

@@ -28,8 +28,9 @@ export default class Avatar {
         return this._removed
     }
     remove() {
-        if(this.removed)
+        if(this._removed)
             return
+        this._removed = true
         this._node && this._node.remove()
         this.subremove()
         this.changed()

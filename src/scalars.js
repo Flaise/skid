@@ -19,7 +19,7 @@ export function randomFloat(lo, hi) {
 }
 
 export function linearInterpolate(from, to, factor) {
-    if(from > to) return exports.lerp(to, from, 1 - factor)
+    if(from > to) return linearInterpolate(to, from, 1 - factor)
     if(factor <= 0) return from
     if(factor >= 1) return to
     return from + (to - from) * factor

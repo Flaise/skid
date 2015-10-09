@@ -1,7 +1,6 @@
 import DefaultAvatar from './default-avatar'
-import turns from '../turns'
+import {wrap, toRadians} from '../turns'
 import {clamp} from '../scalars'
-
 
 export default class PieAvatar extends DefaultAvatar {
     constructor(container) {
@@ -24,7 +23,7 @@ export default class PieAvatar extends DefaultAvatar {
         if(this.x.curr || this.y.curr)
             context.translate(this.x.curr, this.y.curr)
         if(this.angle.curr)
-            context.rotate(turns.wrap(this.angle.curr))
+            context.rotate(wrap(this.angle.curr))
         if(this.w.curr !== 1 || this.h.curr !== 1)
             context.scale(this.w.curr, this.h.curr)
         
@@ -37,8 +36,8 @@ export default class PieAvatar extends DefaultAvatar {
             var startAngle = this.startAngle.curr
             var endAngle = startAngle + this.breadth.curr
             
-            startAngle = turns.toRadians(startAngle - .25)
-            endAngle = turns.toRadians(endAngle - .25)
+            startAngle = toRadians(startAngle - .25)
+            endAngle = toRadians(endAngle - .25)
             
             context.arc(0, 0, .5 * this.innerRadiusRel.curr, endAngle, startAngle,
                         this.breadth.curr >= 0)

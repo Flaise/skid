@@ -14,7 +14,7 @@ funcs.nullish = function(a) {
 }
 
 funcs.integer = function(a) {
-    return a !== Infinity && a !== -Infinity && a === Math.floor(a)
+    return Number.isInteger(a)
 }
 
 funcs.boolean = function(a) {

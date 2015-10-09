@@ -7,7 +7,8 @@ suite('Interpoland')
 
 let interpolands
 beforeEach(function() {
-    interpolands = new Interpolands()
+    const avatar = {changed: function() {}}
+    interpolands = new Interpolands(avatar)
     
     assert(interpolands.pool.aliveCount === 0)
     assert(interpolands.tweens.aliveCount === 0)

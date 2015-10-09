@@ -1,5 +1,5 @@
 import Avatar from './avatar'
-import turns from '../turns'
+import {toRadians} from '../turns'
 
 export default class PiePaths extends Avatar {
     constructor(avatars) {
@@ -15,8 +15,8 @@ export default class PiePaths extends Avatar {
             
             let startAngle = path.startAngle - .25
             let endAngle = startAngle + path.breadth
-            startAngle = turns.toRadians(startAngle)
-            endAngle = turns.toRadians(endAngle)
+            startAngle = toRadians(startAngle)
+            endAngle = toRadians(endAngle)
             
             context.moveTo(0, 0)
             context.arc(0, 0, path.scale.curr / 2 * path.innerRadius, endAngle, startAngle,

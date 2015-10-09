@@ -8,7 +8,7 @@ export default class Group extends Avatar {
         if(container)
             this.interpolands = container.interpolands // used when adding avatars to this group
         else
-            this.interpolands = new Interpolands()
+            this.interpolands = new Interpolands(this)
         this.alive = new LinkedList()
     }
     

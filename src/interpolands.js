@@ -46,9 +46,9 @@ class Interpoland {
 }
 
 export default class Interpolands {
-    constructor() {
+    constructor(avatar) {
         this.pool = new ObjectPool(Interpoland)
-        this.tweens = new Tweens()
+        this.tweens = new Tweens(avatar)
     }
     make(value) {
         return this.pool.make(this.tweens, value)
@@ -92,16 +92,23 @@ function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) 
 
 
 class Tweens extends ObjectPool {
-    constructor() {
+    constructor(avatar) {
         super(Tween)
         this.ending = []
         this.remainder = 0
+        this.avatar = avatar
     }
     
     make(interpoland, dest, amplitude, duration, func, onDone, remainder) {
         if(is.nullish(remainder))
             remainder = this.remainder
-        return super.make(interpoland, dest, amplitude, duration, func, onDone, remainder)
+        const result = super.make(interpoland, dest, amplitude, duration, func, onDone, remainder)
+        this.changed()
+        return result
+    }
+    
+    changed() {
+        this.avatar.changed()
     }
     
     removeInterpolands(removals, count) {
@@ -179,5 +186,8 @@ class Tweens extends ObjectPool {
             this.deadCount += 1
         }
         this.remainder = 0
+        
+        if(this.aliveCount)
+            this.changed()
     }
 }

@@ -76,14 +76,14 @@ export default class Icon {
         
         if(data.solid) {
             context.drawImage(image, data.x, data.y, data.w, data.h,
-                              x - data.axRel * w * data.sx,
-                              y - data.ayRel * h * data.sy,
+                              x + data.wFactor * w,
+                              y + data.hFactor * h,
                               w * data.sx, h * data.sy)
         }
         else {
             context.drawImage(image, data.x, data.y, data.w, data.h,
-                              x + (data.insetXRel - data.axRel) * w * data.sx,
-                              y + (data.insetYRel - data.ayRel) * h * data.sy,
+                              x + data.wFactor * w,
+                              y + data.hFactor * h,
                               (w + data.insetWRel * w) * data.sx,
                               (h + data.insetHRel * h) * data.sy)
         }
@@ -98,11 +98,9 @@ export default class Icon {
         if(!data)
             return [x, y, 0, 0]
         else if(data.solid)
-            return [x - data.axRel * w * data.sx, y - data.ayRel * h * data.sy,
-                    w * data.sx, h * data.sy]
+            return [x + data.wFactor * w, y + data.hFactor * h, w * data.sx, h * data.sy]
         else
-            return [x + (data.insetXRel - data.axRel) * w * data.sx,
-                    y + (data.insetYRel - data.ayRel) * h * data.sy,
+            return [x + data.wFactor * w, y + data.hFactor * h,
                     (w + data.insetWRel * w) * data.sx,
                     (h + data.insetHRel * h) * data.sy]
     }

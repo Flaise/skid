@@ -10,15 +10,6 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
     layout.y = sourceY
     layout.w = sourceW
     layout.h = sourceH
-    if(solid) {
-        layout.solid = true
-    }
-    else {
-        layout.insetXRel = localX / untrimmedWidth
-        layout.insetYRel = localY / untrimmedHeight
-        layout.insetWRel = (localW - untrimmedWidth) / untrimmedWidth
-        layout.insetHRel = (localH - untrimmedHeight) / untrimmedHeight
-    }
     
     var nameTokens = trimmedName.split('_')
     
@@ -27,12 +18,12 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
     var ax = Number(nameTokens[1])
     if(isNaN(ax))
         ax = untrimmedWidth / 2
-    layout.axRel = ax / untrimmedWidth
+    var axRel = ax / untrimmedWidth
     
     var ay = Number(nameTokens[2])
     if(isNaN(ay))
         ay = untrimmedHeight / 2
-    layout.ayRel = ay / untrimmedHeight
+    var ayRel = ay / untrimmedHeight
     
     var diameter = Number(nameTokens[3])
     if(isNaN(diameter)) {
@@ -48,6 +39,20 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
         layout.sx = untrimmedWidth / diameter
         layout.sy = untrimmedHeight / diameter
     }
+    
+    if(solid) {
+        layout.solid = true
+        layout.wFactor = layout.sx * -axRel
+        layout.hFactor = layout.sy * -ayRel
+    }
+    else {
+        layout.insetWRel = (localW - untrimmedWidth) / untrimmedWidth
+        layout.insetHRel = (localH - untrimmedHeight) / untrimmedHeight
+        
+        layout.wFactor = layout.sx * (localX / untrimmedWidth - axRel)
+        layout.hFactor = layout.sy * (localY / untrimmedHeight - ayRel)
+    }
+    
     return layout
 }
 if(typeof exports !== 'undefined')

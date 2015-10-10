@@ -1,3 +1,6 @@
+import loadImage from './load-image'
+import {compute} from '../../texture-packer-exporters/skid/grantlee/0.2/skid.qs'
+
 export default class Icon {
     constructor(image, layout) {
         this._image = image
@@ -32,6 +35,27 @@ export default class Icon {
     set image(value) {
         this._image = value
         this.changed()
+    }
+    
+    loadImage(source, fileName, next) {
+        if(!source) {
+            this.image = undefined
+            return next && next()
+        }
+        
+        this.image = loadImage(source, (err, image) => {
+            if(this.image !== image)
+                return
+            
+            const trimmedName = fileName.split('.')[0]
+            this.layout = compute(trimmedName, image.width, image.height,
+                                  0, 0, image.width, image.height, true)
+                
+            if(next)
+                next(err)
+            else if(err)
+                console.error(err)
+        })
     }
     
     draw(context, x, y, w, h) {

@@ -16,5 +16,5 @@
     <rotationDirection>cw</rotationDirection>
     <supportsNPOT>yes</supportsNPOT>
     <supportsTrimSpriteNames>yes</supportsTrimSpriteNames>
-    <supportsTextureSubPath>no</supportsTextureSubPath>
+    <supportsTextureSubPath>yes</supportsTextureSubPath>
 </exporter>

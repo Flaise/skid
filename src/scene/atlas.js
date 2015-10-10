@@ -1,11 +1,11 @@
 import Icon from './icon'
+import loadImage from './load-image'
 
 export default class Atlas {
     constructor() {
         this._icons = Object.create(null)
         this._layout = undefined
         this._image = undefined
-        this._loadingCounter = 0
     }
     
     get(name) {
@@ -19,8 +19,17 @@ export default class Atlas {
     
     set image(value) {
         this._image = value
-        for(let key of Object.keys(this._icons))
-            this._icons[key].image = value
+        // TODO: check ready state to ensure not already loaded
+        if(value)
+            value.onload = () => {
+                value.onerror = value.onload = undefined
+                if(this._image === value)
+                    for(let key of Object.keys(this._icons))
+                        this._icons[key].image = value
+            }
+        else
+            for(let key of Object.keys(this._icons))
+                this._icons[key].image = value
     }
     get image() {
         return this._image
@@ -43,29 +52,13 @@ export default class Atlas {
         return !!this.layoutOf(name)
     }
     
-    loadImage(source, next) {
-        this.image = undefined
-        if(!source)
-            return next && next()
-        
-        this._loadingCounter += 1
-        const loadingCounter = this._loadingCounter
-        
-        loadImageObject(source, (err, image) => {
-            if(loadingCounter !== this._loadingCounter)
-                return
-            
-            if(err) {
-                if(next)
-                    next(err)
-                else
-                    console.error(err)
-                return
-            }
-            
-            this.image = image
-            next && next()
-        })
+    // changed() {
+    //     for(let key of Object.keys(this._icons))
+    //         this._icons[key].changed()
+    // }
+    
+    loadImage(source) {
+        this.image = loadImage(source)
     }
     
     load(data, next) {
@@ -77,17 +70,4 @@ export default class Atlas {
         else
             setTimeout(next)
     }
-}
-
-function loadImageObject(source, next) {
-    const image = new window.Image()
-    image.onload = () => {
-        image.onload = image.onerror = image.onabort = undefined
-        next && next(undefined, image)
-    }
-    image.onerror = () => {
-        image.onload = image.onerror = image.onabort = undefined
-        next && next(new Error('Unable to load image.'))
-    }
-    image.src = source
 }

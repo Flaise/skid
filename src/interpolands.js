@@ -29,10 +29,13 @@ class Interpoland {
         this.modNow(dest - this.dest)
     }
     setTo(dest) {
+        // TODO: compare this.dest and current number of tweens attached to this interpoland
+        // for early-out
         this.base = dest
         this.curr = dest
         this.dest = dest
         this.tweens.removeInterpolands([this]) // TODO
+        this.tweens.changed() // TODO: without early-out, this is getting called every frame
     }
     setToInitial(dest) {
         this.base = dest

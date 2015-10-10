@@ -31,11 +31,13 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
         if(untrimmedHeight > untrimmedWidth) {
             layout.sx = 1
             layout.sy = untrimmedHeight / untrimmedWidth
-        } else {
+        }
+        else {
             layout.sy = 1
             layout.sx = untrimmedWidth / untrimmedHeight
         }
-    } else {
+    }
+    else {
         layout.sx = untrimmedWidth / diameter
         layout.sy = untrimmedHeight / diameter
     }
@@ -46,11 +48,25 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
         layout.hFactor = layout.sy * -ayRel
     }
     else {
+        // Corrects for seams in tile fields caused by precision loss
+        // TODO: experiment with splitting numerator from denomonator instead
+        if(localX % 2 !== 0) {
+            localX -= 1
+            localW += 1
+        }
+        if(localY % 2 !== 0) {
+            localY -= 1
+            localH += 1
+        }
+        
         layout.insetWRel = (localW - untrimmedWidth) / untrimmedWidth
         layout.insetHRel = (localH - untrimmedHeight) / untrimmedHeight
         
-        layout.wFactor = layout.sx * (localX / untrimmedWidth - axRel)
-        layout.hFactor = layout.sy * (localY / untrimmedHeight - ayRel)
+        var insetXRel = localX / untrimmedWidth
+        var insetYRel = localY / untrimmedHeight
+        
+        layout.wFactor = layout.sx * (insetXRel - axRel)
+        layout.hFactor = layout.sy * (insetYRel - ayRel)
     }
     
     return layout

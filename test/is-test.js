@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import is from '../src/is'
+import is from './is'
 
 suite('is')
 

@@ -33,21 +33,22 @@
     "graph"
   ],
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter progress",
-    "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:espower-babel/guess --ui qunit --reporter min --growl --watch",
+    "test": "node ./node_modules/sigh-cli/bin/sigh",
     "build": "node ./node_modules/sigh-cli/bin/sigh",
-    "build-watch": "npm run build -- --watch",
-    "prepublish": "npm run build && npm test",
-    "coverage": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --compilers js:espower-babel/guess --ui qunit"
+    "watch": "node ./node_modules/sigh-cli/bin/sigh --watch",
+    "prepublish": "npm test"
   },
   "devDependencies": {
     "babel": "5.8.23",
+    "babel-plugin-espower": "1.0.0",
     "espower-babel": "3.3.0",
     "istanbul": "0.3.21",
     "mocha": "2.3.3",
     "power-assert": "1.1.0",
     "sigh": "0.12.22",
     "sigh-babel": "0.11.6",
-    "sigh-cli": "0.2.8"
+    "sigh-cli": "0.2.8",
+    "sigh-mocha": "0.1.2",
+    "babel-runtime": "5.8.25"
   }
 }

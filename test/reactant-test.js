@@ -1,7 +1,7 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Reactant from '../src/reactant'
-import EventDispatcher from '../src/event-dispatcher'
+import Reactant from './reactant'
+import EventDispatcher from './event-dispatcher'
 
 suite('Reactant')
 

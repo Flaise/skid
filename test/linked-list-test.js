@@ -1,6 +1,6 @@
 import assert from 'power-assert'
-import LinkedList from '../src/linked-list'
-import LinkedListNode from '../src/linked-list-node'
+import LinkedList from './linked-list'
+import LinkedListNode from './linked-list-node'
 
 suite('LinkedListNode')
 

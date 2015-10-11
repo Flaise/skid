@@ -1,8 +1,8 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Interpolands from '../src/interpolands'
-import DefaultAvatar from '../src/scene/default-avatar'
-import Viewport from '../src/scene/viewport'
+import Interpolands from './interpolands'
+import DefaultAvatar from './scene/default-avatar'
+import Viewport from './scene/viewport'
 
 suite('Avatar')
 

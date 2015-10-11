@@ -1,7 +1,7 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Interpolands from '../src/interpolands'
-import * as tween from '../src/tween'
+import Interpolands from './interpolands'
+import * as tween from './tween'
 
 suite('Interpoland')
 

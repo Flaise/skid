@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import ObjectPool from '../src/object-pool'
+import ObjectPool from './object-pool'
 
 class ObjectWithNumber {
     constructor(num) {

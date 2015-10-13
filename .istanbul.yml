@@ -1,0 +1,9 @@
+instrumentation:
+    root: ./lib
+    excludes:
+        - "*-test.js"
+        - "*.map"
+    default-excludes: false
+hooks:
+    hook-run-in-context: true
+    

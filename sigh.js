@@ -1,7 +1,7 @@
 'use strict'
 
 var glob, write, debounce, pipeline
-var babel, mocha
+var babel, mochasingleprocess
 
 module.exports = function(pipelines) {
     pipelines['build'] = [
@@ -20,6 +20,6 @@ module.exports = function(pipelines) {
     pipelines.test = [
         pipeline('build-test'),
         debounce(700),
-        mocha({files: 'lib/*-test.js', ui: 'qunit', growl: true, reporter: 'progress'})
+        mochasingleprocess({files: 'lib/*-test.js', ui: 'qunit', growl: true, reporter: 'progress'})
     ]
 }

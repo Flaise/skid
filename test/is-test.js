@@ -28,8 +28,14 @@ for(let entry of configuration) {
     const item = entry[0]
     const methods = entry.slice(1)
     test('' + item, () => {
-        for(let method of methods)
+        for(let method of methods) {
             assert(is[method](item) === true)
+            
+            for(let otherMethod of Object.keys(is)) {
+                assert(is[method].or[otherMethod](item) === true)
+                assert(is[otherMethod].or[method](item) === true)
+            }
+        }
         for(let key of Object.keys(is))
             if(methods.indexOf(key) < 0)
                 assert(is[key](item) === false)

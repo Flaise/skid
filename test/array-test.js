@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import {filter, insertSorted, remove} from './array'
+import {filter, insertSorted, remove, copy} from './array'
 
 suite('array')
 
@@ -83,4 +83,10 @@ test('removes one element - last', () => {
 test('removes nonexistent element', () => {
     remove(arr, 20)
     assert.deepEqual(arr, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+})
+
+test('copies array', () => {
+    const arr2 = copy(arr)
+    assert(arr !== arr2)
+    assert.deepEqual(arr, arr2)
 })

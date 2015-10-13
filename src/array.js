@@ -39,3 +39,14 @@ export function remove(arr, element) {
     if(index >= 0)
         arr.splice(index, 1)
 }
+
+/*
+ * Returns a new shallow copy of the given array. Like Array#slice but faster.
+ * https://jsperf.com/new-array-vs-splice-vs-slice/110
+ */
+export function copy(arr) {
+    const result = new Array(arr.length)
+    for(let i = 0, len = arr.length; i < len; i += 1)
+        result[i] = arr[i]
+    return result
+}

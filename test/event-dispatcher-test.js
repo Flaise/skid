@@ -51,13 +51,13 @@ test('passing two parameters to listeners', function() {
     assert.deepEqual(listenerC.args, [['a', 'b']])
 })
 test('removing a listener', function() {
-    dispatcher.listen(listenerA)()
+    dispatcher.listen(listenerA).stop()
     dispatcher.proc()
     assert(listenerA.callCount === 0)
 })
 test('removing one of many listeners', function() {
     dispatcher.listen(listenerA)
-    dispatcher.listen(listenerB)()
+    dispatcher.listen(listenerB).stop()
     dispatcher.listen(listenerC)
     dispatcher.proc()
     assert(listenerA.calledOnce)
@@ -66,8 +66,8 @@ test('removing one of many listeners', function() {
 })
 test('removal during iteration', function() {
     dispatcher.listen(listenerA)
-    const listenerR = sinon.spy(() => remove())
-    const remove = dispatcher.listen(listenerR)
+    const listenerR = sinon.spy(() => reg.stop())
+    const reg = dispatcher.listen(listenerR)
     dispatcher.listen(listenerB)
     dispatcher.proc()
     dispatcher.proc()
@@ -83,13 +83,21 @@ test('listenOnce', function() {
     assert.deepEqual(listenerA.args, [[1]])
 })
 test('remove a listen-once callback before proc', function() {
-    dispatcher.listenOnce(listenerA)()
+    dispatcher.listenOnce(listenerA).stop()
     dispatcher.proc()
     assert(listenerA.callCount === 0)
 })
 test('concurrent listenOnce without breaking iteration', function() {
     dispatcher.listenOnce(listenerA)
     dispatcher.listen(listenerB)
+    dispatcher.proc(1)
+    dispatcher.proc(2)
+    assert(listenerA.calledOnce)
+    assert(listenerB.calledTwice)
+})
+test('concurrent listenOnce without breaking iteration - other order', function() {
+    dispatcher.listen(listenerB)
+    dispatcher.listenOnce(listenerA)
     dispatcher.proc(1)
     dispatcher.proc(2)
     assert(listenerA.calledOnce)
@@ -150,10 +158,10 @@ test('aggregation of two dispatchers', function() {
     var a = new EventDispatcher()
     var b = new EventDispatcher()
     var aggregation = a.aggregate(b)
-    var removal = aggregation.listen(listenerA)
+    var reg = aggregation.listen(listenerA)
     a.proc(1)
     b.proc(2)
-    removal()
+    reg.stop()
     a.proc(3)
     b.proc(4)
     assert.deepEqual(listenerA.args, [[1], [2]])
@@ -162,10 +170,10 @@ test('passing parameters to aggregation', function() {
     const a = new EventDispatcher()
     const b = new EventDispatcher()
     const aggregation = a.aggregate(b)
-    const removal = aggregation.listen(listenerA)
+    const reg = aggregation.listen(listenerA)
     a.proc('asdf', -123)
     b.proc('asd', -12)
-    removal()
+    reg.stop()
     a.proc()
     b.proc()
     assert.deepEqual(listenerA.args, [
@@ -209,4 +217,22 @@ test.skip('two consecutive once-only listeners with an until hook that fires', f
     dispatcher.proc()
     ok(!a, 'first')
     ok(b, 'second')
+})
+
+test.skip('removal during iteration', () => {
+    const remover = sinon.spy(() => reg.stop())
+    
+    dispatcher.listen(remover)
+    const reg = dispatcher.listen(listenerB)
+    
+    dispatcher.proc()
+    assert(remover.calledOnce)
+    assert(listenerB.callCount === 0)
+})
+
+test("can't listen with non-function", () => {
+    for(let element of [undefined, null, 1, NaN, '', "asdf", -1.04, Infinity]) {
+        assert.throws(() => dispatcher.listen(element))
+        assert.throws(() => dispatcher.listenOnce(element))
+    }
 })

@@ -113,12 +113,12 @@ test('set/retrieve computed value', function() {
 test('register/unregister callback', function() {
     var reactant = new Reactant()
     reactant.value = 1
-    var removal = reactant.listen(function(prev, curr) {
+    var reg = reactant.listen(function(prev, curr) {
         assert(prev === 1)
         assert(curr === 4)
     })
     reactant.value = 4
-    removal()
+    reg.stop()
     reactant.value = 8
 })
 test('multiple instance reaction', function() {

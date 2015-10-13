@@ -1,18 +1,18 @@
-import LinkedList from './linked-list'
+import {remove, copy} from './array'
 
 export default class EventDispatcher {
     constructor() {
-        this.callbacks = new LinkedList()
+        this._callbacks = []
     }
     listen(callback) {
         if(!callback.apply)
             throw new Error()
         
-        // it might break some behaviors to call listeners in reverse order but it allows insertion
-        // during iteration
-        const node = this.callbacks.addFirst(callback)
-        
-        return () => node.remove()
+        this._callbacks.push(callback)
+        return {
+            stop: () => remove(this._callbacks, callback)
+            // TODO: until()
+        }
     }
     listen_pc(callback) {
         callback()
@@ -22,22 +22,22 @@ export default class EventDispatcher {
         if(!callback.apply)
             throw new Error()
             
-        var remove = this.listen((...args) => {
-            // remove will be initialized by the time this closure is called because there is no
-            // event for 'listener-added'
-            remove()
-            callback(...args)
+        const registration = this.listen((...args) => {
+            registration.stop()
+            callback.apply(undefined, args)
         })
-        return remove
+        return registration
     }
     proc(...args) {
-        this.callbacks.forEach(callback => callback(...args))
+        const callbacks = copy(this._callbacks)
+        for(let i = 0; i < callbacks.length; i += 1)
+            callbacks[i].apply(undefined, args)
     }
     filter(reactant) {
         const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: This listener needs to be removed when result has none of its own listeners, and re-added when it does
-        const remove = this.listen((...args) => {
+        const registration = this.listen((...args) => {
             if(reactant.value)
                 result.proc(...args)
         })
@@ -48,8 +48,8 @@ export default class EventDispatcher {
         const result = new EventDispatcher()
 
         ////////////////////////////////////////////////////// TODO: These listeners need to be removed when result has none of its own listeners, and re-added when it does
-        const removeA = this.listen((...args) => result.proc(...args))
-        const removeB = other.listen((...args) => result.proc(...args))
+        const registrationA = this.listen((...args) => result.proc(...args))
+        const registrationB = other.listen((...args) => result.proc(...args))
 
         return result
     }

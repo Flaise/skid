@@ -1,4 +1,3 @@
-import LinkedList from '../linked-list'
 import Avatar from './avatar'
 import Interpolands from '../interpolands'
 
@@ -9,7 +8,7 @@ export default class Group extends Avatar {
             this.interpolands = container.interpolands // used when adding avatars to this group
         else
             this.interpolands = new Interpolands(this)
-        this.alive = new LinkedList()
+        this.contents = []
     }
     
     walk(callback) {
@@ -18,19 +17,22 @@ export default class Group extends Avatar {
     }
     
     walkContents(callback) {
-        this.alive.forEach(avatar => avatar.walk(callback))
+        for(let i = 0; i < this.contents.length; i += 1)
+            this.contents[i].walk(callback)
     }
     
     draw(context) {
-        this.alive.forEach(avatar => avatar.draw(context))
+        for(let i = 0; i < this.contents.length; i += 1)
+            this.contents[i].draw(context)
     }
     
     subremove() {
-        this.alive.forEach(avatar => avatar.remove())
+        for(let i = 0; i < this.contents.length; i += 1)
+            this.contents[i].remove()
     }
     
     get empty() {
-        return this.alive.empty
+        return this.contents.length === 0
     }
     
     bounds() {

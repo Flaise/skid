@@ -1,87 +1,5 @@
-import ObjectPool from './object-pool'
 import is from './is'
-
-class Interpoland {
-    constructor(tweens, value) {
-        value = value || 0
-        this.curr = value
-        this.base = value
-        this.dest = value
-        this.tweens = tweens
-        this.removed = false
-    }
-    
-    mod(delta, duration, tweenFunc, onDone, remainder) {
-        if(!delta && !onDone)
-            return
-        this.dest += delta
-        return this.tweens.make(this, delta, delta, duration, tweenFunc, onDone, remainder)
-    }
-    modTo(dest, duration, tweenFunc, onDone, remainder) {
-        return this.mod(dest - this.dest, duration, tweenFunc, onDone, remainder)
-    }
-    modNow(delta) {
-        this.base += delta
-        this.curr += delta
-        this.dest += delta
-    }
-    modToNow(dest) {
-        this.modNow(dest - this.dest)
-    }
-    setTo(dest) {
-        // TODO: compare this.dest and current number of tweens attached to this interpoland
-        // for early-out
-        this.base = dest
-        this.curr = dest
-        this.dest = dest
-        this.tweens.removeInterpolands([this]) // TODO
-        this.tweens.changed() // TODO: without early-out, this is getting called every frame
-    }
-    setToInitial(dest) {
-        this.base = dest
-        this.curr = dest
-        this.dest = dest
-    }
-    mod_noDelta(amplitude, duration, tweenFunc, onDone, remainder) {
-        return this.tweens.make(this, 0, amplitude, duration, tweenFunc, onDone, remainder)
-    }
-    remove() {
-        this.removed = true
-    }
-}
-
-export default class Interpolands {
-    constructor(avatar) {
-        this.pool = new ObjectPool(Interpoland)
-        this.tweens = new Tweens(avatar)
-    }
-    make(value) {
-        return this.pool.make(this.tweens, value)
-    }
-    update(dt) {
-        var shiftBy = 0
-        for(var i = 0; i < this.pool.aliveCount; i += 1) {
-            var interpoland = this.pool.alive[i]
-            
-            if(interpoland.removed) {
-                this.pool.dead[this.pool.deadCount] = interpoland
-                this.pool.deadCount += 1
-                shiftBy += 1
-            }
-            else {
-                if(shiftBy && i - shiftBy >= 0)
-                    this.pool.alive[i - shiftBy] = interpoland
-                interpoland.curr = interpoland.base
-            }
-        }
-        this.pool.aliveCount -= shiftBy
-        this.tweens.update(dt)
-    }
-    clear() {
-        this.pool.clear()
-        this.tweens.clear()
-    }
-}
+import {filter, remove} from './array'
 
 
 function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) {
@@ -96,103 +14,128 @@ function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) 
 }
 
 
-class Tweens extends ObjectPool {
+class Interpoland {
+    constructor(container, value) {
+        value = value || 0
+        this.curr = value
+        this.base = value
+        this.dest = value
+        this.container = container
+        this.tweenCount = 0
+    }
+    
+    mod(delta, duration, tweenFunc, onDone, remainder) {
+        if(!delta && !onDone)
+            return
+        this.dest += delta
+        return this.container.makeTween(this, delta, delta, duration, tweenFunc, onDone, remainder)
+    }
+    modTo(dest, duration, tweenFunc, onDone, remainder) {
+        return this.mod(dest - this.dest, duration, tweenFunc, onDone, remainder)
+    }
+    modNow(delta) {
+        this.base += delta
+        this.curr += delta
+        this.dest += delta
+    }
+    modToNow(dest) {
+        this.modNow(dest - this.dest)
+    }
+    setTo(dest) {
+        if(this.base === dest && this.tweenCount === 0)
+            return
+        this.base = dest
+        this.curr = dest
+        this.dest = dest
+        this.container.removeTweens(this)
+    }
+    setToInitial(dest) {
+        this.base = dest
+        this.curr = dest
+        this.dest = dest
+    }
+    mod_noDelta(amplitude, duration, tweenFunc, onDone, remainder) {
+        return this.container.makeTween(this, 0, amplitude, duration, tweenFunc, onDone, remainder)
+    }
+    remove() {
+        this.container.remove(this)
+    }
+}
+
+
+export default class Interpolands {
     constructor(avatar) {
-        super(Tween)
+        this.tweens = []
         this.ending = []
+        this.interpolands = []
         this.remainder = 0
         this.avatar = avatar
     }
     
-    make(interpoland, dest, amplitude, duration, func, onDone, remainder) {
-        if(is.nullish(remainder))
-            remainder = this.remainder
-        const result = super.make(interpoland, dest, amplitude, duration, func, onDone, remainder)
-        this.changed()
+    make(value) {
+        const result = new Interpoland(this, value)
+        this.interpolands.push(result)
         return result
     }
     
-    changed() {
-        this.avatar.changed()
+    makeTween(interpoland, dest, amplitude, duration, func, onDone, remainder) {
+        if(is.nullish(remainder))
+            remainder = this.remainder
+        const result = new Tween(interpoland, dest, amplitude, duration, func, onDone, remainder)
+        this.tweens.push(result)
+        this.changed()
+        interpoland.tweenCount += 1
+        return result
     }
     
-    removeInterpolands(removals, count) {
-        if(count === 0)
-            return
-        count = count || removals.length
-        // sanity(count <= removals.length)
-        
-        var shiftBy = 0
-        for(var i = 0; i < this.aliveCount; i += 1) {
-            var tween = this.alive[i]
-            
-            var deleting = false
-            for(var j = 0; j < count; j += 1) {
-                if(removals[j] === tween.interpoland) {
-                    deleting = true
-                    break
-                }
-            }
-            
-            if(deleting) {
-                this.dead[this.deadCount] = tween
-                this.deadCount += 1
-                shiftBy += 1
-            }
-            else if(shiftBy && i - shiftBy >= 0)
-                this.alive[i - shiftBy] = tween
-        }
-        this.aliveCount -= shiftBy
+    remove(interpoland) {
+        remove(this.interpolands, interpoland)
+        this.removeTweens(interpoland)
+    }
+    
+    removeTweens(interpoland) {
+        filter(this.tweens, (tween) => tween.interpoland !== interpoland)
+        interpoland.tweenCount = 0
+        this.changed()
     }
     
     update(dt) {
-        var endingCount = 0
-        var shiftBy = 0
-        for(var i = 0; i < this.aliveCount; i += 1) {
-            var tween = this.alive[i]
+        for(var i = 0; i < this.interpolands.length; i += 1)
+            this.interpolands[i].curr = this.interpolands[i].base
+        
+        filter(this.tweens, (tween) => {
             tween.elapsed += dt
             
-            if(tween.interpoland.removed) {
-                shiftBy += 1
-                
-                this.dead[this.deadCount] = tween
-                this.deadCount += 1
-            }
-            else if(tween.elapsed >= tween.duration) {
-                shiftBy += 1
-                
-                if(tween.onDone) {
-                    this.ending[endingCount] = tween
-                    endingCount += 1
-                }
-                else {
-                    this.dead[this.deadCount] = tween
-                    this.deadCount += 1
-                }
-                
+            if(tween.elapsed >= tween.duration) {
+                if(tween.onDone)
+                    this.ending.push(tween)
                 tween.interpoland.curr += tween.dest
                 tween.interpoland.base += tween.dest
+                tween.interpoland.tweenCount -= 1
+                return false
             }
-            else {
-                tween.interpoland.curr += tween.amplitude * tween.func(tween.elapsed / tween.duration)
-
-                if(shiftBy && i - shiftBy >= 0)
-                    this.alive[i - shiftBy] = tween
-            }
-        }
-        this.aliveCount -= shiftBy
-        for(var i = 0; i < endingCount; i += 1) {
-            var tween = this.ending[i]
             
+            tween.interpoland.curr += tween.amplitude *
+                                      tween.func.call(undefined, tween.elapsed / tween.duration)
+            return true
+        })
+        
+        for(var i = 0; i < this.ending.length; i += 1) {
+            const tween = this.ending[i]
             this.remainder = tween.elapsed - tween.duration
-            tween.onDone(this.remainder)
-            tween.onDone = undefined
-            this.dead[this.deadCount] = tween
-            this.deadCount += 1
+            tween.onDone.call(undefined, this.remainder)
         }
+        this.ending.length = 0
         this.remainder = 0
         
-        if(this.aliveCount)
+        if(this.tweens.length)
             this.changed()
+    }
+    clear() {
+        this.interpolands.length = 0
+        this.tweens.length = 0
+    }
+    changed() {
+        this.avatar.changed()
     }
 }

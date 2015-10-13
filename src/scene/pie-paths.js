@@ -9,7 +9,8 @@ export default class PiePaths extends Avatar {
     }
     
     draw(context) {
-        for(let path of this._paths) {
+        for(var i = 0; i < this._paths.length; i += 1) {
+            const path = this._paths[i]
             if(!path.scale.curr)
                 continue
             
@@ -41,7 +42,7 @@ export default class PiePaths extends Avatar {
     }
     
     subremove() {
-        for(let path of this._paths)
-            path.scale.remove()
+        for(var i = 0; i < this._paths.length; i += 1)
+            this._paths[i].scale.remove()
     }
 }

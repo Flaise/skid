@@ -6,50 +6,59 @@ import * as tween from './tween'
 suite('Interpoland')
 
 let interpolands
+let avatar
 beforeEach(function() {
-    const avatar = {changed: function() {}}
+    avatar = {changed: sinon.spy()}
     interpolands = new Interpolands(avatar)
     
-    assert(interpolands.pool.aliveCount === 0)
-    assert(interpolands.tweens.aliveCount === 0)
+    assert(interpolands.interpolands.length === 0)
+    assert(interpolands.tweens.length === 0)
 })
-// afterEach(function() {
-//     assert(!interpolands._iterating)
-//     assert(!interpolands.tweens._iterating)
-// })
-    
-test('recycles destroyed interpolands', function() {
-    var inter = interpolands.make(0)
-    assert(inter.curr === 0)
-    assert(interpolands.pool.aliveCount === 1)
-    assert(interpolands.pool.deadCount === 0)
-    
-    inter.remove()
-    interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 0)
-    assert(interpolands.pool.deadCount === 1)
-    
-    var inter2 = interpolands.make(5)
-    assert(inter2 === inter)
-    assert(inter2.curr === 5)
-    assert(interpolands.pool.aliveCount === 1)
-    assert(interpolands.pool.deadCount === 0)
+
+test('calls changed() when modifying interpoland', () => {
+    const a = interpolands.make(1)
+    a.setTo(2)
+    assert(avatar.changed.callCount === 1)
+})
+
+test('does not call changed() when performing no-op assignment', () => {
+    const a = interpolands.make(1)
+    a.setTo(1)
+    assert(avatar.changed.callCount === 0)
+})
+
+test('does not call changed() when performing no-op tween', () => {
+    const a = interpolands.make(1)
+    a.modTo(1, 1, tween.linear)
+    assert(avatar.changed.callCount === 0)
+})
+
+test('calls changed() when performing no-op tween with onDone trigger', () => {
+    const a = interpolands.make(1)
+    a.modTo(1, 1, tween.linear, () => {})
+    assert(avatar.changed.callCount === 1)
+})
+
+test('calls changed() when destroying tweens with no-op assignment', () => {
+    const a = interpolands.make(1)
+    a.modTo(2, 1, tween.linear)
+    a.modTo(1, 1, tween.linear)
+    avatar.changed.reset()
+    assert(a.dest === 1)
+    a.setTo(1)
+    assert(a.dest === 1)
+    assert(avatar.changed.callCount === 1)
 })
 
 test('recycles second of 3', function() {
     var a = interpolands.make(1)
     var b = interpolands.make(2)
     var c = interpolands.make(3)
-    assert(interpolands.pool.aliveCount === 3)
-    assert(interpolands.pool.deadCount === 0)
+    assert(interpolands.interpolands.length === 3)
     
     b.remove()
     interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 2)
-    assert(interpolands.pool.deadCount === 1)
-    assert(interpolands.pool.alive[0] === a)
-    assert(interpolands.pool.alive[1] === c)
-    assert(interpolands.pool.dead[0] === b)
+    assert(interpolands.interpolands.length === 2)
     
     assert(a.curr === 1)
     assert(a.dest === 1)
@@ -63,19 +72,12 @@ test('recycles second and third of 5', function() {
     var c = interpolands.make(3)
     var d = interpolands.make(4)
     var e = interpolands.make(5)
-    assert(interpolands.pool.aliveCount === 5)
-    assert(interpolands.pool.deadCount === 0)
+    assert(interpolands.interpolands.length === 5)
     
     b.remove()
     c.remove()
     interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 3)
-    assert(interpolands.pool.deadCount === 2)
-    assert(interpolands.pool.alive[0] === a)
-    assert(interpolands.pool.alive[1] === d)
-    assert(interpolands.pool.alive[2] === e)
-    assert(interpolands.pool.dead[0] === b)
-    assert(interpolands.pool.dead[1] === c)
+    assert(interpolands.interpolands.length === 3)
     
     assert(a.curr === 1)
     assert(a.dest === 1)
@@ -90,14 +92,12 @@ test('recycles tween of destroyed interpolands', function() {
     
     var inter = interpolands.make(0)
     inter.mod(2, 1, tween.linear, onDone)
-    assert(interpolands.tweens.aliveCount === 1)
-    assert(interpolands.tweens.deadCount === 0)
+    assert(interpolands.tweens.length === 1)
     assert(onDone.callCount === 0)
     
     inter.remove()
     interpolands.update(0)
-    assert(interpolands.tweens.aliveCount === 0)
-    assert(interpolands.tweens.deadCount === 1)
+    assert(interpolands.tweens.length === 0)
     
     inter = interpolands.make(9)
     var tw = inter.modTo(7, 1, tween.linear)
@@ -112,7 +112,7 @@ test('interpolates linearly', function() {
     var onDone = sinon.spy()
     
     var val = interpolands.make(1)
-    assert(interpolands.pool.aliveCount === 1)
+    assert(interpolands.interpolands.length === 1)
     assert(val.curr === 1)
     
     val.mod(2, 1, tween.power_fac(1), onDone)
@@ -146,16 +146,14 @@ test('supports concurrent interpolations', function() {
     assert(onDoneB.callCount === 0)
     assert(inter.curr === 5)
     assert(inter.dest === -2)
-    assert(interpolands.tweens.aliveCount === 2)
-    assert(interpolands.tweens.deadCount === 0)
+    assert(interpolands.tweens.length === 2)
     
     interpolands.update(1)
     assert(onDoneA.called)
     assert(onDoneB.callCount === 0)
     assert(inter.curr === -1)
     assert(inter.dest === -2)
-    assert(interpolands.tweens.aliveCount === 1)
-    assert(interpolands.tweens.deadCount === 1)
+    assert(interpolands.tweens.length === 1)
     
     onDoneA.reset()
     interpolands.update(1)
@@ -163,8 +161,7 @@ test('supports concurrent interpolations', function() {
     assert(onDoneB.called)
     assert(inter.curr === -2)
     assert(inter.dest === -2)
-    assert(interpolands.tweens.aliveCount === 0)
-    assert(interpolands.tweens.deadCount === 2)
+    assert(interpolands.tweens.length === 0)
 })
 
 test('can halt interpolation and snap to a value', function() {
@@ -172,15 +169,13 @@ test('can halt interpolation and snap to a value', function() {
     
     var inter = interpolands.make(8)
     inter.mod(2, 1, tween.power_fac(1), onDone)
-    assert(interpolands.tweens.aliveCount === 1)
-    assert(interpolands.tweens.deadCount === 0)
+    assert(interpolands.tweens.length === 1)
     assert(onDone.callCount === 0)
     assert(inter.curr === 8)
     assert(inter.dest === 10)
     
     inter.setTo(5)
-    assert(interpolands.tweens.aliveCount === 0)
-    assert(interpolands.tweens.deadCount === 1)
+    assert(interpolands.tweens.length === 0)
     assert(onDone.callCount === 0)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
@@ -190,7 +185,7 @@ test('can snap value without halting interpolation', function() {
     var inter = interpolands.make(9)
     inter.mod(5, 1, tween.power_fac(1))
     inter.modNow(1)
-    assert(interpolands.tweens.aliveCount === 1)
+    assert(interpolands.tweens.length === 1)
     assert(inter.curr === 10)
     assert(inter.dest === 15)
     inter.modToNow(-1)
@@ -207,28 +202,28 @@ test('interpolates to a destination', function() {
     assert(onDoneA.callCount === 0)
     assert(inter.curr === -4)
     assert(inter.dest === -2)
-    assert(interpolands.tweens.aliveCount === 1)
+    assert(interpolands.tweens.length === 1)
     
     inter.modTo(2, 1, tween.power_fac(1), onDoneB)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.callCount === 0)
     assert(inter.curr === -4)
     assert(inter.dest === 2)
-    assert(interpolands.tweens.aliveCount === 2)
+    assert(interpolands.tweens.length === 2)
     
     interpolands.update(.5)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.callCount === 0)
     assert(inter.curr === -1)
     assert(inter.dest === 2)
-    assert(interpolands.tweens.aliveCount === 2)
+    assert(interpolands.tweens.length === 2)
     
     interpolands.update(.5)
     assert(onDoneA.called)
     assert(onDoneB.called)
     assert(inter.curr === 2)
     assert(inter.dest === 2)
-    assert(interpolands.tweens.aliveCount === 0)
+    assert(interpolands.tweens.length === 0)
 })
 
 test('maintains precision when chaining interpolations', function() {
@@ -318,7 +313,6 @@ test('interpolates with no net change', function() {
     interpolands.update(250)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
-    assert(interpolands.tweens.deadCount === 1)
     
     interpolands.update(100)
     assert(inter.curr === 5)
@@ -336,114 +330,14 @@ test('removes one interpoland without disturbing tweens of others', function() {
     
     assert(interA.dest === 3)
     assert(interB.dest === 8)
-    assert(interpolands.pool.aliveCount === 2)
-    assert(interpolands.pool.alive[0] === interA)
-    assert(interpolands.pool.alive[1] === interB)
-    assert(interpolands.tweens.aliveCount === 5)
-    assert(interpolands.tweens.alive[0] === ta)
-    assert(interpolands.tweens.alive[1] === tb)
-    assert(interpolands.tweens.alive[2] === tc)
-    assert(interpolands.tweens.alive[3] === td)
-    assert(interpolands.tweens.alive[4] === te)
+    assert(interpolands.interpolands.length === 2)
+    assert(interpolands.tweens.length === 5)
     
     interA.remove()
     interpolands.update(0)
     assert(interB.dest === 8)
-    assert(interpolands.pool.aliveCount === 1)
-    assert(interpolands.pool.alive[0] === interB)
-    assert(interpolands.pool.dead[0] === interA)
-    assert(interpolands.tweens.aliveCount === 2)
-    assert(interpolands.tweens.dead[0] === ta)
-    assert(interpolands.tweens.dead[1] === tb)
-    assert(interpolands.tweens.dead[2] === td)
-    assert(interpolands.tweens.alive[0] === tc)
-    assert(interpolands.tweens.alive[1] === te)
-})
-
-test('handles multiple creations and removals', function() {
-    var a = interpolands.make(1)
-    var b = interpolands.make(2)
-    var c = interpolands.make(3)
-    var d = interpolands.make(4)
-    var e = interpolands.make(5)
-    
-    d.remove()
-    interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 4)
-    assert(interpolands.pool.dead[0] === d)
-    
-    assert(interpolands.make(6) === d)
-    assert(interpolands.pool.alive[3] === e)
-    assert(interpolands.pool.alive[4] === d)
-    assert(d.curr === 6)
-    
-    a.remove()
-    interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 4)
-    assert(interpolands.pool.alive[0] === b)
-    assert(interpolands.pool.alive[1] === c)
-    assert(interpolands.pool.alive[2] === e)
-    assert(interpolands.pool.alive[3] === d)
-    assert(interpolands.pool.dead[0] === a)
-    
-    assert(interpolands.make(7) === a)
-    assert(interpolands.pool.aliveCount === 5)
-    assert(interpolands.pool.alive[4] === a)
-    assert(a.curr === 7)
-    
-    c.remove()
-    interpolands.update(0)
-    b.remove()
-    interpolands.update(0)
-    e.remove()
-    interpolands.update(0)
-    assert(interpolands.pool.aliveCount === 2)
-    assert(interpolands.pool.alive[0] === d)
-    assert(interpolands.pool.alive[1] === a)
-    assert(interpolands.pool.dead[0] === c)
-    assert(interpolands.pool.dead[1] === b)
-    assert(interpolands.pool.dead[2] === e)
-    
-    assert(interpolands.make(8) === e)
-    assert(e.curr === 8)
-    assert(interpolands.make(9) === b)
-    assert(b.curr === 9)
-    assert(interpolands.make(10) === c)
-    assert(c.curr === 10)
-    
-    var f = interpolands.make(11)
-    assert(interpolands.pool.aliveCount === 6)
-    assert(interpolands.pool.alive[0] === d)
-    assert(interpolands.pool.alive[1] === a)
-    assert(interpolands.pool.alive[2] === e)
-    assert(interpolands.pool.alive[3] === b)
-    assert(interpolands.pool.alive[4] === c)
-    assert(interpolands.pool.alive[5] === f)
-})
-
-test('will not reuse an interpoland that is already alive', function() {
-    for(var i = 0; i < 30; i += 1)
-        interpolands.make(0)
-    for(var i = 0; i < interpolands.pool.aliveCount; i += 6)
-        interpolands.pool.alive[i].remove()
-    interpolands.update(0)
-    for(var i = 0; i < 30; i += 1)
-        interpolands.make(0)
-    interpolands.pool.alive[0].remove()
-    interpolands.pool.alive[1].remove()
-    interpolands.pool.alive[2].remove()
-    interpolands.update(0)
-    for(var i = 0; i < 90; i += 1)
-        interpolands.make(0)
-    for(var i = 0; i < 30; i += 1) {
-        interpolands.pool.alive[40].remove()
-        interpolands.update(0)
-    }
-    interpolands.make(0)
-    
-    for(var i = 0; i < interpolands.pool.aliveCount - 1; i += 1)
-        for(var j = i + 1; j < interpolands.pool.aliveCount; j += 1)
-            assert(interpolands.pool.alive[i] !== interpolands.pool.alive[j])
+    assert(interpolands.interpolands.length === 1)
+    assert(interpolands.tweens.length === 2)
 })
 
 test('will not update tweens that are added during update', function() {
@@ -459,8 +353,7 @@ test('will not update tweens that are added during update', function() {
     assert(onDone.calledOnce)
     assert(inter.curr === 1)
     assert(inter.dest === 0)
-    assert(inter.tweens.aliveCount === 1)
-    assert(inter.tweens.alive[0] === tweenB)
+    assert(interpolands.tweens.length === 1)
     assert(tweenB.dest === -1)
     assert(tweenB.duration === 50)
     assert(!tweenB.onDone)

@@ -131,10 +131,6 @@ export default class Interpolands {
         if(this.tweens.length)
             this.changed()
     }
-    clear() {
-        this.interpolands.length = 0
-        this.tweens.length = 0
-    }
     changed() {
         this.avatar.changed()
     }

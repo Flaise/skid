@@ -1,5 +1,5 @@
-export function zero(x) { return 0 }
-export function one(x) { return 1 }
+export function zero(x) { return Math.floor(x) }
+export function one(x) { return Math.ceil(x) }
 export function linear(x) { return x }
 export function power_fac(exp) {
     if(exp === 1)
@@ -16,14 +16,3 @@ export function sine_3(x) { return sine(sine(sine(x))) }
 export function cosine(x) { return (1 - Math.cos(x * Math.PI)) / 2 }
 export function circle(x) { return Math.sqrt(1 - Math.pow(x - 1, 2)) }
 export function reverseSine(x) { return 1 - Math.sin((x + 1) * Math.PI / 2) }
-
-export function noDelta_sine_fac(cycles) {
-    if(Math.floor(cycles * 2) !== cycles * 2)
-        console.warn('number of cycles must be multiple of .5')
-    return (x) => Math.sin(x * Math.PI * 2 * cycles)
-}
-
-export function noDelta_quake_fac(cycles) {
-    const subFunc = noDelta_sine_fac(cycles)
-    return (x) => (1 - x) * subFunc(x)
-}

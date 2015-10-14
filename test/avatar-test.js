@@ -16,7 +16,7 @@ beforeEach(function() {
         }
     }
     avatars = new Viewport(canvas)
-    avatars.changed = () => {} // disable autoredraw
+    sinon.stub(avatars, 'changed')
 })
 
 test('does not sort new avatars', function() {

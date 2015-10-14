@@ -18,7 +18,7 @@ beforeEach(function() {
 test('calls changed() when modifying interpoland', () => {
     const a = interpolands.make(1)
     a.setTo(2)
-    assert(avatar.changed.callCount === 1)
+    assert(avatar.changed.called)
 })
 
 test('does not call changed() when performing no-op assignment', () => {

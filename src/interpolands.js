@@ -47,12 +47,10 @@ class Interpoland {
         this.base = dest
         this.curr = dest
         this.dest = dest
-        this.container.removeTweens(this)
-    }
-    setToInitial(dest) {
-        this.base = dest
-        this.curr = dest
-        this.dest = dest
+        if(this.tweenCount === 0)
+            this.container.changed()
+        else
+            this.container.removeTweens(this)
     }
     mod_noDelta(amplitude, duration, tweenFunc, onDone, remainder) {
         return this.container.makeTween(this, 0, amplitude, duration, tweenFunc, onDone, remainder)

@@ -14,10 +14,6 @@ export default class EventDispatcher {
             // TODO: until()
         }
     }
-    listen_pc(callback) {
-        callback()
-        return this.listen(callback)
-    }
     listenOnce(callback) {
         if(!callback.apply)
             throw new Error()
@@ -51,15 +47,6 @@ export default class EventDispatcher {
         const registrationA = this.listen((...args) => result.proc(...args))
         const registrationB = other.listen((...args) => result.proc(...args))
 
-        return result
-    }
-    
-    static any(...dispatchers) {
-        if(!dispatchers.length)
-            return undefined
-        let result = dispatchers[0]
-        for(let i = 1; i < dispatchers.length; i += 1)
-            result = result.aggregate(dispatchers[i])
         return result
     }
 }

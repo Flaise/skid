@@ -1,4 +1,4 @@
-import {default as Vec2, rotatedXYTurns} from './vector2'
+import {Vec2, rotatedXYTurns} from './vector2'
 
 
 export function wrap(a) {

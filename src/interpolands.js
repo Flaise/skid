@@ -98,7 +98,7 @@ export default class Interpolands {
     }
     
     update(dt) {
-        for(var i = 0; i < this.interpolands.length; i += 1)
+        for(let i = 0; i < this.interpolands.length; i += 1)
             this.interpolands[i].curr = this.interpolands[i].base
         
         filter(this.tweens, (tween) => {
@@ -118,7 +118,7 @@ export default class Interpolands {
             return true
         })
         
-        for(var i = 0; i < this.ending.length; i += 1) {
+        for(let i = 0; i < this.ending.length; i += 1) {
             const tween = this.ending[i]
             this.remainder = tween.elapsed - tween.duration
             tween.onDone.call(undefined, this.remainder)

@@ -1,7 +1,7 @@
 
 /*
  * Like Array#filter except modifies the array instead of consuming the resources to create a new
- * one. Return `true` from the predicate to keep the element.
+ * one. Return `true` from the predicate to keep an element passed to it.
  */
 export function filter(arr, predicate) {
     let shiftBy = 0

@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import {filter, insertSorted, remove, copy} from './array'
+import {filter, insertSorted, remove, copy} from '../src/array'
 
 suite('array')
 
@@ -40,17 +40,17 @@ test('filters everything', () => {
     assert.deepEqual(arr, [])
 })
 
-test('fiters one element', () => {
+test('filters one element', () => {
     filter(arr, (a) => a !== 1)
     assert.deepEqual(arr, [0, 2, 3, 4, 5, 6, 7, 8, 9])
 })
 
-test('fiters two disjoint elements', () => {
+test('filters two disjoint elements', () => {
     filter(arr, (a) => a !== 1 && a !== 4)
     assert.deepEqual(arr, [0, 2, 3, 5, 6, 7, 8, 9])
 })
 
-test('fiters two adjacent elements', () => {
+test('filters two adjacent elements', () => {
     filter(arr, (a) => a !== 1 && a !== 2)
     assert.deepEqual(arr, [0, 3, 4, 5, 6, 7, 8, 9])
 })

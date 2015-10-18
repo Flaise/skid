@@ -52,11 +52,6 @@ export default class Atlas {
         return !!this.layoutOf(name)
     }
     
-    // changed() {
-    //     for(let key of Object.keys(this._icons))
-    //         this._icons[key].changed()
-    // }
-    
     loadImage(source) {
         this.image = loadImage(source)
     }

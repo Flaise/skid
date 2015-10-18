@@ -22,7 +22,7 @@ export function filter(arr, predicate) {
  * and a positive number if it comes after.
  */
 export function insertSorted(arr, element, compare, context) {
-    for(var i = 0; i < arr.length; i += 1) {
+    for(let i = 0; i < arr.length; i += 1) {
         if(compare.call(context, element, arr[i]) >= 0) {
             arr.splice(i, 0, element)
             return

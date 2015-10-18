@@ -2,11 +2,11 @@ import is from './is'
 import {filter, remove} from './array'
 
 
-function Tween(interpoland, dest, amplitude, duration, func, onDone, remainder) {
+function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
     this.interpoland = interpoland
     this.curr = 0
     this.elapsed = remainder
-    this.dest = dest
+    this.magnitude = magnitude
     this.duration = duration
     this.func = func
     this.onDone = onDone
@@ -76,10 +76,10 @@ export default class Interpolands {
         return result
     }
     
-    makeTween(interpoland, dest, amplitude, duration, func, onDone, remainder) {
+    makeTween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
         if(is.nullish(remainder))
             remainder = this.remainder
-        const result = new Tween(interpoland, dest, amplitude, duration, func, onDone, remainder)
+        const result = new Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder)
         this.tweens.push(result)
         this.changed()
         interpoland.tweenCount += 1
@@ -107,8 +107,8 @@ export default class Interpolands {
             if(tween.elapsed >= tween.duration) {
                 if(tween.onDone)
                     this.ending.push(tween)
-                tween.interpoland.curr += tween.dest
-                tween.interpoland.base += tween.dest
+                tween.interpoland.curr += tween.magnitude
+                tween.interpoland.base += tween.magnitude
                 tween.interpoland.tweenCount -= 1
                 return false
             }

@@ -41,6 +41,10 @@ all.iterable = function(a) {
     return !!(a != null && a[Symbol.iterator])
 }
 
+all.generatorFunction = function(a) {
+    return a != null && a.constructor.name === 'GeneratorFunction'
+}
+
 function composeOr(funcA, funcB) {
     return addCompositorsTo((a) => funcA(a) || funcB(a))
 }

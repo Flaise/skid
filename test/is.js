@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import is from './is'
+import is from '../src/is'
 
 suite('is')
 
@@ -21,13 +21,25 @@ const configuration = [
     [Infinity, 'defined'],
     [-Infinity, 'defined'],
     [null, 'nullish'],
-    [undefined, 'nullish']
+    [undefined, 'nullish'],
+    [() => {}, 'defined', 'function'],
+    [function() {}, 'defined', 'function'],
+    [function*() {}, 'defined', 'function', 'generatorFunction']
 ]
 
 for(let entry of configuration) {
     const item = entry[0]
     const methods = entry.slice(1)
-    test('' + item, () => {
+    
+    let title
+    if(item !== item || item === Infinity || item === -Infinity)
+        title = '' + item
+    else if(typeof item === 'function')
+        title = '<function>'
+    else
+        title = JSON.stringify(item)
+    
+    test(title, () => {
         for(let method of methods) {
             assert(is[method](item) === true)
             

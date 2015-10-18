@@ -1,7 +1,7 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Interpolands from './interpolands'
-import * as tween from './tween'
+import Interpolands from '../src/interpolands'
+import * as tween from '../src/tween'
 
 suite('Interpoland')
 
@@ -354,7 +354,7 @@ test('will not update tweens that are added during update', function() {
     assert(inter.curr === 1)
     assert(inter.dest === 0)
     assert(interpolands.tweens.length === 1)
-    assert(tweenB.dest === -1)
+    assert(tweenB.magnitude === -1)
     assert(tweenB.duration === 50)
     assert(!tweenB.onDone)
     assert(tweenB.func === tween.circle)

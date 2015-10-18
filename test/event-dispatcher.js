@@ -1,6 +1,6 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import EventDispatcher from './event-dispatcher'
+import EventDispatcher from '../src/event-dispatcher'
 
 suite('EventDispatcher')
 

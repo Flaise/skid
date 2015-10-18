@@ -1,8 +1,8 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Interpolands from './interpolands'
-import Translation from './scene/translation'
-import Viewport from './scene/viewport'
+import Interpolands from '../src/interpolands'
+import Translation from '../src/scene/translation'
+import Viewport from '../src/scene/viewport'
 
 suite('Avatar')
 
@@ -31,6 +31,9 @@ test('does not sort new avatars', function() {
     assert(a.layer === 10)
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
+    
+    // yield browser.url('http://www.google.com')
+    // assert((yield browser.getTitle()) === 'Google')
 })
 
 test('sorts avatars ascendingly', function() {

@@ -71,8 +71,6 @@ function compute(trimmedName, untrimmedWidth, untrimmedHeight,
     
     return layout
 }
-if(typeof exports !== 'undefined')
-    exports.compute = compute
 
 function skid(allSprites) {
     try {

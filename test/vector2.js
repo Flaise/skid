@@ -1,5 +1,5 @@
-import {distanceXY, distance4XY, distance8XY} from './vector2'
-import * as vector2 from './vector2'
+import {distanceXY, distance4XY, distance8XY} from '../src/vector2'
+import * as vector2 from '../src/vector2'
 import assert from 'power-assert'
 
 suite('vector')

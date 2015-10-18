@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import * as tween from './tween'
+import * as tween from '../src/tween'
 
 suite('tween')
 

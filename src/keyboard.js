@@ -3,6 +3,11 @@ import is from './is'
 
 const states = Object.create(null)
 
+export function reset() {
+    for(let k of Object.keys(states))
+        delete states[k]
+}
+
 window.addEventListener('keydown', (e) => {
     const type = window.document.activeElement.type
     if(type === 'textarea' || type === 'text' || type === 'password' || type === 'number')

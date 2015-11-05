@@ -106,16 +106,11 @@ export function borderIcons(
     concaveNW, concaveNE,
     concaveSW, concaveSE
 ) {
-    if(inverse) {
-        // TODO: Does this make sense or is the atlas mistructured?
-        ;[concaveNW, concaveNE, concaveSW, concaveSE] = [concaveSE, concaveSW, concaveNE, concaveNW]
-    }
-    
     return {
-        nw: selected(-1, -1, observedTypes, inverse, nw, concaveNW, n, w, c),
-        ne: selected(1, -1, observedTypes, inverse, ne, concaveNE, n, e, c),
-        sw: selected(-1, 1, observedTypes, inverse, sw, concaveSW, s, w, c),
-        se: selected(1, 1, observedTypes, inverse, se, concaveSE, s, e, c)
+        nw: selected(-1, -1, observedTypes, inverse, nw, concaveSE, n, w, c),
+        ne: selected(1, -1, observedTypes, inverse, ne, concaveSW, n, e, c),
+        sw: selected(-1, 1, observedTypes, inverse, sw, concaveNE, s, w, c),
+        se: selected(1, 1, observedTypes, inverse, se, concaveNW, s, e, c)
     }
 }
 

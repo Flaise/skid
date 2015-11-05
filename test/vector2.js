@@ -1,5 +1,4 @@
 import {distanceXY, distance4XY, distance8XY} from '../src/vector2'
-import * as vector2 from '../src/vector2'
 import assert from 'power-assert'
 
 suite('vector')
@@ -33,13 +32,4 @@ test('distance8XY', () => {
     assert(distance8XY(-1, 1, 0, 0) === 1)
     assert(distance8XY(1, 0, 0, 1) === 1)
     assert(distance8XY(1, 0, 0, 2) === 2)
-})
-
-test('zero', () => {
-    let zero = vector2.zero()
-    assert.deepEqual(zero, {x: 0, y: 0})
-    zero.x = 9
-    
-    zero = vector2.zero()
-    assert.deepEqual(zero, {x: 0, y: 0})
 })

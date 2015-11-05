@@ -13,10 +13,7 @@ export class Vec2 {
     }
 
     sum(other) {
-        if(isNaN(other))
-            return this.sumXY(other.x, other.y)
-        else
-            return this.sum(toVector(other))
+        return this.sumXY(other.x, other.y)
     }
     sumXY(x, y) {
         return new Vec2(this.x + x, this.y + y)

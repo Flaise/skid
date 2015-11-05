@@ -40,8 +40,7 @@ module.exports = function(config) {
         },
         coverageReporter: {
             reporters: [
-                {type: 'text-summary', file: 'summary.txt'},
-                {type: 'text'},
+                {type: 'text-summary'},
                 {type: 'html', subdir: 'html'}
             ],
             dir: 'reports/coverage'

@@ -2,14 +2,18 @@ let func
 if(typeof window === 'undefined')
     // for unit testing in Node
     func = (callback => setTimeout(callback, 1000 / 60))
-else
+else {
     func = (
         window.requestAnimationFrame
         || window.webkitRequestAnimationFrame
         || window.mozRequestAnimationFrame
         || window.oRequestAnimationFrame
         || window.msRequestAnimationFrame
-        || (callback => window.setTimeout(callback, 1000 / 60))
     )
+    if(func)
+        func = func.bind(window)
+    else
+        func = (callback => window.setTimeout(callback, 1000 / 60))
+}
 
 export default func

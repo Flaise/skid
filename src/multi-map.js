@@ -15,10 +15,10 @@ export default class MultiMap {
         this.get(key).push(value)
     }
     removeLast(key, value) {
-        let arr = this.data[key]
+        const arr = this.data[key]
         if(!arr)
             return
-        let index = arr.lastIndexOf(value)
+        const index = arr.lastIndexOf(value)
         if(index === -1)
             return
         if(arr.length === 1)
@@ -27,10 +27,10 @@ export default class MultiMap {
             arr.splice(index, 1)
     }
     removeFirst(key, value) {
-        let arr = this.data[key]
+        const arr = this.data[key]
         if(!arr)
             return
-        let index = arr.firstIndexOf(value)
+        const index = arr.firstIndexOf(value)
         if(index === -1)
             return
         if(arr.length === 1)
@@ -42,7 +42,7 @@ export default class MultiMap {
         this.removeLast(key, value)
     }
     count(key) {
-        let arr = this.data[key]
+        const arr = this.data[key]
         return arr? arr.length: 0
     }
 
@@ -55,17 +55,17 @@ export default class MultiMap {
 
     forEachMapping(callback) {
         Object.keys(this.data).forEach(key => {
-            let arr = this.data[key]
+            const arr = this.data[key]
             if(arr.length > 0)
                 callback(key, arr)
         })
     }
 
     *[Symbol.iterator]() {
-        for(let key in this.data) {
-            let arr = this.data[key]
+        for(const key in this.data) {
+            const arr = this.data[key]
             if(arr.length > 0)
-                for(let element of arr)
+                for(const element of arr)
                     yield element
         }
     }

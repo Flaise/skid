@@ -12,11 +12,6 @@ test('quake', () => {
 test('sine', () => {
     const sine1 = sine(1)
     assert(sine1(0) === 0)
-    assert(sine1(1) === 0)
-})
-
-test('no incomplete cycles', () => {
-    assert.throws(() => {
-        sine(.9)
-    })
+    assert(Math.abs(sine1(.5)) < .0001)
+    assert(Math.abs(sine1(1)) < .0001)
 })

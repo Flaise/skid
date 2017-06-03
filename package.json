@@ -33,7 +33,7 @@
     "graph"
   ],
   "scripts": {
-    "prepublish": "npm prune && npm run test",
+    "prepublish": "npm prune && npm run test && npm run build",
     "test": "npm run headless -- karma start --single-run",
     "test-watch": "npm run headless -- karma start",
     "build": "gobble build -f lib",

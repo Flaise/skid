@@ -7,7 +7,7 @@ export default function loadImage(source, next) {
     }
     image.onerror = () => {
         image.onload = image.onerror = undefined
-        if (next) next(new Error('Unable to load image.'))
+        if (next) next(new Error(`Unable to load image ${source}`))
     }
     image.src = source
     return image

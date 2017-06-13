@@ -16,7 +16,7 @@ export default class Icon {
             this._avatars.splice(index, 1)
     }
     changed() {
-        for(let avatar of this._avatars)
+        for(const avatar of this._avatars)
             avatar.changed()
     }
 
@@ -43,13 +43,21 @@ export default class Icon {
             return
         }
 
+        if(typeof source !== 'string') {
+            this.image = source
+            const trimmedName = fileName.split('.')[0]
+            this.layout = compute(trimmedName, source.width, source.height,
+                                  0, 0, source.width, source.height, true)
+            if(next) next()
+            return
+        }
+
         this.image = loadImage(source, (error, image) => {
             if(error) {
                 if(next)
-                    next(error)
+                    return next(error)
                 else
-                    console.error(source, error)
-                return
+                    throw error
             }
             if(this.image !== image)
                 return

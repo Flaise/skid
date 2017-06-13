@@ -70,10 +70,10 @@ export default class ComputedTileField {
     }
 
     makeTile4({nw, ne, sw, se}, x, y, layer, type) {
-        this._makeTile4Part(nw, x, y, layer, -1, -1)
-        this._makeTile4Part(ne, x, y, layer, 1, -1)
         this._makeTile4Part(sw, x, y, layer, -1, 1)
         this._makeTile4Part(se, x, y, layer, 1, 1)
+        this._makeTile4Part(nw, x, y, layer, -1, -1)
+        this._makeTile4Part(ne, x, y, layer, 1, -1)
 
         this._addType(x, y, type)
         this._changedAt(x, y)

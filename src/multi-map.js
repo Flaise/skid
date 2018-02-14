@@ -1,4 +1,4 @@
-export default class MultiMap {
+export class MultiMap {
     constructor() {
         this.data = Object.create(null)
     }

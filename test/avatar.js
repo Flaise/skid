@@ -1,8 +1,8 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Interpolands from '../src/interpolands'
-import Translation from '../src/scene/translation'
-import Viewport from '../src/scene/viewport'
+import {Interpolands} from '../src/interpolands'
+import {Translation} from '../src/scene/translation'
+import {Viewport} from '../src/scene/viewport'
 
 suite('Avatar')
 
@@ -22,16 +22,16 @@ beforeEach(function() {
 test('does not sort new avatars', function() {
     var a = new Translation(avatars)
     assert(a.layer === undefined)
-    
+
     a.layer = 10
     assert(a.layer === 10)
-    
+
     var b = new Translation(avatars)
     assert(b.layer === undefined)
     assert(a.layer === 10)
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
-    
+
     // yield browser.url('http://www.google.com')
     // assert((yield browser.getTitle()) === 'Google')
 })
@@ -39,14 +39,14 @@ test('does not sort new avatars', function() {
 test('sorts avatars ascendingly', function() {
     var a = new Translation(avatars)
     a.layer = 10
-    
+
     var b = new Translation(avatars)
     b.layer = 2
-    
+
     assert(avatars.contents[0] === b)
     assert(avatars.contents[1] === a)
     assert(avatars.contents.length === 2)
-    
+
     b.layer = 11
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
@@ -61,7 +61,7 @@ test('sorts past avatars of undefined layer', function() {
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
     assert(avatars.contents[2] === c)
-    
+
     c.layer = 7
     assert(avatars.contents[0] === c)
     assert(avatars.contents[1] === a)
@@ -97,7 +97,7 @@ test('sorts many avatars', function() {
     assert(avatars.contents[6] === h)
     assert(avatars.contents[7] === e)
     assert(avatars.contents[8] === b)
-    
+
     a.layer = 4
     b.layer = 7
     c.layer = -.01
@@ -121,7 +121,7 @@ test('sorts many avatars', function() {
 
 test('draws all avatars in order', function() {
     var i = 0
-    
+
     var a = new Translation(avatars)
     a.layer = 4
     var b = new Translation(avatars)
@@ -136,10 +136,10 @@ test('draws all avatars in order', function() {
         assert(i === 0)
         i += 1
     })
-    
+
     assert(avatars.contents[0] === b)
     assert(avatars.contents[1] === a)
-    
+
     avatars.draw(context)
     assert(a.draw.called)
     assert(b.draw.called)
@@ -152,7 +152,7 @@ test('leaves no interpolands behind after removal', function() {
     avatars.interpolands.update(0)
     assert(avatars.contents.length === 0)
     assert(avatars.interpolands.interpolands.length === 0)
-    
+
     // double-removal should have no effect
     av.remove()
     assert(av.removed)
@@ -165,7 +165,7 @@ test('leaves no interpolands behind after multi-removal and calls all onRemoves'
     var a = new Translation(avatars)
     var b = new Translation(avatars)
     var c = new Translation(avatars)
-    
+
     a.remove()
     b.remove()
     c.remove()
@@ -180,26 +180,26 @@ test('handles multiple creations and removals', function() {
     var c = new Translation(avatars)
     var d = new Translation(avatars)
     var e = new Translation(avatars)
-    
+
     assert(avatars.contents.length === 5)
     assert(avatars.interpolands.interpolands.length === 10)
-    
+
     d.remove()
     avatars.interpolands.update(0)
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
     assert(avatars.contents[2] === c)
     assert(avatars.contents[3] === e)
-    
+
     assert(avatars.contents.length === 4)
     assert(avatars.interpolands.interpolands.length === 8)
-    
+
     var dx = d
     d = new Translation(avatars)
     assert(d !== dx)
     assert(avatars.contents[3] === e)
     assert(avatars.contents[4] === d)
-    
+
     a.remove()
     avatars.interpolands.update(0)
     assert(avatars.contents.length === 4)
@@ -208,14 +208,14 @@ test('handles multiple creations and removals', function() {
     assert(avatars.contents[1] === c)
     assert(avatars.contents[2] === e)
     assert(avatars.contents[3] === d)
-    
+
     var ax = a
     a = new Translation(avatars)
     assert(a !== ax)
     assert(avatars.contents.length === 5)
     assert(avatars.interpolands.interpolands.length === 10)
     assert(avatars.contents[4] === a)
-    
+
     c.remove()
     b.remove()
     e.remove()
@@ -224,11 +224,11 @@ test('handles multiple creations and removals', function() {
     assert(avatars.interpolands.interpolands.length === 4)
     assert(avatars.contents[0] === d)
     assert(avatars.contents[1] === a)
-    
+
     e = new Translation(avatars)
     b = new Translation(avatars)
     c = new Translation(avatars)
-    
+
     var f = new Translation(avatars)
     assert(avatars.contents.length === 6)
     assert(avatars.interpolands.interpolands.length === 12)

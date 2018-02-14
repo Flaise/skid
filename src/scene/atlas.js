@@ -1,7 +1,7 @@
-import Icon from './icon'
-import loadImage from './load-image'
+import {Icon} from './icon'
+import {loadImage} from './load-image'
 
-export default class Atlas {
+export class Atlas {
     constructor() {
         this._icons = Object.create(null)
         this._layout = undefined

@@ -1,5 +1,5 @@
-import Reactant from './reactant'
-import is from './is'
+import {Reactant} from './reactant'
+import {is} from './is'
 
 const states = Object.create(null)
 

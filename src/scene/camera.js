@@ -1,6 +1,6 @@
-import Group from './group'
+import {Group} from './group'
 
-export default class Camera extends Group {
+export class Camera extends Group {
     constructor(group) {
         super(group)
         this.x = group.interpolands.make(0)
@@ -11,7 +11,7 @@ export default class Camera extends Group {
         this.anchorY = group.interpolands.make(0)
         this.angle = group.interpolands.make(0)
     }
-    
+
     subremove() {
         this.x.remove()
         this.y.remove()
@@ -21,7 +21,7 @@ export default class Camera extends Group {
         this.anchorY.remove()
         this.angle.remove()
     }
-    
+
     draw(context) {
         const canvas = context.canvas
 

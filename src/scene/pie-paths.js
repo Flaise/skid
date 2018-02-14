@@ -1,7 +1,7 @@
-import Avatar from './avatar'
+import {Avatar} from './avatar'
 import {toRadians} from '../turns'
 
-export default class PiePaths extends Avatar {
+export class PiePaths extends Avatar {
     constructor(avatars) {
         super(avatars)
         this._paths = []

@@ -1,5 +1,5 @@
 
-export default function loadImage(source, next) {
+export function loadImage(source, next) {
     const image = new window.Image()
     image.onload = () => {
         image.onload = image.onerror = undefined

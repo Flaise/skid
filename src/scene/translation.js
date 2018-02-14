@@ -1,6 +1,6 @@
-import Group from './group'
+import {Group} from './group'
 
-export default class Translation extends Group {
+export class Translation extends Group {
     constructor(container, x, y) {
         super(container)
         this.x = this.interpolands.make(x || 0)

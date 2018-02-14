@@ -1,7 +1,7 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import Reactant from '../src/reactant'
-import EventDispatcher from '../src/event-dispatcher'
+import {Reactant} from '../src/reactant'
+import {EventDispatcher} from '../src/event-dispatcher'
 
 suite('Reactant')
 
@@ -85,17 +85,17 @@ test('composition polling', function() {
 test('tuples', () => {
     reactantA.value = 1
     reactantB.value = 5
-    
+
     const tuple = Reactant.tuple(reactantA, reactantB)
     assert.deepEqual(tuple.value, [1, 5])
-    
+
     tuple.listen_pc(listener)
     reactantA.value = 4
     reactantB.value = 3
-    
+
     reactantA.value = 4
     reactantB.value = 3
-    
+
     assert.deepEqual(listener.args, [
         [undefined, [1, 5]],
         [[1, 5], [4, 5]],
@@ -182,16 +182,16 @@ test('discard multiple procs for function-derived reactant', function() {
     var a = new Reactant()
     var closureVar = 1
     a.setFunc(function() { return closureVar })
-    
+
     a.listen(listener)
     a.proc()
     a.proc()
     assert(listener.callCount === 0)
-    
+
     closureVar = 2
     a.proc()
     assert(listener.callCount === 1)
-    
+
     a.proc()
     assert(listener.callCount === 1)
 })
@@ -249,7 +249,7 @@ test('reactant transformation', function() {
     var source = new Reactant(4)
     var transformation = source.transform(function(a) { return a > 4 })
     transformation.listen(listener)
-    
+
     assert(transformation.value === false)
     source.value = 5
     assert(transformation.value === true)
@@ -257,7 +257,7 @@ test('reactant transformation', function() {
     assert(transformation.value === true)
     source.value = 3
     assert(transformation.value === false)
-    
+
     assert.deepEqual(listener.args, [
         [false, true],
         [true, false]
@@ -277,7 +277,7 @@ test('reactant event composition with itself', function() {
     reactant.value = 6
     reactant.value = 5
     reactant.value = 6
-    
+
     assert.deepEqual(listener.args, [
         [1, 6],
         [2, 10],
@@ -305,7 +305,7 @@ test('nested tuples', function() {
     c.value = 'rrr'
     b.value = 2
     c.value = 'rrr'
-    
+
     assert.deepEqual(listener.args, [
         [undefined, [['a', 'b'], 1]],
         [[['a', 'b'], 1], [['a', 2], 1]],

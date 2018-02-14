@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import is from '../src/is'
+import {is} from '../src/is'
 
 suite('is')
 
@@ -30,7 +30,7 @@ const configuration = [
 for(let entry of configuration) {
     const item = entry[0]
     const methods = entry.slice(1)
-    
+
     let title
     if(item !== item || item === Infinity || item === -Infinity)
         title = '' + item
@@ -38,11 +38,11 @@ for(let entry of configuration) {
         title = '<function>'
     else
         title = JSON.stringify(item)
-    
+
     test(title, () => {
         for(let method of methods) {
             assert(is[method](item) === true)
-            
+
             for(let otherMethod of Object.keys(is)) {
                 assert(is[method].or[otherMethod](item) === true)
                 assert(is[otherMethod].or[method](item) === true)

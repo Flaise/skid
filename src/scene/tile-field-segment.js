@@ -1,8 +1,8 @@
-import Group from './group'
-import Translation from './translation'
-import Scalement from './scalement'
+import {Group} from './group'
+import {Translation} from './translation'
+import {Scalement} from './scalement'
 
-export default class TileFieldSegment extends Group {
+export class TileFieldSegment extends Group {
     constructor(container, tileSize) {
         super(container)
         this._tileSize = tileSize

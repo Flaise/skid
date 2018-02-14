@@ -1,6 +1,6 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import EventDispatcher from '../src/event-dispatcher'
+import {EventDispatcher} from '../src/event-dispatcher'
 
 suite('EventDispatcher')
 
@@ -22,7 +22,7 @@ test('notifying multiple listeners', function() {
     dispatcher.listen(listenerB)
     dispatcher.listen(listenerC)
     dispatcher.proc()
-    
+
     assert(listenerA.calledOnce)
     assert(listenerB.calledOnce)
     assert(listenerC.calledOnce)
@@ -33,7 +33,7 @@ test('passing one parameter to listeners', function() {
     dispatcher.listen(listenerB)
     dispatcher.listen(listenerC)
     dispatcher.proc(param)
-    
+
     assert.deepEqual(listenerA.args, [[param]])
     assert.deepEqual(listenerB.args, [[param]])
     assert.deepEqual(listenerC.args, [[param]])
@@ -45,7 +45,7 @@ test('passing two parameters to listeners', function() {
     dispatcher.listen(listenerB)
     dispatcher.listen(listenerC)
     dispatcher.proc('a', 'b')
-    
+
     assert.deepEqual(listenerA.args, [['a', 'b']])
     assert.deepEqual(listenerB.args, [['a', 'b']])
     assert.deepEqual(listenerC.args, [['a', 'b']])
@@ -105,7 +105,7 @@ test('concurrent listenOnce without breaking iteration - other order', function(
 })
 test.skip('removal listener registration', function() {
     var onRemove = new EventDispatcher()
-    
+
 
     dispatcher.listen(function(a) { assert(a === 'a') }).until(onRemove)
     dispatcher.proc('a')
@@ -117,7 +117,7 @@ test.skip('removal listener registration', function() {
 })
 test.skip('removal listener deregistration on manual removal call', function() {
     var onRemove = new EventDispatcher()
-    
+
     var removal = dispatcher.listen(listenerA)
     removal.until(onRemove)
     removal()
@@ -128,7 +128,7 @@ test.skip('removal listener deregistration on manual removal call', function() {
 })
 test.skip('removal listener registration for listenOnce', function() {
     var onRemove = new EventDispatcher()
-    
+
 
     dispatcher.listenOnce(function(a) { assert(a === 'a') }).until(onRemove)
     dispatcher.proc('a')
@@ -145,7 +145,7 @@ test.skip('removal listener registration for listenOnce', function() {
 })
 test.skip('removal listener deregistration on manual removal call for listenOnce', function() {
     var onRemove = new EventDispatcher()
-    
+
 
     var removal = dispatcher.listenOnce(fail)
     removal.until(onRemove)
@@ -198,7 +198,7 @@ test('two consecutive once-only listeners getting called', function() {
 test.skip('two consecutive once-only listeners with an until hook', function() {
     var a = false
     var b = false
-    
+
     var end = new EventDispatcher()
     dispatcher.listenOnce(function() { a = true }).until(end)
     dispatcher.listenOnce(function() { b = true })
@@ -209,7 +209,7 @@ test.skip('two consecutive once-only listeners with an until hook', function() {
 test.skip('two consecutive once-only listeners with an until hook that fires', function() {
     var a = false
     var b = false
-    
+
     var end = new EventDispatcher()
     dispatcher.listenOnce(function() { a = true }).until(end)
     dispatcher.listenOnce(function() { b = true })
@@ -221,10 +221,10 @@ test.skip('two consecutive once-only listeners with an until hook that fires', f
 
 test.skip('removal during iteration', () => {
     const remover = sinon.spy(() => reg.stop())
-    
+
     dispatcher.listen(remover)
     const reg = dispatcher.listen(listenerB)
-    
+
     dispatcher.proc()
     assert(remover.calledOnce)
     assert(listenerB.callCount === 0)

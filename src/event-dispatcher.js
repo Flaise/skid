@@ -1,13 +1,13 @@
 import {remove, copy} from './array'
 
-export default class EventDispatcher {
+export class EventDispatcher {
     constructor() {
         this._callbacks = []
     }
     listen(callback) {
         if(!callback.apply)
             throw new Error()
-        
+
         this._callbacks.push(callback)
         return {
             stop: () => remove(this._callbacks, callback)
@@ -17,7 +17,7 @@ export default class EventDispatcher {
     listenOnce(callback) {
         if(!callback.apply)
             throw new Error()
-            
+
         const registration = this.listen((...args) => {
             registration.stop()
             callback.apply(undefined, args)

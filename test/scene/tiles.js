@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import ComputedTileField from '../../src/scene/computed-tile-field'
+import {ComputedTileField} from '../../src/scene/computed-tile-field'
 
 suite('tiles')
 

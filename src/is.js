@@ -1,47 +1,46 @@
-const all = {}
-export default all
+export const is = {}
 
-all.number = function(a) {
+is.number = function(a) {
     return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a)
 }
 
-all.defined = function(a) {
+is.defined = function(a) {
     return a != null
 }
 
-all.nullish = function(a) {
+is.nullish = function(a) {
     return a == null
 }
 
-all.integer = function(a) {
+is.integer = function(a) {
     return Number.isInteger(a)
 }
 
-all.boolean = function(a) {
+is.boolean = function(a) {
     return !!a === a
 }
 
-all.function = function(a) {
+is.function = function(a) {
     return typeof a === 'function'
 }
 
-all.object = function(a) {
+is.object = function(a) {
     return typeof a === 'string' || (!!a && typeof a === 'object')
 }
 
-all.array = function(a) {
+is.array = function(a) {
     return !!a && a.constructor === Array
 }
 
-all.string = function(a) {
+is.string = function(a) {
     return typeof a === 'string'
 }
 
-all.iterable = function(a) {
+is.iterable = function(a) {
     return !!(a != null && a[Symbol.iterator])
 }
 
-all.generatorFunction = function(a) {
+is.generatorFunction = function(a) {
     return a != null && a.constructor.name === 'GeneratorFunction'
 }
 
@@ -51,8 +50,8 @@ function composeOr(funcA, funcB) {
 
 function makeCompositions(func, compositor) {
     const result = {}
-    for(let key in all) {
-        const otherFunc = all[key]
+    for(let key in is) {
+        const otherFunc = is[key]
         Object.defineProperty(result, key, {get: () => compositor(func, otherFunc)})
     }
     return result
@@ -62,5 +61,6 @@ function addCompositorsTo(func) {
     func.or = makeCompositions(func, composeOr)
     return func
 }
-for(var key in all)
-    addCompositorsTo(all[key])
+for(var key in is) {
+    addCompositorsTo(is[key])
+}

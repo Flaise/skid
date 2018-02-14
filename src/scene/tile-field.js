@@ -1,7 +1,7 @@
-import TileFieldSegment from './tile-field-segment'
-import Group from './group'
+import {TileFieldSegment} from './tile-field-segment'
+import {Group} from './group'
 
-export default class TileField {
+export class TileField {
     constructor(root, tileSize) {
         this.root = root
         // limit pixel size to limit redraws - maximum is roughly 8000 on Firefox
@@ -11,7 +11,7 @@ export default class TileField {
         this._rows = Object.create(null)
         this._segments = Object.create(null)
     }
-    
+
     _keyOf(x, y) {
         return Math.floor(x / this._tilesPerSegment) + ',' + Math.floor(y)
     }

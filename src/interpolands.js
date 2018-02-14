@@ -1,4 +1,4 @@
-import is from './is'
+import {is} from './is'
 import {filter, remove} from './array'
 
 
@@ -23,7 +23,7 @@ class Interpoland {
         this.container = container
         this.tweenCount = 0
     }
-    
+
     mod(delta, duration, tweenFunc, onDone, remainder) {
         if(!delta && !onDone)
             return
@@ -61,7 +61,7 @@ class Interpoland {
 }
 
 
-export default class Interpolands {
+export class Interpolands {
     constructor(avatar) {
         this.tweens = []
         this.ending = []
@@ -69,13 +69,13 @@ export default class Interpolands {
         this.remainder = 0
         this.avatar = avatar
     }
-    
+
     make(value) {
         const result = new Interpoland(this, value)
         this.interpolands.push(result)
         return result
     }
-    
+
     makeTween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
         if(is.nullish(remainder))
             remainder = this.remainder
@@ -85,25 +85,25 @@ export default class Interpolands {
         interpoland.tweenCount += 1
         return result
     }
-    
+
     remove(interpoland) {
         remove(this.interpolands, interpoland)
         this.removeTweens(interpoland)
     }
-    
+
     removeTweens(interpoland) {
         filter(this.tweens, (tween) => tween.interpoland !== interpoland)
         interpoland.tweenCount = 0
         this.changed()
     }
-    
+
     update(dt) {
         for(let i = 0; i < this.interpolands.length; i += 1)
             this.interpolands[i].curr = this.interpolands[i].base
-        
+
         filter(this.tweens, (tween) => {
             tween.elapsed += dt
-            
+
             if(tween.elapsed >= tween.duration) {
                 if(tween.onDone)
                     this.ending.push(tween)
@@ -112,12 +112,12 @@ export default class Interpolands {
                 tween.interpoland.tweenCount -= 1
                 return false
             }
-            
+
             tween.interpoland.curr += tween.amplitude *
                                       tween.func.call(undefined, tween.elapsed / tween.duration)
             return true
         })
-        
+
         for(let i = 0; i < this.ending.length; i += 1) {
             const tween = this.ending[i]
             this.remainder = tween.elapsed - tween.duration
@@ -125,7 +125,7 @@ export default class Interpolands {
         }
         this.ending.length = 0
         this.remainder = 0
-        
+
         if(this.tweens.length)
             this.changed()
     }

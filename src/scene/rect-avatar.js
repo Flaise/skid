@@ -1,6 +1,6 @@
-import DefaultAvatar from './default-avatar'
+import {DefaultAvatar} from './default-avatar'
 
-export default class RectAvatar extends DefaultAvatar {
+export class RectAvatar extends DefaultAvatar {
     constructor(group) {
         super(group)
         this.anchorX = group.interpolands.make(0)
@@ -10,7 +10,7 @@ export default class RectAvatar extends DefaultAvatar {
         this.lineWidth = undefined
         this.radius = undefined
     }
-    
+
     draw(context) {
         context.save()
         this.doTransform(context)
@@ -38,7 +38,7 @@ export default class RectAvatar extends DefaultAvatar {
 
         context.restore()
     }
-    
+
     subremove() {
         this.anchorX.remove()
         this.anchorY.remove()

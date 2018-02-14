@@ -1,7 +1,7 @@
-import Procrastinator from '../src/procrastinator'
 import assert from 'power-assert'
 import lolex from 'lolex'
 import sinon from 'sinon'
+import {Procrastinator} from '../src/procrastinator'
 
 suite('procrastinator')
 

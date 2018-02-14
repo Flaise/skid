@@ -1,6 +1,6 @@
-import Translation from './translation'
+import {Translation} from './translation'
 
-export default class CopiedTranslation extends Translation {
+export class CopiedTranslation extends Translation {
     constructor(root, target, autoDelete) {
         super(root, target? target.x.curr: 0, target? target.y.curr: 0)
         this.target = target
@@ -8,7 +8,7 @@ export default class CopiedTranslation extends Translation {
     }
     // TODO: use Observer
     // TODO: is autoDelete necessary?
-    
+
     draw(context) {
         if(this.target) {
             if(this.target.removed) {

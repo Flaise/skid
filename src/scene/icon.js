@@ -1,6 +1,6 @@
-import loadImage from './load-image'
+import {loadImage} from './load-image'
 
-export default class Icon {
+export class Icon {
     constructor(image, layout) {
         this._image = image
         this._layout = layout

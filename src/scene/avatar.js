@@ -1,4 +1,4 @@
-import is from '../is'
+import {is} from '../is'
 import {insertSorted, remove} from '../array'
 
 function compare(a, b) {
@@ -9,7 +9,7 @@ function compare(a, b) {
     return b._layer - a._layer
 }
 
-export default class Avatar {
+export class Avatar {
     constructor(container) {
         this._layer = undefined
         this._removed = false
@@ -19,7 +19,7 @@ export default class Avatar {
             container.changed()
         }
     }
-    
+
     get layer() {
         return this._layer
     }
@@ -31,12 +31,12 @@ export default class Avatar {
             // TODO: This can probably be optimized to not shift the contents of the array twice.
             remove(this.container.contents, this)
             insertSorted(this.container.contents, this, compare)
-            
+
             this.container.changed()
         }
         this.changed()
     }
-    
+
     get removed() {
         return this._removed
     }
@@ -50,20 +50,20 @@ export default class Avatar {
         this.changed()
     }
     subremove() {}
-    
+
     draw(context) {
         console.warn('Called abstract function Avatar.draw()')
     }
-    
+
     walk(callback) {
         callback(this)
     }
-    
+
     changed() {
         if(this.container)
             this.container.changed()
     }
-    
+
     bounds() {
         return undefined
     }

@@ -1,8 +1,8 @@
-import TileField from './tile-field'
-import IconAvatar from './icon-avatar'
-import is from '../is'
+import {TileField} from './tile-field'
+import {IconAvatar} from './icon-avatar'
+import {is} from '../is'
 
-export default class ComputedTileField {
+export class ComputedTileField {
     constructor(root, tileSize) {
         this.field = new TileField(root, tileSize)
         this.types = Object.create(null) // {position: {[type]: true}}

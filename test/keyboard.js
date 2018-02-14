@@ -1,7 +1,7 @@
 import assert from 'power-assert'
+import simulate from 'simulate-dom-event'
 import {stateOf, keyOf, reset} from '../src/keyboard'
 import * as key from '../src/key'
-import simulate from 'simulate-dom-event'
 
 suite('keyboard')
 

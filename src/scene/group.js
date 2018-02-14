@@ -1,7 +1,7 @@
-import Avatar from './avatar'
-import Interpolands from '../interpolands'
+import {Avatar} from './avatar'
+import {Interpolands} from '../interpolands'
 
-export default class Group extends Avatar {
+export class Group extends Avatar {
     constructor(container) {
         super(container)
         if(container)

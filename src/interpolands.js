@@ -1,7 +1,6 @@
 import {is} from './is'
 import {filter, remove} from './array'
 
-
 function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
     this.interpoland = interpoland
     this.curr = 0
@@ -12,7 +11,6 @@ function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remain
     this.onDone = onDone
     this.amplitude = amplitude
 }
-
 
 class Interpoland {
     constructor(container, value) {
@@ -59,7 +57,6 @@ class Interpoland {
         this.container.remove(this)
     }
 }
-
 
 export class Interpolands {
     constructor(avatar) {

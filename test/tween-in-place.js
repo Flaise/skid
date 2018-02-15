@@ -15,3 +15,9 @@ test('sine', () => {
     assert(Math.abs(sine1(.5)) < .0001)
     assert(Math.abs(sine1(1)) < .0001)
 })
+
+test('invalid cycles', () => {
+    assert.throws(() => {
+        sine(.4)
+    })
+})

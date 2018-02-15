@@ -11,8 +11,11 @@ export function load(state) {
     }
 }
 
-function loaded(state, image) {
-    image.onload = image.onerror = undefined;
+export function startLoading(state) {
+    state.load.requests += 1;
+}
+
+export function doneLoading(state) {
     state.load.requests -= 1;
     handle(state, 'load_progress'); // TODO: needs parameter with amount of progress
     if (!state.load.done && state.load.requests === 0) {
@@ -22,15 +25,17 @@ function loaded(state, image) {
 }
 
 function loadImage(state, source, onload) {
-    state.load.requests += 1;
+    startLoading(state);
     const image = new window.Image();
     image.onload = () => {
-        loaded(state, image);
-        onload(image);
+        image.onload = image.onerror = undefined;
+        doneLoading(state);
+        if (onload) onload(image);
     };
     image.onerror = () => {
         console.error(`Unable to load image ${source}`);
-        loaded(state, image);
+        image.onload = image.onerror = undefined;
+        doneLoading(state);
     };
     image.src = source;
     return image;

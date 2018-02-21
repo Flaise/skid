@@ -2,7 +2,7 @@ const {Icon} = require('./scene/icon');
 const {handle} = require('./event');
 
 export function load(state) {
-    state.load = {requests: 0, completions: 0, done: false, loaders: {}};
+    state.load = {requests: 0, completions: 0, done: false, loaders: {}, error: false};
 
     handle(state, 'load');
     if (state.load.requests === 0) {
@@ -15,12 +15,13 @@ export function startLoading(state, size) {
     if (state.load.done) throw new Error("load assets during the 'load' event");
     state.load.requests += 1;
     const id = state.load.requests;
-    if (size) progressLoading(state, id, 0, size);
+    if (size != undefined) progressLoading(state, id, 0, size);
     return id;
 }
 
 export function progressLoading(state, id, loaded, total) {
     if (state.load.done) throw new Error("load assets during the 'load' event");
+    if (state.load.error) return;
     if (isNaN(loaded) || isNaN(total)) {
         loaded = 0;
         total = 0;
@@ -42,11 +43,18 @@ export function progressLoading(state, id, loaded, total) {
 
 export function doneLoading(state, id) {
     if (state.load.done) throw new Error("load assets during the 'load' event");
+    if (state.load.error) return;
     state.load.completions += 1;
     if (state.load.completions === state.load.requests) {
         state.load.done = true;
         handle(state, 'load_done');
     }
+}
+
+export function errorLoading(state) {
+    if (state.load.error) return;
+    state.load.error = true;
+    handle(state, 'load_error');
 }
 
 export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
@@ -147,7 +155,7 @@ export function loadData(state, imageUrl, total) {
 
         xhr.onloadend = () => {
             if (!xhr.status.toString().match(/^2/)) {
-                reject(xhr);
+                errorLoading(state);
                 return;
             }
 

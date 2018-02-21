@@ -44,6 +44,9 @@
     "karma": "karma start --single-run",
     "karma-watch": "karma start"
   },
+  "dependencies": {
+    "howler": "2.0.9"
+  },
   "devDependencies": {
     "babel-plugin-espower": "1.0.0",
     "babel-runtime": "5.8.25",
@@ -53,7 +56,7 @@
     "browserify-istanbul": "2.0.0",
     "gobble": "0.10.2",
     "gobble-babel": "5.5.8",
-    "gobble-cli": "^0.8.0",
+    "gobble-cli": "0.8.0",
     "istanbul": "0.4.0",
     "karma": "1.6.0",
     "karma-babel-preprocessor": "6.0.1",

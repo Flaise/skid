@@ -23,10 +23,11 @@ export function loadAudio(state, eventCode, howlArgs) {
     for (const path of src) {
         const extension = extname(path).substr(1);
         if (Howler.codecs(extension)) {
-            return loadData(state, path).then((source) => {
-                const args = { ...howlArgs, src: [source], format: [extension] };
-                return load(state, eventCode, args, id);
-            });
+            return loadData(state, path, undefined, () => Promise.resolve(howlArgs.src))
+                .then((source) => {
+                    const args = { ...howlArgs, src: source, format: [extension] };
+                    return load(state, eventCode, args, id);
+                });
         }
     }
     setTimeout(() => errorLoading(state), 0); // Needs to be async call

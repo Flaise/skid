@@ -89,13 +89,14 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         const icon = new Icon();
         const image = new window.Image();
         icon.image = image;
-        image.onload = () => {
-            icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                        image.width, image.height, true);
-        };
-        loadData(state, source, sizeBytes).then((source) => {
-            image.src = source;
-        });
+        loadData(state, source, sizeBytes, () => Promise.resolve(source))
+            .then((data) => {
+                image.onload = () => {
+                    icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                                                image.width, image.height, true);
+                };
+                image.src = data;
+            });
         return icon;
     } else {
         return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,

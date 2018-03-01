@@ -1,7 +1,7 @@
 const {Icon} = require('./scene/icon');
 const {handle} = require('./event');
 
-export function load(debug) {
+export function start(debug) {
     const state = Object.create(null);
     if (debug) {
         state.debug = true;
@@ -9,11 +9,13 @@ export function load(debug) {
     }
     state.load = {requests: 0, completions: 0, done: false, loaders: {}, error: false};
 
-    handle(state, 'load');
-    if (state.load.requests === 0) {
-        state.load.done = true;
-        handle(state, 'load_done');
-    }
+    window.addEventListener('load', () => {
+        handle(state, 'load');
+        if (state.load.requests === 0) {
+            state.load.done = true;
+            handle(state, 'load_done');
+        }
+    });
 }
 
 export function startLoading(state, size) {
@@ -43,7 +45,9 @@ export function progressLoading(state, id, loaded, total) {
         allLoaded += loader.loaded;
         allTotal += loader.total;
     }
-    handle(state, 'load_progress', allLoaded / allTotal);
+    let progress = allLoaded / allTotal;
+    if (allTotal === 0) progress = 0;
+    handle(state, 'load_progress', progress);
 }
 
 export function doneLoading(state, id) {
@@ -62,11 +66,11 @@ export function errorLoading(state) {
     handle(state, 'load_error');
 }
 
-export function loadData(state, imageUrl, total) {
+export function loadData(state, url, total, alternate) {
     const id = startLoading(state, total);
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', imageUrl, true);
+        xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
         xhr.onprogress = (event) => {
@@ -77,7 +81,18 @@ export function loadData(state, imageUrl, total) {
 
         xhr.onloadend = () => {
             if (!xhr.status.toString().match(/^2/)) {
-                errorLoading(state);
+                if (alternate) {
+                    // Fallback for file:// protocol
+                    alternate()
+                        .then((result) => {
+                            progressLoading(state, id, 1, 1);
+                            resolve(result);
+                            doneLoading(state, id);
+                        })
+                        .catch(() => errorLoading(state));
+                } else {
+                    errorLoading(state);
+                }
                 return;
             }
 
@@ -93,8 +108,8 @@ export function loadData(state, imageUrl, total) {
             progressLoading(state, id, blob.size, blob.size);
             resolve(window.URL.createObjectURL(blob));
             doneLoading(state, id);
-        }
+        };
 
-        xhr.send();
+        setTimeout(() => xhr.send()); // Errors must happen asynchronously.
     });
 }

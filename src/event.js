@@ -42,6 +42,7 @@ export function handle(state, code, arg) {
     }
 }
 
+// For unit testing
 export function clearHandlers() {
     for (const key in handlers) {
         delete handlers[key];

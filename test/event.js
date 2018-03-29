@@ -13,11 +13,19 @@ afterEach(() => {
     clearHandlers();
 });
 
-test('calls handler', () => {
+test('calls handler - string', () => {
     addHandler('a', () => {
         state.a = 1;
     });
     handle(state, 'a');
+    assert(state.a === 1);
+});
+
+test('calls handler - number', () => {
+    addHandler(5, () => {
+        state.a = 1;
+    });
+    handle(state, 5);
     assert(state.a === 1);
 });
 

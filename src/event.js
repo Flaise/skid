@@ -1,16 +1,19 @@
 const handlers = Object.create(null);
 
 function identity(a) {
-    // yay, micro-optimization
     return a;
 }
 
 export function addHandler(code, handler) {
     if (typeof handler !== 'function') throw new Error('handler must be a function');
 
-    let keys = code;
+    let keys;
     if (typeof code === 'string') {
         keys = code.split(' ').filter(identity);
+    } else if (Array.isArray(code)) {
+        keys = code;
+    } else {
+        keys = [code];
     }
 
     for (const key of keys) {
@@ -32,7 +35,9 @@ export function handle(state, code, arg) {
     if (state.debug) console.log(code, arg);
     const list = handlers[code];
     if (!list) return;
-    for (const func of list) {
+    // for-of syntax gives bad tracebacks
+    for (let i = 0; i < list.length; i += 1) {
+        const func = list[i];
         func(state, arg);
     }
 }

@@ -25,8 +25,8 @@ function onKey(state, event) {
 }
 
 function mouseXY(event, component) {
-    const x = event.pageX - component.offsetLeft;
-    const y = event.pageY - component.offsetTop;
+    const x = event.pageX - (component.offsetLeft || 0);
+    const y = event.pageY - (component.offsetTop || 0);
     return {x, y};
 }
 

@@ -4,6 +4,8 @@ import {is} from '../is'
 export class TextAvatar extends Avatar {
     constructor(container, camera) {
         super(container)
+        this.x = container.interpolands.make(0)
+        this.y = container.interpolands.make(0)
         this.camera = camera
         this.font = undefined
         this.text = ''
@@ -25,6 +27,9 @@ export class TextAvatar extends Avatar {
             context.font = this.font(cw, ch)
         else
             context.font = this.font
+
+        if(this.x.curr || this.y.curr)
+            context.translate(this.x.curr, this.y.curr)
 
         context.scale(1 / (cw / this.camera.w.curr),
                       1 / (ch / this.camera.h.curr))

@@ -1,3 +1,5 @@
+const {inspect} = require('util');
+
 const handlers = Object.create(null);
 
 function identity(a) {
@@ -32,7 +34,7 @@ export function addHandler(code, handler) {
 export function handle(state, code, arg) {
     if (!state) throw new Error();
     if (typeof state !== 'object') throw new Error('state must be an object');
-    if (state.debug) console.log(code, arg);
+    if (state.debug && code !== 'mousemove') console.log(code, inspect(arg, {depth: 0}));
     const list = handlers[code];
     if (!list) return;
     // for-of syntax gives bad tracebacks

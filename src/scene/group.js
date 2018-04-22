@@ -26,6 +26,14 @@ export class Group extends Avatar {
             this.contents[i].draw(context)
     }
 
+    clear() {
+        for(let i = 0; i < this.contents.length; i += 1) {
+            this.contents[i].container = undefined
+            this.contents[i].remove()
+        }
+        this.contents.length = 0
+    }
+
     subremove() {
         for(let i = 0; i < this.contents.length; i += 1) {
             this.contents[i].container = undefined

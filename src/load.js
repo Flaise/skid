@@ -1,21 +1,35 @@
 const {Icon} = require('./scene/icon');
 const {handle} = require('./event');
 
+let started = false;
+
 export function start(debug) {
+    if (started) throw new Error('call start() only once');
+    started = true;
     const state = Object.create(null);
     if (debug) {
         state.debug = true;
-        window.getState = () => state;
+        if (typeof window !== 'undefined') {
+            window.getState = () => state;
+        }
     }
     state.load = {requests: 0, completions: 0, done: false, loaders: {}, error: false};
 
-    window.addEventListener('load', () => {
+    if (typeof window !== 'undefined') {
+        window.addEventListener('load', () => {
+            handle(state, 'load');
+            if (state.load.requests === 0) {
+                state.load.done = true;
+                handle(state, 'load_done');
+            }
+        });
+    } else {
         handle(state, 'load');
         if (state.load.requests === 0) {
             state.load.done = true;
             handle(state, 'load_done');
         }
-    });
+    }
 }
 
 export function startLoading(state, size) {

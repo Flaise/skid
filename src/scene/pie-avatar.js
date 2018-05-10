@@ -46,8 +46,6 @@ export class PieAvatar extends DefaultAvatar {
 
         context.closePath()
 
-        context.globalAlpha = clamp(this.opacity.curr, 0, 1)
-
         if(this.fillStyle) {
             context.fillStyle = this.fillStyle
             context.fill()

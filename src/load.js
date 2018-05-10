@@ -9,9 +9,9 @@ export function start(debug) {
     const state = Object.create(null);
     if (debug) {
         state.debug = true;
-        if (typeof window !== 'undefined') {
-            window.getState = () => state;
-        }
+    }
+    if (typeof window !== 'undefined') {
+        window.getState = () => state;
     }
     state.load = {requests: 0, completions: 0, done: false, loaders: {}, error: false};
 

@@ -10,10 +10,6 @@ export class DefaultAvatar extends Avatar {
         this.w = group.interpolands.make(0)
         this.h = group.interpolands.make(0)
         this.angle = group.interpolands.make(0)
-
-        // TODO: use Opacity node
-        this.opacity = group.interpolands.make(1)
-        this.skipAlpha = undefined
     }
 
     doTransform(context) {
@@ -22,8 +18,6 @@ export class DefaultAvatar extends Avatar {
         if(this.angle.curr)
             context.rotate(toRadians(this.angle.curr))
         // can't scale here; it breaks radii and strokes
-        if(!this.skipAlpha) ////////// TODO: always use Opacity group
-            context.globalAlpha = clamp(this.opacity.curr, 0, 1)
     }
 
     subremove() {

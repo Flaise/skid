@@ -84,6 +84,15 @@ export class Icon {
     }
 }
 
+export function loadImage(state, source, sizeBytes) {
+    const image = new window.Image();
+    loadData(state, source, sizeBytes, () => Promise.resolve(source))
+        .then((data) => {
+            image.src = data;
+        });
+    return image;
+}
+
 export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
     if (typeof source === 'string') {
         const icon = new Icon();

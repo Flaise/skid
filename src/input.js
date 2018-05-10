@@ -5,6 +5,7 @@ addHandler('load_done', (state) => {
     window.addEventListener('blur', () => handle(state, 'windowblur'));
     window.addEventListener('keydown', event => onKey(state, event));
     window.addEventListener('keyup', event => onKey(state, event));
+    window.addEventListener('resize', event => handle(state, 'resize'));
 
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {

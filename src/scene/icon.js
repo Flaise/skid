@@ -1,4 +1,4 @@
-import {loadData} from '../load';
+import {loadData, reloadData} from '../load';
 
 export class Icon {
     constructor(image, layout) {
@@ -111,6 +111,22 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,
                                               source.width, source.height, true));
     }
+}
+
+export function reloadIcon(state, icon, source, ax, ay, diameter) {
+    reloadData(state, source, () => Promise.resolve(source))
+        .then((data) => {
+            const image = new window.Image();
+            image.onload = () => {
+                // TODO: Putting this here reduces flicker but also increases likelihood
+                // of race condition
+                icon.image = image;
+
+                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                                            image.width, image.height, true);
+            };
+            image.src = data;
+        });
 }
 
 function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,

@@ -80,6 +80,42 @@ export function errorLoading(state) {
     handle(state, 'load_error');
 }
 
+export function reloadData(state, url, alternate) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onloadend = () => {
+            if (!xhr.status.toString().match(/^2/)) {
+                if (alternate) {
+                    // Fallback for file:// protocol
+                    alternate()
+                        .then((result) => {
+                            resolve(result);
+                        })
+                        // TODO: .catch(() => ...);
+                } else {
+                    // TODO: report error
+                }
+                return;
+            }
+
+            const options = {};
+            const headers = xhr.getAllResponseHeaders();
+            const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
+
+            if (match && match[1]) {
+                options.type = match[1];
+            }
+
+            const blob = new Blob([xhr.response], options);
+            resolve(window.URL.createObjectURL(blob));
+        };
+
+        setTimeout(() => xhr.send()); // Errors must happen asynchronously.
+    });
+}
+
 export function loadData(state, url, total, alternate) {
     const id = startLoading(state, total);
     return new Promise((resolve, reject) => {

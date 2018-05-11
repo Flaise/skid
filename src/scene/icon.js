@@ -114,19 +114,22 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
 }
 
 export function reloadIcon(state, icon, source, ax, ay, diameter) {
-    reloadData(state, source, () => Promise.resolve(source))
-        .then((data) => {
-            const image = new window.Image();
-            image.onload = () => {
-                // TODO: Putting this here reduces flicker but also increases likelihood
-                // of race condition
-                icon.image = image;
+    return new Promise((resolve, reject) => {
+        reloadData(state, source, () => Promise.resolve(source))
+            .then((data) => {
+                const image = new window.Image();
+                image.onload = () => {
+                    // TODO: Putting this here reduces flicker but also increases likelihood
+                    // of race condition
+                    icon.image = image;
 
-                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                            image.width, image.height, true);
-            };
-            image.src = data;
-        });
+                    icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                                                image.width, image.height, true);
+                    resolve();
+                };
+                image.src = data;
+            });
+    });
 }
 
 function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,

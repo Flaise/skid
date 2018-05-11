@@ -31,8 +31,9 @@ export class TextAvatar extends Avatar {
         if(this.x.curr || this.y.curr)
             context.translate(this.x.curr, this.y.curr)
 
-        context.scale(1 / (cw / this.camera.w.curr),
-                      1 / (ch / this.camera.h.curr))
+        if(this.camera)
+            context.scale(1 / (cw / this.camera.w.curr),
+                          1 / (ch / this.camera.h.curr))
 
         context.textAlign = this.textAlign
         context.textBaseline = this.textBaseline

@@ -2,6 +2,8 @@ import {is} from './is'
 import {filter, remove} from './array'
 
 function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
+    if(!func)
+        throw new Error()
     this.interpoland = interpoland
     this.curr = 0
     this.elapsed = remainder

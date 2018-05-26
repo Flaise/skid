@@ -12,6 +12,9 @@ export class RectAvatar extends DefaultAvatar {
     }
 
     draw(context) {
+        if (!this.w.curr || !this.h.curr)
+            return
+
         context.save()
         this.doTransform(context)
         if(this.anchorX.curr || this.anchorY.curr)

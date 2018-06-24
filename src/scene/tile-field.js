@@ -10,6 +10,7 @@ export class TileField {
         this._tileSize = tileSize
         this._rows = Object.create(null)
         this._segments = Object.create(null)
+        this.layerOffset = 0
     }
 
     _keyOf(x, y) {
@@ -19,7 +20,7 @@ export class TileField {
         let result = this._rows[y]
         if(!result) {
             result = new Group(this.root)
-            result.layer = y
+            result.layer = y + this.layerOffset
             this._rows[y] = result
         }
         return result

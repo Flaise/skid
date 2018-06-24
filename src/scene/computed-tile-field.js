@@ -30,6 +30,14 @@ export class ComputedTileField {
         }
         typeSet[type] = true
     }
+
+    _removeType(x, y, type) {
+        const key = keyOf(x, y)
+        const typeSet = this.types[key]
+        if(typeSet)
+            delete typeSet[type]
+    }
+
     _addUpdater(x, y, func) {
         const key = keyOf(x, y)
         let updaters = this.updaters[key]
@@ -84,6 +92,13 @@ export class ComputedTileField {
         avatar.layer = layer
         this._addType(x, y, type)
         this._changedAround(x, y)
+        return {
+            remove: () => {
+                avatar.remove()
+                this._removeType(x, y, type)
+                this._changedAround(x, y)
+            }
+        }
     }
 
     clear() {

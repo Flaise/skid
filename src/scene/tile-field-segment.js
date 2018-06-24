@@ -13,7 +13,6 @@ export class TileFieldSegment extends Group {
         this._y = 0
         this._width = 0
         this._height = 0
-        this._excribed = false
     }
 
     changed() {
@@ -25,9 +24,16 @@ export class TileFieldSegment extends Group {
         if(this._altered) {
             this._altered = false
 
-            ;[this._x, this._y, this._width, this._height] = this.bounds()
-            this._canvas.width = Math.ceil(this._width * this._tileSize)
-            this._canvas.height = Math.ceil(this._height * this._tileSize)
+            const bounds = this.bounds()
+            if(bounds) {
+                ;[this._x, this._y, this._width, this._height] = bounds
+                this._canvas.width = Math.ceil(this._width * this._tileSize)
+                this._canvas.height = Math.ceil(this._height * this._tileSize)
+            } else {
+                this._canvas.width = 0
+                this._canvas.height = 0
+            }
+            this._altered = false
 
             if(!this._canvas.width || !this._canvas.height)
                 return

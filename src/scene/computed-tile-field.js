@@ -7,6 +7,7 @@ export class ComputedTileField {
         this.field = new TileField(root, tileSize)
         this.types = Object.create(null) // {position: {[type]: true}}
         this.updaters = Object.create(null)
+        this.avatars = Object.create(null) // {position: {[type]: [avatar, ...]}}
     }
 
     _hasTypeAtKey(key, types) {
@@ -29,6 +30,21 @@ export class ComputedTileField {
             this.types[key] = typeSet
         }
         typeSet[type] = true
+    }
+
+    _addAvatar(x, y, type, avatar) {
+        const key = keyOf(x, y)
+        let map = this.avatars[key]
+        if(!map) {
+            map = Object.create(null)
+            this.avatars[key] = map
+        }
+        let list = map[type]
+        if(!list) {
+            list = []
+            map[type] = list
+        }
+        list.push(avatar)
     }
 
     _removeType(x, y, type) {
@@ -75,29 +91,44 @@ export class ComputedTileField {
             this._addUpdater(x, y, icon(avatar))
         else
             avatar.icon = icon
+        return avatar
     }
 
     makeTile4({nw, ne, sw, se}, x, y, layer, type) {
-        this._makeTile4Part(sw, x, y, layer, -1, 1)
-        this._makeTile4Part(se, x, y, layer, 1, 1)
-        this._makeTile4Part(nw, x, y, layer, -1, -1)
-        this._makeTile4Part(ne, x, y, layer, 1, -1)
+        const a = this._makeTile4Part(sw, x, y, layer, -1, 1)
+        const b = this._makeTile4Part(se, x, y, layer, 1, 1)
+        const c = this._makeTile4Part(nw, x, y, layer, -1, -1)
+        const d = this._makeTile4Part(ne, x, y, layer, 1, -1)
 
+        this._addAvatar(x, y, type, a)
+        this._addAvatar(x, y, type, b)
+        this._addAvatar(x, y, type, c)
+        this._addAvatar(x, y, type, d)
         this._addType(x, y, type)
         this._changedAt(x, y)
         this._changedAround(x, y)
     }
+
     makeTile(icon, x, y, layer, type) {
         const avatar = new IconAvatar(this.field.nodeAt(x, y), icon, x, y, 1, 1)
         avatar.layer = layer
         this._addType(x, y, type)
         this._changedAround(x, y)
-        return {
-            remove: () => {
+        this._addAvatar(x, y, type, avatar)
+    }
+
+    removeTile(x, y, type) {
+        const key = keyOf(x, y)
+        const lists = this.avatars[key]
+        if(lists && lists[type]) {
+            for(const avatar of lists[type]) {
                 avatar.remove()
-                this._removeType(x, y, type)
-                this._changedAround(x, y)
             }
+            delete lists[type]
+            this._removeType(x, y, type)
+            this._changedAt(x, y)
+            this._changedAround(x, y)
+            // TODO: need to remove updaters
         }
     }
 

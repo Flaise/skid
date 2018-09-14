@@ -2,8 +2,11 @@ import {is} from './is'
 import {filter, remove} from './array'
 
 function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
-    if(!func)
-        throw new Error()
+    if(!func) throw new Error()
+    if(isNaN(magnitude)) throw new Error()
+    if(isNaN(amplitude)) throw new Error()
+    if(isNaN(duration)) throw new Error()
+    if(isNaN(remainder)) throw new Error()
     this.interpoland = interpoland
     this.curr = 0
     this.elapsed = remainder
@@ -42,6 +45,8 @@ class Interpoland {
         this.modNow(dest - this.dest)
     }
     setTo(dest) {
+        if(isNaN(dest))
+            throw new Error()
         if(this.base === dest && this.tweenCount === 0)
             return
         this.base = dest

@@ -45,7 +45,6 @@ export class Observer extends Avatar {
                 observer.remove()
                 return
             }
-            // TODO: would be better without interpolands
             target.x.setTo(source.x.curr)
             target.y.setTo(source.y.curr)
         }, onRemove)

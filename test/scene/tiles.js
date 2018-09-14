@@ -13,8 +13,7 @@ test('clear', () => {
 
     field.clear()
     assert(Object.keys(field.field._segments).length === 0)
-    assert(Object.keys(field.types).length === 0)
-    assert(Object.keys(field.updaters).length === 0)
+    assert(Object.keys(field.avatars).length === 0)
 
     for(const segment of segments)
         assert(segment.contents == undefined)

@@ -5,30 +5,23 @@ import {is} from '../is'
 export class ComputedTileField {
     constructor(root, tileSize) {
         this.field = new TileField(root, tileSize)
-        this.types = Object.create(null) // {position: {[type]: true}}
         this.avatars = Object.create(null) // {position: {[type]: [avatar, ...]}}
     }
 
     _hasTypeAtKey(key, types) {
-        const typeSet = this.types[key]
-        if(!typeSet)
+        const map = this.avatars[key]
+        if(!map)
             return false
-        if(!is.iterable(types))
-            return !!typeSet[types]
-        for(const type of types)
-            if(typeSet[type])
+        if(is.iterable(types)) {
+            for(const type of types) {
+                if(map[type] && map[type].length)
+                    return true
+            }
+        } else {
+            if(map[types] && map[types].length)
                 return true
-        return false
-    }
-
-    _addType(x, y, type) {
-        const key = keyOf(x, y)
-        let typeSet = this.types[key]
-        if(!typeSet) {
-            typeSet = Object.create(null)
-            this.types[key] = typeSet
         }
-        typeSet[type] = true
+        return false
     }
 
     _addAvatar(x, y, type, avatar) {
@@ -46,20 +39,13 @@ export class ComputedTileField {
         list.push(avatar)
     }
 
-    _removeType(x, y, type) {
-        const key = keyOf(x, y)
-        const typeSet = this.types[key]
-        if(typeSet)
-            delete typeSet[type]
-    }
-
     _changedAt(x, y) {
         const lists = this.avatars[keyOf(x, y)]
-        for(const key in lists) {
-            const list = lists[key]
+        for(const type in lists) {
+            const list = lists[type]
             for(const avatar of list) {
                 if(avatar.updater) {
-                    avatar.updater(this, avatar, x, y)
+                    avatar.icon = avatar.updater(this, x, y)
                 }
             }
         }
@@ -92,7 +78,6 @@ export class ComputedTileField {
         this._makeTile4Part(se, x, y, layer, type, 1, 1)
         this._makeTile4Part(nw, x, y, layer, type, -1, -1)
         this._makeTile4Part(ne, x, y, layer, type, 1, -1)
-        this._addType(x, y, type)
         this._changedAt(x, y)
         this._changedAround(x, y)
     }
@@ -100,7 +85,6 @@ export class ComputedTileField {
     makeTile(icon, x, y, layer, type) {
         const avatar = new IconAvatar(this.field.nodeAt(x, y), icon, x, y, 1, 1)
         avatar.layer = layer
-        this._addType(x, y, type)
         this._changedAround(x, y)
         this._addAvatar(x, y, type, avatar)
     }
@@ -112,7 +96,6 @@ export class ComputedTileField {
                 avatar.remove()
             }
             delete lists[type]
-            this._removeType(x, y, type)
             this._changedAt(x, y)
             this._changedAround(x, y)
         }
@@ -120,8 +103,7 @@ export class ComputedTileField {
 
     clear() {
         this.field.clear()
-        this.types = Object.create(null)
-        this.updaters = Object.create(null)
+        this.avatars = Object.create(null)
     }
 }
 
@@ -146,7 +128,7 @@ export function borderIcons(
 }
 
 function selected(dx, dy, observedTypes, inverse, convex, concave, hFace, vFace, surrounded) {
-    return (cfield, avatar, x, y) => {
+    return (cfield, x, y) => {
         const cornerKey = keyOf(x + dx, y + dy)
         const hKey = keyOf(x, y + dy)
         const vKey = keyOf(x + dx, y)
@@ -161,7 +143,7 @@ function selected(dx, dy, observedTypes, inverse, convex, concave, hFace, vFace,
             vert = !vert
         }
 
-        avatar.icon = select(convex, concave, hFace, vFace, surrounded, corner, horiz, vert)
+        return select(convex, concave, hFace, vFace, surrounded, corner, horiz, vert)
     }
 }
 

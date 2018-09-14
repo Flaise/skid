@@ -6,7 +6,6 @@ export class ComputedTileField {
     constructor(root, tileSize) {
         this.field = new TileField(root, tileSize)
         this.types = Object.create(null) // {position: {[type]: true}}
-        this.updaters = Object.create(null)
         this.avatars = Object.create(null) // {position: {[type]: [avatar, ...]}}
     }
 
@@ -54,22 +53,16 @@ export class ComputedTileField {
             delete typeSet[type]
     }
 
-    _addUpdater(x, y, func) {
-        const key = keyOf(x, y)
-        let updaters = this.updaters[key]
-        if(!updaters) {
-            updaters = []
-            this.updaters[key] = updaters
-        }
-
-        updaters.push(func)
-    }
-
     _changedAt(x, y) {
-        const functions = this.updaters[keyOf(x, y)]
-        if(functions)
-            for(const func of functions)
-                func(this, x, y)
+        const lists = this.avatars[keyOf(x, y)]
+        for(const key in lists) {
+            const list = lists[key]
+            for(const avatar of list) {
+                if(avatar.updater) {
+                    avatar.updater(this, avatar, x, y)
+                }
+            }
+        }
     }
 
     _changedAround(x, y) {
@@ -83,27 +76,22 @@ export class ComputedTileField {
         this._changedAt(x + 1, y + 1)
     }
 
-    _makeTile4Part(icon, x, y, layer, sx, sy) {
+    _makeTile4Part(icon, x, y, layer, type, sx, sy) {
         const segment = this.field.nodeAt(x, y)
         const avatar = new IconAvatar(segment, undefined, x + .25 * sx, y + .25 * sy, .5, .5)
         avatar.layer = layer
         if(is.function(icon))
-            this._addUpdater(x, y, icon(avatar))
+            avatar.updater = icon
         else
             avatar.icon = icon
-        return avatar
+        this._addAvatar(x, y, type, avatar)
     }
 
     makeTile4({nw, ne, sw, se}, x, y, layer, type) {
-        const a = this._makeTile4Part(sw, x, y, layer, -1, 1)
-        const b = this._makeTile4Part(se, x, y, layer, 1, 1)
-        const c = this._makeTile4Part(nw, x, y, layer, -1, -1)
-        const d = this._makeTile4Part(ne, x, y, layer, 1, -1)
-
-        this._addAvatar(x, y, type, a)
-        this._addAvatar(x, y, type, b)
-        this._addAvatar(x, y, type, c)
-        this._addAvatar(x, y, type, d)
+        this._makeTile4Part(sw, x, y, layer, type, -1, 1)
+        this._makeTile4Part(se, x, y, layer, type, 1, 1)
+        this._makeTile4Part(nw, x, y, layer, type, -1, -1)
+        this._makeTile4Part(ne, x, y, layer, type, 1, -1)
         this._addType(x, y, type)
         this._changedAt(x, y)
         this._changedAround(x, y)
@@ -118,8 +106,7 @@ export class ComputedTileField {
     }
 
     removeTile(x, y, type) {
-        const key = keyOf(x, y)
-        const lists = this.avatars[key]
+        const lists = this.avatars[keyOf(x, y)]
         if(lists && lists[type]) {
             for(const avatar of lists[type]) {
                 avatar.remove()
@@ -128,7 +115,6 @@ export class ComputedTileField {
             this._removeType(x, y, type)
             this._changedAt(x, y)
             this._changedAround(x, y)
-            // TODO: need to remove updaters
         }
     }
 
@@ -160,24 +146,22 @@ export function borderIcons(
 }
 
 function selected(dx, dy, observedTypes, inverse, convex, concave, hFace, vFace, surrounded) {
-    return (avatar) => {
-        return (cfield, x, y) => {
-            const cornerKey = keyOf(x + dx, y + dy)
-            const hKey = keyOf(x, y + dy)
-            const vKey = keyOf(x + dx, y)
+    return (cfield, avatar, x, y) => {
+        const cornerKey = keyOf(x + dx, y + dy)
+        const hKey = keyOf(x, y + dy)
+        const vKey = keyOf(x + dx, y)
 
-            let corner = cfield._hasTypeAtKey(cornerKey, observedTypes)
-            let horiz = cfield._hasTypeAtKey(hKey, observedTypes)
-            let vert = cfield._hasTypeAtKey(vKey, observedTypes)
+        let corner = cfield._hasTypeAtKey(cornerKey, observedTypes)
+        let horiz = cfield._hasTypeAtKey(hKey, observedTypes)
+        let vert = cfield._hasTypeAtKey(vKey, observedTypes)
 
-            if(inverse) {
-                corner = !corner
-                horiz = !horiz
-                vert = !vert
-            }
-
-            avatar.icon = select(convex, concave, hFace, vFace, surrounded, corner, horiz, vert)
+        if(inverse) {
+            corner = !corner
+            horiz = !horiz
+            vert = !vert
         }
+
+        avatar.icon = select(convex, concave, hFace, vFace, surrounded, corner, horiz, vert)
     }
 }
 

@@ -85,8 +85,8 @@ export class ComputedTileField {
     makeTile(icon, x, y, layer, type) {
         const avatar = new IconAvatar(this.field.nodeAt(x, y), icon, x, y, 1, 1)
         avatar.layer = layer
-        this._changedAround(x, y)
         this._addAvatar(x, y, type, avatar)
+        this._changedAround(x, y)
     }
 
     removeTile(x, y, type) {

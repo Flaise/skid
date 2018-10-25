@@ -33,7 +33,6 @@ export class TileFieldSegment extends Group {
                 this._canvas.width = 0
                 this._canvas.height = 0
             }
-            this._altered = false
 
             if(!this._canvas.width || !this._canvas.height)
                 return

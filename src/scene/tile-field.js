@@ -4,9 +4,6 @@ import {Group} from './group'
 export class TileField {
     constructor(root, tileSize) {
         this.root = root
-        // limit pixel size to limit redraws - maximum is roughly 8000 on Firefox
-        // subtract a few for objects that aren't contained by their tiles
-        this._tilesPerSegment = Math.floor(7000 / tileSize) - 2
         this._tileSize = tileSize
         this._rows = Object.create(null)
         this._segments = Object.create(null)
@@ -14,7 +11,7 @@ export class TileField {
     }
 
     _keyOf(x, y) {
-        return Math.floor(x / this._tilesPerSegment) + ',' + Math.floor(y)
+        return Math.floor(x / 6) + ',' + Math.floor(y)
     }
     _ensureRow(y) {
         let result = this._rows[y]

@@ -6,7 +6,16 @@ export function power_fac(exp) {
         return linear
     return (x) => Math.pow(x, exp)
 }
+
 export function quadratic(x) { return x * x }
+export function quadraticInOut(x) {
+    x *= 2
+    if(x < 1)
+        return x * x / 2
+    x -= 1
+    return -1 / 2 * (x * (x - 2) - 1)
+}
+
 export function cubic(x) { return x * x * x }
 export function quartic(x) { return x * x * x * x }
 

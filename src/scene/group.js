@@ -1,5 +1,15 @@
 import {Avatar} from './avatar'
 import {Interpolands} from '../interpolands'
+import {is} from '../is'
+import {insertSorted, remove} from '../array'
+
+function compare(a, b) {
+    if(is.nullish(a._layer))
+        return -1
+    if(is.nullish(b._layer))
+        return 1
+    return b._layer - a._layer
+}
 
 export class Group extends Avatar {
     constructor(container) {
@@ -73,5 +83,22 @@ export class Group extends Avatar {
             return undefined
 
         return [left, top, right - left, bottom - top]
+    }
+
+    insert(avatar) {
+        avatar.container = this
+        insertSorted(this.contents, avatar, compare)
+        this.changed()
+    }
+
+    resort(avatar) {
+        remove(this.contents, avatar)
+        insertSorted(this.contents, avatar, compare)
+        this.changed()
+    }
+
+    removeAvatar(avatar) {
+        remove(this.contents, avatar)
+        this.changed()
     }
 }

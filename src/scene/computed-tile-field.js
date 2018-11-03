@@ -89,6 +89,17 @@ export class ComputedTileField {
         this._changedAround(x, y)
     }
 
+    hasTile(type, x, y) {
+        const lists = this.avatars[keyOf(x, y)]
+        return lists && lists[type] && lists[type].length > 0
+    }
+
+    insertAvatar(avatar, x, y, type) {
+        this.field.nodeAt(x, y).insert(avatar)
+        this._addAvatar(x, y, type, avatar)
+        this._changedAround(x, y)
+    }
+
     removeTile(x, y, type) {
         const lists = this.avatars[keyOf(x, y)]
         if(lists && lists[type]) {

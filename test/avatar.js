@@ -166,6 +166,8 @@ test('leaves no interpolands behind after multi-removal and calls all onRemoves'
     var b = new Translation(avatars)
     var c = new Translation(avatars)
 
+    assert(avatars.interpolands === a.interpolands)
+
     a.remove()
     b.remove()
     c.remove()

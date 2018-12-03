@@ -22,7 +22,7 @@ export function procrastinate(inCode, outCode, delay) {
     });
 }
 
-function callLater(state, delay, callback) {
+export function callLater(state, delay, callback) {
     if (!state.timeRemainder) state.timeRemainder = 0;
     const targetTime = Date.now() + delay - state.timeRemainder;
 

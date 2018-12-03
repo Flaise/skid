@@ -13,27 +13,27 @@ export function start(debug) {
     if (typeof window !== 'undefined') {
         window.getState = () => state;
     }
-    state.load = {requests: 0, completions: 0, done: false, loaders: {}, error: false};
+    state.load = {requests: 0, completions: 0, loaders: {}, error: false};
 
     if (typeof window !== 'undefined') {
         window.addEventListener('load', () => {
             handle(state, 'load');
             if (state.load.requests === 0) {
-                state.load.done = true;
+                state.load = undefined;
                 handle(state, 'load_done');
             }
         });
     } else {
         handle(state, 'load');
         if (state.load.requests === 0) {
-            state.load.done = true;
+            state.load = undefined;
             handle(state, 'load_done');
         }
     }
 }
 
 export function startLoading(state, size) {
-    if (state.load.done) throw new Error("load assets during the 'load' event");
+    if (!state.load) throw new Error("load assets during the 'load' event");
     state.load.requests += 1;
     const id = state.load.requests;
     if (size != undefined) progressLoading(state, id, 0, size);
@@ -41,7 +41,7 @@ export function startLoading(state, size) {
 }
 
 export function progressLoading(state, id, loaded, total) {
-    if (state.load.done) throw new Error("load assets during the 'load' event");
+    if (!state.load) throw new Error("load assets during the 'load' event");
     if (state.load.error) return;
     if (isNaN(loaded) || isNaN(total)) {
         loaded = 0;
@@ -65,11 +65,11 @@ export function progressLoading(state, id, loaded, total) {
 }
 
 export function doneLoading(state, id) {
-    if (state.load.done) throw new Error("load assets during the 'load' event");
+    if (!state.load) throw new Error("load assets during the 'load' event");
     if (state.load.error) return;
     state.load.completions += 1;
     if (state.load.completions === state.load.requests) {
-        state.load.done = true;
+        state.load = undefined;
         handle(state, 'load_done');
     }
 }

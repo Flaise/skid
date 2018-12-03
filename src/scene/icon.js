@@ -1,4 +1,5 @@
-import {loadData, reloadData} from '../load';
+import {loadData, reloadData, startLoading, doneLoading} from '../load';
+import {handle} from '../event';
 
 export class Icon {
     constructor(image, layout) {
@@ -114,22 +115,26 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
 }
 
 export function reloadIcon(state, icon, source, ax, ay, diameter) {
-    return new Promise((resolve, reject) => {
-        reloadData(state, source, () => Promise.resolve(source))
-            .then((data) => {
-                const image = new window.Image();
-                image.onload = () => {
-                    // TODO: Putting this here reduces flicker but also increases likelihood
-                    // of race condition
-                    icon.image = image;
+    let loadId = undefined;
+    if (state.load) loadId = startLoading(state, 0);
 
-                    icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                                image.width, image.height, true);
-                    resolve();
-                };
-                image.src = data;
-            });
-    });
+    reloadData(state, source, () => Promise.resolve(source))
+        .then((data) => {
+            const image = new window.Image();
+            image.onload = () => {
+                // TODO: Putting this here reduces flicker but also increases likelihood
+                // of race condition
+                // TODO: Need a way to mark an image load as canceled
+                icon.image = image;
+
+                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                                            image.width, image.height, true);
+
+                if (loadId) doneLoading(state, loadId);
+                handle(state, 'icon_reloaded', icon);
+            };
+            image.src = data;
+        });
 }
 
 function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,

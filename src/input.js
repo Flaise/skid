@@ -18,7 +18,7 @@ addHandler('load_done', (state) => {
 
 function onKey(state, event) {
     if (event.repeat) return;
-    if (event.target.tagName === 'INPUT') {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
         if (event.code === 'Escape') event.target.blur();
         return;
     }

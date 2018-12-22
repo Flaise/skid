@@ -50,7 +50,7 @@ export class PieAvatar extends DefaultAvatar {
             context.fillStyle = this.fillStyle
             context.fill()
         }
-        if(this.strokeStyle) {
+        if(this.strokeStyle && this.lineWidth) {
             context.strokeStyle = this.strokeStyle
             context.lineWidth = this.lineWidth
             context.stroke()

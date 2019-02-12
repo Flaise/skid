@@ -83,17 +83,14 @@ export class Group extends Avatar {
     insert(avatar) {
         avatar.container = this
         insertSorted(this.contents, avatar, compare)
-        this.changed()
     }
 
     resort(avatar) {
         remove(this.contents, avatar)
         insertSorted(this.contents, avatar, compare)
-        this.changed()
     }
 
     removeAvatar(avatar) {
         remove(this.contents, avatar)
-        this.changed()
     }
 }

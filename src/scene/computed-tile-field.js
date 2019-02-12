@@ -49,6 +49,7 @@ export class ComputedTileField {
                 }
             }
         }
+        this.field.nodeAt(x, y)._altered = true
     }
 
     _changedAround(x, y) {

@@ -15,11 +15,6 @@ export class TileFieldSegment extends Group {
         this._height = 0
     }
 
-    changed() {
-        this._altered = true
-        super.changed()
-    }
-
     draw(context) {
         if(this._altered) {
             this._altered = false

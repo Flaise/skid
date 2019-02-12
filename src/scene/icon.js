@@ -16,17 +16,12 @@ export class Icon {
         if(index >= 0)
             this._avatars.splice(index, 1)
     }
-    changed() {
-        for(const avatar of this._avatars)
-            avatar.changed()
-    }
 
     get layout() {
         return this._layout
     }
     set layout(value) {
         this._layout = value
-        this.changed()
     }
 
     get image() {
@@ -34,7 +29,6 @@ export class Icon {
     }
     set image(value) {
         this._image = value
-        this.changed()
     }
 
     draw(context, x, y, w, h) {
@@ -132,6 +126,7 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
 
                 if (loadId) doneLoading(state, loadId);
                 handle(state, 'icon_reloaded', icon);
+                handle(state, 'request_draw');
             };
             image.src = data;
         });

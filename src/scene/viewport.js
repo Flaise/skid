@@ -4,7 +4,6 @@ import {addHandler, handle} from '../event'
 
 export function makeViewport(state, canvas) {
     const result = new Group()
-    result.changed = () => handle(state, 'request_draw') // TODO: alter interpolands API
     state.skid.viewport = result
     state.skid.canvas = canvas
     return result

@@ -28,19 +28,21 @@ class Interpoland {
         this.tweenCount = 0
     }
 
-    mod(delta, duration, tweenFunc, onDone, remainder) {
+    mod(delta, duration, tweenFunc, onDone) {
         if(!delta && !onDone)
             return
         this.dest += delta
-        return this.container.makeTween(this, delta, delta, duration, tweenFunc, onDone, remainder)
+        return this.container.makeTween(this, delta, delta, duration, tweenFunc, onDone)
     }
-    modTo(dest, duration, tweenFunc, onDone, remainder) {
-        return this.mod(dest - this.dest, duration, tweenFunc, onDone, remainder)
+    modTo(dest, duration, tweenFunc, onDone) {
+        return this.mod(dest - this.dest, duration, tweenFunc, onDone)
     }
     modNow(delta) {
         this.base += delta
         this.curr += delta
         this.dest += delta
+        if(this.tweenCount === 0)
+            handle(this.container.state, 'request_draw')
     }
     modToNow(dest) {
         this.modNow(dest - this.dest)
@@ -54,12 +56,12 @@ class Interpoland {
         this.curr = dest
         this.dest = dest
         if(this.tweenCount === 0)
-            this.container.changed()
+            handle(this.container.state, 'request_draw')
         else
             this.container.removeTweens(this)
     }
-    mod_noDelta(amplitude, duration, tweenFunc, onDone, remainder) {
-        return this.container.makeTween(this, 0, amplitude, duration, tweenFunc, onDone, remainder)
+    mod_noDelta(amplitude, duration, tweenFunc, onDone) {
+        return this.container.makeTween(this, 0, amplitude, duration, tweenFunc, onDone)
     }
     remove() {
         this.container.remove(this)
@@ -77,12 +79,11 @@ class Interpolands {
         this.state = state
     }
 
-    makeTween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
-        if(is.nullish(remainder))
-            remainder = this.remainder
-        const result = new Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder)
+    makeTween(interpoland, magnitude, amplitude, duration, func, onDone) {
+        const result = new Tween(interpoland, magnitude, amplitude, duration, func, onDone,
+                                 this.remainder)
         this.tweens.push(result)
-        this.changed()
+        handle(this.state, 'request_draw')
         interpoland.tweenCount += 1
         return result
     }
@@ -93,9 +94,11 @@ class Interpolands {
     }
 
     removeTweens(interpoland) {
+        if (interpoland.tweenCount === 0)
+            return
         filter(this.tweens, (tween) => tween.interpoland !== interpoland)
         interpoland.tweenCount = 0
-        this.changed()
+        handle(this.state, 'request_draw')
     }
 
     update(dt) {
@@ -122,14 +125,10 @@ class Interpolands {
         for(let i = 0; i < this.ending.length; i += 1) {
             const tween = this.ending[i]
             this.remainder = tween.elapsed - tween.duration
-            tween.onDone.call(undefined, this.remainder)
+            tween.onDone.call()
         }
         this.ending.length = 0
         this.remainder = 0
-    }
-
-    changed() {
-        handle(this.state, 'request_draw')
     }
 }
 

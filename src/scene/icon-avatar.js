@@ -26,7 +26,6 @@ export class IconAvatar extends Avatar {
         this._remove()
         this._icon = value
         this._add()
-        this.changed()
     }
 
     subremove() {

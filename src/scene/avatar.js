@@ -37,11 +37,6 @@ export class Avatar {
         callback(this)
     }
 
-    changed() {
-        if(this.container)
-            this.container.changed()
-    }
-
     bounds() {
         return undefined
     }

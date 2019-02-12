@@ -1,5 +1,4 @@
 import {Avatar} from './avatar'
-import {Interpolands} from '../interpolands'
 import {is} from '../is'
 import {insertSorted, remove} from '../array'
 
@@ -14,10 +13,6 @@ function compare(a, b) {
 export class Group extends Avatar {
     constructor(container) {
         super(container)
-        if(container)
-            this.interpolands = container.interpolands // used when adding avatars to this group
-        else
-            this.interpolands = new Interpolands(this)
         this.contents = []
     }
 

@@ -1,5 +1,6 @@
 import {is} from './is'
 import {filter, remove} from './array'
+import {handle, addHandler} from './event'
 
 function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
     if(!func) throw new Error()
@@ -65,19 +66,15 @@ class Interpoland {
     }
 }
 
-export class Interpolands {
-    constructor(avatar) {
+class Interpolands {
+    constructor(state) {
         this.tweens = []
         this.ending = []
         this.interpolands = []
-        this.remainder = 0
-        this.avatar = avatar
-    }
 
-    make(value) {
-        const result = new Interpoland(this, value)
-        this.interpolands.push(result)
-        return result
+        // TODO: merge with state.skid.timeRemainder; need to modify animationFrame
+        this.remainder = 0
+        this.state = state
     }
 
     makeTween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
@@ -134,6 +131,22 @@ export class Interpolands {
             this.changed()
     }
     changed() {
-        this.avatar.changed()
+        handle(this.state, 'request_redraw');
     }
 }
+
+export function makeInterpoland(state, value) {
+    if (!state.skid.interpolands) {
+        state.skid.interpolands = new Interpolands(state)
+    }
+    const group = state.skid.interpolands
+    const result = new Interpoland(group, value)
+    group.interpolands.push(result)
+    return result
+}
+
+addHandler('interpolate', (state, dt) => {
+    if (state.skid.interpolands) {
+        state.skid.interpolands.update(dt)
+    }
+})

@@ -1,10 +1,11 @@
 import {Group} from './group'
+import {makeInterpoland} from '../interpolands'
 
 export class Translation extends Group {
-    constructor(container, x, y) {
+    constructor(state, container, x, y) {
         super(container)
-        this.x = this.interpolands.make(x || 0)
-        this.y = this.interpolands.make(y || 0)
+        this.x = makeInterpoland(state, x || 0)
+        this.y = makeInterpoland(state, y || 0)
     }
 
     draw(context) {

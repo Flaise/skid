@@ -1,15 +1,16 @@
 import {DefaultAvatar} from './default-avatar'
 import {wrap, toRadians} from '../turns'
 import {clamp} from '../scalars'
+import {makeInterpoland} from '../interpolands'
 
 export class PieAvatar extends DefaultAvatar {
-    constructor(container) {
-        super(container)
+    constructor(state, container) {
+        super(state, container)
         // Distance of second jaw from first jaw. Positive is clockwise.
-        this.breadth = container.interpolands.make(0)
+        this.breadth = makeInterpoland(state, 0)
         // Distance of first jaw from north. Positive is clockwise.
-        this.startAngle = container.interpolands.make(0)
-        this.innerRadiusRel = container.interpolands.make(0)
+        this.startAngle = makeInterpoland(state, 0)
+        this.innerRadiusRel = makeInterpoland(state, 0)
         this.fillStyle = undefined
         this.strokeStyle = undefined
         this.lineWidth = undefined

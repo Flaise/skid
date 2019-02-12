@@ -116,7 +116,7 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
 
 export function reloadIcon(state, icon, source, ax, ay, diameter) {
     let loadId = undefined;
-    if (state.load) loadId = startLoading(state, 0);
+    if (state.skid.load) loadId = startLoading(state, 0);
 
     reloadData(state, source, () => Promise.resolve(source))
         .then((data) => {

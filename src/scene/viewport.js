@@ -1,12 +1,12 @@
 import {Group} from './group'
-import {animationFrame} from './request-animation-frame'
 import {is} from '../is'
+import {addHandler, handle} from '../event'
 
 export class Viewport extends Group {
-    constructor(canvas) {
+    constructor(state, canvas) {
         super()
         this._canvas = canvas
-        this.lastFrame = undefined
+        this.lastFrame = undefined // TODO: move to interpolands module
         this.animFrame = false
 
         this.animationFrame = () => {
@@ -17,8 +17,12 @@ export class Viewport extends Group {
         }
 
         this.resize = () => this.changed()
-        if(typeof window !== 'undefined') // for unit testing in Node
+        if(typeof window !== 'undefined') { // for unit testing in Node
             window.addEventListener('resize', this.resize)
+        }
+
+        this.state = state
+        state.skid.viewport = this
     }
 
     set canvas(value) {
@@ -46,9 +50,36 @@ export class Viewport extends Group {
             return
 
         const currentFrame = Date.now()
-        this.interpolands.update(currentFrame - this.lastFrame)
+        handle(this.state, 'interpolate', currentFrame - this.lastFrame)
         this.lastFrame = currentFrame
 
         super.draw(this._canvas.getContext('2d'))
     }
 }
+
+addHandler('request_redraw', (state) => {
+    if (state.skid.viewport) {
+        // TODO: do this without instance method
+        state.skid.viewport.changed()
+    }
+})
+
+let func
+if(typeof window === 'undefined')
+    // for unit testing in Node
+    func = (callback => setTimeout(callback, 1000 / 60))
+else {
+    func = (
+        window.requestAnimationFrame
+        || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame
+        || window.oRequestAnimationFrame
+        || window.msRequestAnimationFrame
+    )
+    if(func)
+        func = func.bind(window)
+    else
+        func = (callback => window.setTimeout(callback, 1000 / 60))
+}
+
+const animationFrame = func

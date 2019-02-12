@@ -1,10 +1,11 @@
 import {DefaultAvatar} from './default-avatar'
+import {makeInterpoland} from '../interpolands'
 
 export class RectAvatar extends DefaultAvatar {
-    constructor(group) {
-        super(group)
-        this.anchorX = group.interpolands.make(0)
-        this.anchorY = group.interpolands.make(0)
+    constructor(state, group) {
+        super(state, group)
+        this.anchorX = makeInterpoland(state, 0)
+        this.anchorY = makeInterpoland(state, 0)
         this.fillStyle = undefined
         this.strokeStyle = undefined
         this.lineWidth = undefined

@@ -1,11 +1,12 @@
 import {Avatar} from './avatar'
 import {is} from '../is'
+import {makeInterpoland} from '../interpolands'
 
 export class TextAvatar extends Avatar {
-    constructor(container, camera) {
+    constructor(state, container, camera) {
         super(container)
-        this.x = container.interpolands.make(0)
-        this.y = container.interpolands.make(0)
+        this.x = makeInterpoland(state, 0)
+        this.y = makeInterpoland(state, 0)
         this.camera = camera
         this.font = undefined
         this.text = ''

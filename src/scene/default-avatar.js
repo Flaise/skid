@@ -1,15 +1,16 @@
 import {Avatar} from './avatar'
 import {toRadians} from '../turns'
 import {clamp} from '../scalars'
+import {makeInterpoland} from '../interpolands';
 
 export class DefaultAvatar extends Avatar {
-    constructor(group) {
+    constructor(state, group) {
         super(group)
-        this.x = group.interpolands.make(0)
-        this.y = group.interpolands.make(0)
-        this.w = group.interpolands.make(0)
-        this.h = group.interpolands.make(0)
-        this.angle = group.interpolands.make(0)
+        this.x = makeInterpoland(state, 0)
+        this.y = makeInterpoland(state, 0)
+        this.w = makeInterpoland(state, 0)
+        this.h = makeInterpoland(state, 0)
+        this.angle = makeInterpoland(state, 0)
     }
 
     doTransform(context) {

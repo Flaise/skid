@@ -1,59 +1,25 @@
 import assert from 'power-assert'
 import sinon from 'sinon'
-import {Interpolands} from '../src/interpolands'
+import {makeInterpoland} from '../src/interpolands'
 import * as tween from '../src/tween'
 
 suite('Interpoland')
 
 let interpolands
-let avatar
+let state
 beforeEach(function() {
-    avatar = {changed: sinon.spy()}
-    interpolands = new Interpolands(avatar)
+    state = {skid: {}}
+    makeInterpoland(state, 0).remove()
+    interpolands = state.skid.interpolands
 
     assert(interpolands.interpolands.length === 0)
     assert(interpolands.tweens.length === 0)
 })
 
-test('calls changed() when modifying interpoland', () => {
-    const a = interpolands.make(1)
-    a.setTo(2)
-    assert(avatar.changed.called)
-})
-
-test('does not call changed() when performing no-op assignment', () => {
-    const a = interpolands.make(1)
-    a.setTo(1)
-    assert(avatar.changed.callCount === 0)
-})
-
-test('does not call changed() when performing no-op tween', () => {
-    const a = interpolands.make(1)
-    a.modTo(1, 1, tween.linear)
-    assert(avatar.changed.callCount === 0)
-})
-
-test('calls changed() when performing no-op tween with onDone trigger', () => {
-    const a = interpolands.make(1)
-    a.modTo(1, 1, tween.linear, () => {})
-    assert(avatar.changed.callCount === 1)
-})
-
-test('calls changed() when destroying tweens with no-op assignment', () => {
-    const a = interpolands.make(1)
-    a.modTo(2, 1, tween.linear)
-    a.modTo(1, 1, tween.linear)
-    avatar.changed.reset()
-    assert(a.dest === 1)
-    a.setTo(1)
-    assert(a.dest === 1)
-    assert(avatar.changed.callCount === 1)
-})
-
 test('recycles second of 3', function() {
-    var a = interpolands.make(1)
-    var b = interpolands.make(2)
-    var c = interpolands.make(3)
+    var a = makeInterpoland(state, 1)
+    var b = makeInterpoland(state, 2)
+    var c = makeInterpoland(state, 3)
     assert(interpolands.interpolands.length === 3)
 
     b.remove()
@@ -67,11 +33,11 @@ test('recycles second of 3', function() {
 })
 
 test('recycles second and third of 5', function() {
-    var a = interpolands.make(1)
-    var b = interpolands.make(2)
-    var c = interpolands.make(3)
-    var d = interpolands.make(4)
-    var e = interpolands.make(5)
+    var a = makeInterpoland(state, 1)
+    var b = makeInterpoland(state, 2)
+    var c = makeInterpoland(state, 3)
+    var d = makeInterpoland(state, 4)
+    var e = makeInterpoland(state, 5)
     assert(interpolands.interpolands.length === 5)
 
     b.remove()
@@ -90,7 +56,7 @@ test('recycles second and third of 5', function() {
 test('recycles tween of destroyed interpolands', function() {
     var onDone = sinon.spy()
 
-    var inter = interpolands.make(0)
+    var inter = makeInterpoland(state, 0)
     inter.mod(2, 1, tween.linear, onDone)
     assert(interpolands.tweens.length === 1)
     assert(onDone.callCount === 0)
@@ -99,7 +65,7 @@ test('recycles tween of destroyed interpolands', function() {
     interpolands.update(0)
     assert(interpolands.tweens.length === 0)
 
-    inter = interpolands.make(9)
+    inter = makeInterpoland(state, 9)
     var tw = inter.modTo(7, 1, tween.linear)
     assert(tw)
     assert(tw.onDone !== onDone)
@@ -111,7 +77,7 @@ test('recycles tween of destroyed interpolands', function() {
 test('interpolates linearly', function() {
     var onDone = sinon.spy()
 
-    var val = interpolands.make(1)
+    var val = makeInterpoland(state, 1)
     assert(interpolands.interpolands.length === 1)
     assert(val.curr === 1)
 
@@ -136,7 +102,7 @@ test('supports concurrent interpolations', function() {
     var onDoneA = sinon.spy()
     var onDoneB = sinon.spy()
 
-    var inter = interpolands.make(5)
+    var inter = makeInterpoland(state, 5)
     inter.mod(-5, 1, tween.power_fac(1), onDoneA)
     assert(onDoneA.callCount === 0)
     assert(inter.curr === 5)
@@ -167,7 +133,7 @@ test('supports concurrent interpolations', function() {
 test('can halt interpolation and snap to a value', function() {
     var onDone = sinon.spy()
 
-    var inter = interpolands.make(8)
+    var inter = makeInterpoland(state, 8)
     inter.mod(2, 1, tween.power_fac(1), onDone)
     assert(interpolands.tweens.length === 1)
     assert(onDone.callCount === 0)
@@ -182,7 +148,7 @@ test('can halt interpolation and snap to a value', function() {
 })
 
 test('can snap value without halting interpolation', function() {
-    var inter = interpolands.make(9)
+    var inter = makeInterpoland(state, 9)
     inter.mod(5, 1, tween.power_fac(1))
     inter.modNow(1)
     assert(interpolands.tweens.length === 1)
@@ -197,7 +163,7 @@ test('interpolates to a destination', function() {
     var onDoneA = sinon.spy()
     var onDoneB = sinon.spy()
 
-    var inter = interpolands.make(-4)
+    var inter = makeInterpoland(state, -4)
     inter.mod(2, 1, tween.power_fac(1), onDoneA)
     assert(onDoneA.callCount === 0)
     assert(inter.curr === -4)
@@ -227,14 +193,14 @@ test('interpolates to a destination', function() {
 })
 
 test('maintains precision when chaining interpolations', function() {
-    var onDoneB = sinon.spy(function(remainder) {
-        assert(remainder === 200)
+    var onDoneB = sinon.spy(function() {
+        assert(interpolands.remainder === 200)
     })
-    var onDoneA = sinon.spy(function(remainder) {
-        inter.mod(-1, 1000, tween.linear, onDoneB, remainder)
+    var onDoneA = sinon.spy(function() {
+        inter.mod(-1, 1000, tween.linear, onDoneB)
     })
 
-    var inter = interpolands.make(0)
+    var inter = makeInterpoland(state, 0)
     inter.mod(1, 1000, tween.linear, onDoneA)
     assert(inter.dest === 1)
 
@@ -256,14 +222,14 @@ test('maintains precision when chaining interpolations', function() {
 })
 
 test('maintains precision when chaining interpolations without remainder parameter', function() {
-    var onDoneB = sinon.spy(function(remainder) {
-        assert(remainder === 200)
+    var onDoneB = sinon.spy(function() {
+        assert(interpolands.remainder === 200)
     })
-    var onDoneA = sinon.spy(function(remainder) {
+    var onDoneA = sinon.spy(function() {
         inter.mod(-1, 1000, tween.linear, onDoneB)
     })
 
-    var inter = interpolands.make(0)
+    var inter = makeInterpoland(state, 0)
     inter.mod(1, 1000, tween.linear, onDoneA)
     assert(inter.dest === 1)
 
@@ -290,7 +256,7 @@ test('maintains precision when chaining interpolations without remainder paramet
 })
 
 test('interpolates with no net change', function() {
-    var inter = interpolands.make(5)
+    var inter = makeInterpoland(state, 5)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
 
@@ -320,10 +286,10 @@ test('interpolates with no net change', function() {
 })
 
 test('removes one interpoland without disturbing tweens of others', function() {
-    var interA = interpolands.make(5)
+    var interA = makeInterpoland(state, 5)
     var ta = interA.mod(-1, 1, tween.linear)
     var tb = interA.mod(4, 4, tween.linear)
-    var interB = interpolands.make(3)
+    var interB = makeInterpoland(state, 3)
     var tc = interB.mod(2, 2, tween.linear)
     var td = interA.mod(-5, 5, tween.linear)
     var te = interB.mod(3, 3, tween.linear)
@@ -341,11 +307,11 @@ test('removes one interpoland without disturbing tweens of others', function() {
 })
 
 test('will not update tweens that are added during update', function() {
-    var inter = interpolands.make(0)
+    var inter = makeInterpoland(state, 0)
     var tweenB
-    var onDone = sinon.spy((remainder) => {
-        assert(remainder === 0)
-        tweenB = inter.mod(-1, 50, tween.circle, undefined, remainder)
+    var onDone = sinon.spy(() => {
+        assert(interpolands.remainder === 0)
+        tweenB = inter.mod(-1, 50, tween.circle)
     })
     var tweenA = inter.mod(1, 100, tween.linear, onDone)
 

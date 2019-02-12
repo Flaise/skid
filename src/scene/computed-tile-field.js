@@ -40,7 +40,8 @@ export class ComputedTileField {
     }
 
     _changedAt(x, y) {
-        const lists = this.avatars[keyOf(x, y)]
+        const key = keyOf(x, y)
+        const lists = this.avatars[key]
         for(const type in lists) {
             const list = lists[type]
             for(const avatar of list) {
@@ -49,7 +50,10 @@ export class ComputedTileField {
                 }
             }
         }
-        this.field.nodeAt(x, y)._altered = true
+        const node = this.field._segments[key]
+        if (node) {
+            node._altered = true
+        }
     }
 
     _changedAround(x, y) {

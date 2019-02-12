@@ -6,7 +6,7 @@ suite('Event');
 let state;
 
 beforeEach(() => {
-    state = {};
+    state = {skid: {}};
 });
 
 afterEach(() => {

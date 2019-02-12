@@ -6,10 +6,6 @@ import {Avatar} from './avatar'
  * by tiling alpha-blended images on some rendering engines, such as Firefox.
  */
 export class ClearAll extends Avatar {
-    constructor(container) {
-        super(container)
-    }
-
     draw(context) {
         const canvas = context.canvas
         context.clearRect(0, 0, canvas.width, canvas.height)

@@ -13,7 +13,7 @@ before(() => {
 });
 
 beforeEach(() => {
-    state = {};
+    state = {skid: {}};
     callback = sinon.spy();
     procrastinate('a', 'b', 50);
     addHandler('b', callback);

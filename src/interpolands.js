@@ -136,9 +136,9 @@ export function makeInterpoland(state, value) {
     if (!state.skid.interpolands) {
         state.skid.interpolands = new Interpolands(state)
     }
-    const group = state.skid.interpolands
-    const result = new Interpoland(group, value)
-    group.interpolands.push(result)
+    const interpolands = state.skid.interpolands
+    const result = new Interpoland(interpolands, value)
+    interpolands.interpolands.push(result)
     return result
 }
 

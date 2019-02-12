@@ -126,12 +126,10 @@ class Interpolands {
         }
         this.ending.length = 0
         this.remainder = 0
-
-        if(this.tweens.length)
-            this.changed()
     }
+
     changed() {
-        handle(this.state, 'request_redraw');
+        handle(this.state, 'request_draw')
     }
 }
 
@@ -145,8 +143,14 @@ export function makeInterpoland(state, value) {
     return result
 }
 
-addHandler('interpolate', (state, dt) => {
+addHandler('before_draw', (state, dt) => {
     if (state.skid.interpolands) {
         state.skid.interpolands.update(dt)
+    }
+})
+
+addHandler('after_draw', (state) => {
+    if (state.skid.interpolands && state.skid.interpolands.tweens.length) {
+        handle(state, 'request_draw')
     }
 })

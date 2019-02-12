@@ -43,7 +43,9 @@ export function silence(code) {
 export function handle(state, code, arg) {
     if (!state) throw new Error();
     if (typeof state !== 'object') throw new Error('state must be an object');
-    if (state.debug && silences.indexOf(code) < 0) console.log(code, inspect(arg, {depth: 0}));
+    if (state.skid.debug && silences.indexOf(code) < 0) {
+        console.log('[event]', code, inspect(arg, {depth: 0}));
+    }
     const list = handlers[code];
     if (!list) return;
     // for-of syntax gives bad tracebacks

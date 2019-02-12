@@ -23,12 +23,12 @@ export function procrastinate(inCode, outCode, delay) {
 }
 
 export function callLater(state, delay, callback) {
-    if (!state.timeRemainder) state.timeRemainder = 0;
-    const targetTime = Date.now() + delay - state.timeRemainder;
+    if (!state.skid.timeRemainder) state.skid.timeRemainder = 0;
+    const targetTime = Date.now() + delay - state.skid.timeRemainder;
 
     return setTimeout(() => {
-        state.timeRemainder = Math.min(100, Date.now() - targetTime);
+        state.skid.timeRemainder = Math.min(100, Date.now() - targetTime);
         callback();
-        state.timeRemainder = 0;
-    }, delay - state.timeRemainder);
+        state.skid.timeRemainder = 0;
+    }, delay - state.skid.timeRemainder);
 }

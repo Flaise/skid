@@ -7,55 +7,56 @@ export function start(debug) {
     if (started) throw new Error('call start() only once');
     started = true;
     const state = Object.create(null);
+    state.skid = Object.create(null);
     if (debug) {
-        state.debug = true;
+        state.skid.debug = true;
     }
     if (typeof window !== 'undefined') {
         window.getState = () => state;
     }
-    state.load = {requests: 0, completions: 0, loaders: {}, error: false};
+    state.skid.load = {requests: 0, completions: 0, loaders: {}, error: false};
 
     if (typeof window !== 'undefined') {
         window.addEventListener('load', () => {
             handle(state, 'load');
-            if (state.load.requests === 0) {
-                state.load = undefined;
+            if (state.skid.load.requests === 0) {
+                state.skid.load = undefined;
                 handle(state, 'load_done');
             }
         });
     } else {
         handle(state, 'load');
-        if (state.load.requests === 0) {
-            state.load = undefined;
+        if (state.skid.load.requests === 0) {
+            state.skid.load = undefined;
             handle(state, 'load_done');
         }
     }
 }
 
 export function startLoading(state, size) {
-    if (!state.load) throw new Error("load assets during the 'load' event");
-    state.load.requests += 1;
-    const id = state.load.requests;
+    if (!state.skid.load) throw new Error("load assets during the 'load' event");
+    state.skid.load.requests += 1;
+    const id = state.skid.load.requests;
     if (size != undefined) progressLoading(state, id, 0, size);
     return id;
 }
 
 export function progressLoading(state, id, loaded, total) {
-    if (!state.load) throw new Error("load assets during the 'load' event");
-    if (state.load.error) return;
+    if (!state.skid.load) throw new Error("load assets during the 'load' event");
+    if (state.skid.load.error) return;
     if (isNaN(loaded) || isNaN(total)) {
         loaded = 0;
         total = 0;
     }
-    if (!state.load.loaders[id]) state.load.loaders[id] = {};
-    state.load.loaders[id].loaded = loaded;
-    state.load.loaders[id].total = total;
+    if (!state.skid.load.loaders[id]) state.skid.load.loaders[id] = {};
+    state.skid.load.loaders[id].loaded = loaded;
+    state.skid.load.loaders[id].total = total;
 
-    if (Object.keys(state.load.loaders).length < state.load.requests) return;
+    if (Object.keys(state.skid.load.loaders).length < state.skid.load.requests) return;
 
     let allLoaded = 0;
     let allTotal = 0;
-    for (const loader of Object.values(state.load.loaders)) {
+    for (const loader of Object.values(state.skid.load.loaders)) {
         allLoaded += loader.loaded;
         allTotal += loader.total;
     }
@@ -65,18 +66,18 @@ export function progressLoading(state, id, loaded, total) {
 }
 
 export function doneLoading(state, id) {
-    if (!state.load) throw new Error("load assets during the 'load' event");
-    if (state.load.error) return;
-    state.load.completions += 1;
-    if (state.load.completions === state.load.requests) {
-        state.load = undefined;
+    if (!state.skid.load) throw new Error("load assets during the 'load' event");
+    if (state.skid.load.error) return;
+    state.skid.load.completions += 1;
+    if (state.skid.load.completions === state.skid.load.requests) {
+        state.skid.load = undefined;
         handle(state, 'load_done');
     }
 }
 
 export function errorLoading(state) {
-    if (state.load.error) return;
-    state.load.error = true;
+    if (state.skid.load.error) return;
+    state.skid.load.error = true;
     handle(state, 'load_error');
 }
 

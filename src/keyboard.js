@@ -1,9 +1,9 @@
-import {is} from './is'
+const {addHandler, handle} = require('./event')
 
 const states = Object.create(null)
 
 export function reset() {
-    for(let k of Object.keys(states))
+    for(const k of Object.keys(states))
         delete states[k]
 }
 
@@ -18,9 +18,22 @@ window.addEventListener('keyup', (e) => {
     states[e.keyCode] = false
 })
 
+// TODO: use handler, not globals
+
 export function stateOf(keyCode) {
-    if(is.object(states[keyCode]))
-        return states[keyCode].value
-    else
-        return !!states[keyCode]
+    return !!states[keyCode]
+}
+
+addHandler('load_done', (state) => {
+    window.addEventListener('keydown', event => onKey(state, event));
+    window.addEventListener('keyup', event => onKey(state, event));
+});
+
+function onKey(state, event) {
+    if (event.repeat) return;
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        if (event.code === 'Escape') event.target.blur();
+        return;
+    }
+    handle(state, 'key', event);
 }

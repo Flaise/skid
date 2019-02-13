@@ -2,22 +2,6 @@ import {is} from './is'
 import {filter, remove} from './array'
 import {handle, addHandler} from './event'
 
-function Tween(interpoland, magnitude, amplitude, duration, func, onDone, remainder) {
-    if(!func) throw new Error()
-    if(isNaN(magnitude)) throw new Error()
-    if(isNaN(amplitude)) throw new Error()
-    if(isNaN(duration)) throw new Error()
-    if(isNaN(remainder)) throw new Error()
-    this.interpoland = interpoland
-    this.curr = 0
-    this.elapsed = remainder
-    this.magnitude = magnitude
-    this.duration = duration
-    this.func = func
-    this.onDone = onDone
-    this.amplitude = amplitude
-}
-
 class Interpoland {
     constructor(container, value) {
         value = value || 0
@@ -32,7 +16,7 @@ class Interpoland {
         if(!delta && !onDone)
             return
         this.dest += delta
-        return this.container.makeTween(this, delta, delta, duration, tweenFunc, onDone)
+        return makeTween(this.container.state, this, delta, delta, duration, tweenFunc, onDone)
     }
     modTo(dest, duration, tweenFunc, onDone) {
         return this.mod(dest - this.dest, duration, tweenFunc, onDone)
@@ -61,7 +45,7 @@ class Interpoland {
             this.container.removeTweens(this)
     }
     mod_noDelta(amplitude, duration, tweenFunc, onDone) {
-        return this.container.makeTween(this, 0, amplitude, duration, tweenFunc, onDone)
+        return makeTween(this.container.state, this, 0, amplitude, duration, tweenFunc, onDone)
     }
     remove() {
         this.container.remove(this)
@@ -77,15 +61,6 @@ class Interpolands {
         // TODO: merge with state.skid.timeRemainder; need to modify animationFrame
         this.remainder = 0
         this.state = state
-    }
-
-    makeTween(interpoland, magnitude, amplitude, duration, func, onDone) {
-        const result = new Tween(interpoland, magnitude, amplitude, duration, func, onDone,
-                                 this.remainder)
-        this.tweens.push(result)
-        handle(this.state, 'request_draw')
-        interpoland.tweenCount += 1
-        return result
     }
 
     remove(interpoland) {
@@ -130,6 +105,23 @@ class Interpolands {
         this.ending.length = 0
         this.remainder = 0
     }
+}
+
+function makeTween(state, interpoland, magnitude, amplitude, duration, func, onDone) {
+    const interpolands = state.skid.interpolands;
+    if(!func) throw new Error()
+    if(isNaN(magnitude)) throw new Error()
+    if(isNaN(amplitude)) throw new Error()
+    if(isNaN(duration)) throw new Error()
+    if(isNaN(interpolands.remainder)) throw new Error()
+    const result = {
+        interpoland, magnitude, amplitude, duration, func, onDone,
+        curr: 0, elapsed: interpolands.remainder,
+    }
+    interpolands.tweens.push(result)
+    interpoland.tweenCount += 1
+    handle(state, 'request_draw')
+    return result
 }
 
 export function makeInterpoland(state, value) {

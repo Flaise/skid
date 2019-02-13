@@ -6,8 +6,16 @@ function identity(a) {
     return a;
 }
 
+let warned = false;
+
 export function addHandler(code, handler) {
     if (typeof handler !== 'function') throw new Error('handler must be a function');
+
+    if (handling > 0 && !warned) {
+        warned = true;
+        console.warn('addHandler should only be called during program initialization, ' +
+                     'not after events are triggered')
+    }
 
     let keys;
     if (typeof code === 'string') {
@@ -40,6 +48,8 @@ export function silence(code) {
     }
 }
 
+let handling = 0;
+
 export function handle(state, code, arg) {
     if (!state) throw new Error();
     if (typeof state !== 'object') throw new Error('state must be an object');
@@ -48,14 +58,20 @@ export function handle(state, code, arg) {
     }
     const list = handlers[code];
     if (!list) return;
-    // for-of syntax gives bad tracebacks
-    for (let i = 0; i < list.length; i += 1) {
-        const func = list[i];
-        func(state, arg);
+    handling += 1;
+    try {
+        // for-of syntax gives bad tracebacks
+        for (let i = 0; i < list.length; i += 1) {
+            const func = list[i];
+            func(state, arg);
+        }
+    }
+    finally {
+        handling -= 1;
     }
 }
 
-// For unit testing
+// For unit testing; don't call in production code
 export function clearHandlers() {
     for (const key in handlers) {
         delete handlers[key];

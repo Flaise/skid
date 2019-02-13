@@ -1,4 +1,4 @@
-import {TileFieldSegment} from './tile-field-segment'
+import {Cache} from './cache'
 import {Group} from './group'
 
 export class TileField {
@@ -26,7 +26,7 @@ export class TileField {
         const key = this._keyOf(x, y)
         let result = this._segments[key]
         if(!result) {
-            result = new TileFieldSegment(this._ensureRow(y), this._tileSize)
+            result = new Cache(this._ensureRow(y), this._tileSize)
             result.layer = x
             this._segments[key] = result
         }

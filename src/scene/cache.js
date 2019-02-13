@@ -2,7 +2,7 @@ import {Group} from './group'
 import {Translation} from './translation'
 import {Scalement} from './scalement'
 
-export class TileFieldSegment extends Group {
+export class Cache extends Group {
     constructor(container, tileSize) {
         super(container)
         this._tileSize = tileSize

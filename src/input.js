@@ -1,6 +1,6 @@
 const {addHandler, handle} = require('./event');
 
-addHandler('load_done', (state) => {
+addHandler('load', (state) => {
     window.addEventListener('focus', () => handle(state, 'windowfocus'));
     window.addEventListener('blur', () => handle(state, 'windowblur'));
     window.addEventListener('resize', event => handle(state, 'resize'));

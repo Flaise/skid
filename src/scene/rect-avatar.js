@@ -1,9 +1,15 @@
-import {DefaultAvatar} from './default-avatar'
+import {Avatar} from './avatar'
 import {makeInterpoland} from '../interpolands'
+import {toRadians} from '../turns'
 
-export class RectAvatar extends DefaultAvatar {
-    constructor(state, group) {
-        super(state, group)
+export class RectAvatar extends Avatar {
+    constructor(state, container) {
+        super(container)
+        this.x = makeInterpoland(state, 0)
+        this.y = makeInterpoland(state, 0)
+        this.w = makeInterpoland(state, 0)
+        this.h = makeInterpoland(state, 0)
+        this.angle = makeInterpoland(state, 0)
         this.anchorX = makeInterpoland(state, 0)
         this.anchorY = makeInterpoland(state, 0)
         this.fillStyle = undefined
@@ -17,7 +23,10 @@ export class RectAvatar extends DefaultAvatar {
             return
 
         context.save()
-        this.doTransform(context)
+        if(this.x.curr || this.y.curr)
+            context.translate(this.x.curr, this.y.curr)
+        if(this.angle.curr)
+            context.rotate(toRadians(this.angle.curr))
         if(this.anchorX.curr || this.anchorY.curr)
             context.translate(-this.w.curr * this.anchorX.curr, -this.h.curr * this.anchorY.curr)
 
@@ -44,6 +53,11 @@ export class RectAvatar extends DefaultAvatar {
     }
 
     subremove() {
+        this.x.remove()
+        this.y.remove()
+        this.w.remove()
+        this.h.remove()
+        this.angle.remove()
         this.anchorX.remove()
         this.anchorY.remove()
     }

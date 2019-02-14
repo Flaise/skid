@@ -7,10 +7,15 @@ function load(state, eventCode, howlArgs, id) {
     const sound = new Howl(howlArgs);
     sound.once('loaderror', (id, error) => errorLoading(state));
     sound.once('load', () => {
-        doneLoading(state, id);
         handle(state, `${eventCode}_load_done`, sound);
+        doneLoading(state, id);
     });
-    return sound;
+    addHandler(eventCode, () => {
+        sound.play();
+    });
+    addHandler(`${eventCode}_stop`, () => {
+        sound.stop();
+    });
 }
 
 export function loadAudio(state, eventCode, howlArgs) {
@@ -20,19 +25,11 @@ export function loadAudio(state, eventCode, howlArgs) {
     for (const path of src) {
         const extension = extname(path).substr(1);
         if (Howler.codecs(extension)) {
-            let sound;
             loadData(state, path, undefined, () => Promise.resolve(howlArgs.src))
                 .then((source) => {
                     const args = { ...howlArgs, src: source, format: [extension] };
-                    sound = load(state, eventCode, args, id);
+                    load(state, eventCode, args, id);
                 });
-
-            addHandler(eventCode, () => {
-                if (sound) sound.play();
-            });
-            addHandler(`${eventCode}_stop`, () => {
-                if (sound) sound.stop();
-            });
             return;
         }
     }

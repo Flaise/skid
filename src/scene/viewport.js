@@ -3,23 +3,9 @@ import {is} from '../is'
 import {addHandler, handle} from '../event'
 
 export function makeViewport(state, canvas) {
-    const result = new Group()
-    state.skid.viewport = result
-    state.skid.canvas = canvas
-    return result
-}
-
-export function setCanvas(state, canvas) {
-    state.skid.canvas = canvas
-    handle(state, 'request_draw')
-}
-
-export function canvasOf(state) {
-    return state.skid.canvas
-}
-
-export function contextOf(state) {
-    return state.skid.canvas && state.skid.canvas.getContext('2d')
+    const root = new Group()
+    state.skid.viewport = {root, canvas}
+    return root
 }
 
 addHandler('request_draw', (state) => {
@@ -34,9 +20,10 @@ addHandler('request_draw', (state) => {
     animationFrame(() => {
         const currentFrame = Date.now()
         handle(state, 'before_draw', currentFrame - state.skid.lastFrame)
-        const context = contextOf(state)
-        if (state.skid.viewport && context) {
-            state.skid.viewport.draw(context)
+        const viewport = state.skid.viewport
+        if (viewport && viewport.canvas) {
+            const context = viewport.canvas.getContext('2d')
+            viewport.root.draw(context)
         }
         state.skid.willDraw = false
         handle(state, 'after_draw')

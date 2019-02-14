@@ -1,11 +1,15 @@
-import {DefaultAvatar} from './default-avatar'
+import {Avatar} from './avatar'
 import {wrap, toRadians} from '../turns'
 import {clamp} from '../scalars'
 import {makeInterpoland} from '../interpolands'
 
-export class PieAvatar extends DefaultAvatar {
+export class PieAvatar extends Avatar {
     constructor(state, container) {
-        super(state, container)
+        super(container)
+        this.x = makeInterpoland(state, 0)
+        this.y = makeInterpoland(state, 0)
+        this.w = makeInterpoland(state, 0)
+        this.h = makeInterpoland(state, 0)
         // Distance of second jaw from first jaw. Positive is clockwise.
         this.breadth = makeInterpoland(state, 0)
         // Distance of first jaw from north. Positive is clockwise.
@@ -23,8 +27,6 @@ export class PieAvatar extends DefaultAvatar {
         context.save()
         if(this.x.curr || this.y.curr)
             context.translate(this.x.curr, this.y.curr)
-        if(this.angle.curr)
-            context.rotate(wrap(this.angle.curr))
         if(this.w.curr !== 1 || this.h.curr !== 1)
             context.scale(this.w.curr, this.h.curr)
 
@@ -61,6 +63,10 @@ export class PieAvatar extends DefaultAvatar {
     }
 
     subremove() {
+        this.x.remove()
+        this.y.remove()
+        this.w.remove()
+        this.h.remove()
         this.breadth.remove()
         this.startAngle.remove()
         this.innerRadiusRel.remove()

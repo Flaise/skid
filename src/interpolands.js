@@ -2,12 +2,12 @@ import {filter, remove} from './array'
 import {handle, addHandler} from './event'
 
 class Interpoland {
-    constructor(container, value) {
+    constructor(state, value) {
         value = value || 0
         this.curr = value
         this.base = value
         this.dest = value
-        this.container = container
+        this.state = state
         this.tweenCount = 0
     }
 
@@ -15,7 +15,7 @@ class Interpoland {
         if(!delta && !onDone)
             return
         this.dest += delta
-        return makeTween(this.container.state, this, delta, delta, duration, tweenFunc, onDone)
+        return makeTween(this.state, this, delta, delta, duration, tweenFunc, onDone)
     }
     modTo(dest, duration, tweenFunc, onDone) {
         return this.mod(dest - this.dest, duration, tweenFunc, onDone)
@@ -25,7 +25,7 @@ class Interpoland {
         this.curr += delta
         this.dest += delta
         if(this.tweenCount === 0)
-            handle(this.container.state, 'request_draw')
+            handle(this.state, 'request_draw')
     }
     modToNow(dest) {
         this.modNow(dest - this.dest)
@@ -39,75 +39,35 @@ class Interpoland {
         this.curr = dest
         this.dest = dest
         if(this.tweenCount === 0)
-            handle(this.container.state, 'request_draw')
+            handle(this.state, 'request_draw')
         else
-            this.container.removeTweens(this)
+            removeTweensOf(this.state, this)
     }
     mod_noDelta(amplitude, duration, tweenFunc, onDone) {
-        return makeTween(this.container.state, this, 0, amplitude, duration, tweenFunc, onDone)
+        return makeTween(this.state, this, 0, amplitude, duration, tweenFunc, onDone)
     }
     remove() {
-        this.container.remove(this)
+        removeInterpoland(this.state, this)
     }
 }
 
-class Interpolands {
-    constructor(state) {
-        this.tweens = []
-        this.ending = []
-        this.interpolands = []
+function removeInterpoland(state, interpoland) {
+    const interpolands = state.skid.interpolands
+    remove(interpolands.interpolands, interpoland)
+    removeTweensOf(state, interpoland)
+}
 
-        // TODO: merge with state.skid.timeRemainder; need to modify animationFrame
-        this.remainder = 0
-        this.state = state
-    }
-
-    remove(interpoland) {
-        remove(this.interpolands, interpoland)
-        this.removeTweens(interpoland)
-    }
-
-    removeTweens(interpoland) {
-        if (interpoland.tweenCount === 0)
-            return
-        filter(this.tweens, (tween) => tween.interpoland !== interpoland)
-        interpoland.tweenCount = 0
-        handle(this.state, 'request_draw')
-    }
-
-    update(dt) {
-        for(let i = 0; i < this.interpolands.length; i += 1)
-            this.interpolands[i].curr = this.interpolands[i].base
-
-        filter(this.tweens, (tween) => {
-            tween.elapsed += dt
-
-            if(tween.elapsed >= tween.duration) {
-                if(tween.onDone)
-                    this.ending.push(tween)
-                tween.interpoland.curr += tween.magnitude
-                tween.interpoland.base += tween.magnitude
-                tween.interpoland.tweenCount -= 1
-                return false
-            }
-
-            tween.interpoland.curr += tween.amplitude *
-                                      tween.func.call(undefined, tween.elapsed / tween.duration)
-            return true
-        })
-
-        for(let i = 0; i < this.ending.length; i += 1) {
-            const tween = this.ending[i]
-            this.remainder = tween.elapsed - tween.duration
-            tween.onDone.call()
-        }
-        this.ending.length = 0
-        this.remainder = 0
-    }
+function removeTweensOf(state, interpoland) {
+    if (interpoland.tweenCount === 0)
+        return
+    const interpolands = state.skid.interpolands
+    filter(interpolands.tweens, (tween) => tween.interpoland !== interpoland)
+    interpoland.tweenCount = 0
+    handle(state, 'request_draw')
 }
 
 function makeTween(state, interpoland, magnitude, amplitude, duration, func, onDone) {
-    const interpolands = state.skid.interpolands;
+    const interpolands = state.skid.interpolands
     if(!func) throw new Error()
     if(isNaN(magnitude)) throw new Error()
     if(isNaN(amplitude)) throw new Error()
@@ -125,18 +85,54 @@ function makeTween(state, interpoland, magnitude, amplitude, duration, func, onD
 
 export function makeInterpoland(state, value) {
     if (!state.skid.interpolands) {
-        state.skid.interpolands = new Interpolands(state)
+        state.skid.interpolands = {
+            tweens: [],
+            ending: [],
+            interpolands: [],
+            // TODO: merge with state.skid.timeRemainder; need to modify animationFrame
+            remainder: 0,
+        }
     }
     const interpolands = state.skid.interpolands
-    const result = new Interpoland(interpolands, value)
+    const result = new Interpoland(state, value)
     interpolands.interpolands.push(result)
     return result
 }
 
 addHandler('before_draw', (state, dt) => {
-    if (state.skid.interpolands) {
-        state.skid.interpolands.update(dt)
+    const interpolands = state.skid.interpolands
+    if (!interpolands) {
+        return
     }
+
+    for(let i = 0; i < interpolands.interpolands.length; i += 1)
+        interpolands.interpolands[i].curr = interpolands.interpolands[i].base
+
+    filter(interpolands.tweens, (tween) => {
+        tween.elapsed += dt
+
+        if(tween.elapsed >= tween.duration) {
+            tween.interpoland.curr += tween.magnitude
+            tween.interpoland.base += tween.magnitude
+            tween.interpoland.tweenCount -= 1
+            return false
+        }
+
+        tween.interpoland.curr += tween.amplitude *
+                                  tween.func.call(undefined, tween.elapsed / tween.duration)
+        return true
+    }, interpolands.ending)
+
+    for(let i = 0; i < interpolands.ending.length; i += 1) {
+        const tween = interpolands.ending[i]
+        if (!tween.onDone) {
+            continue;
+        }
+        interpolands.remainder = tween.elapsed - tween.duration
+        tween.onDone.call()
+    }
+    interpolands.ending.length = 0
+    interpolands.remainder = 0
 })
 
 addHandler('after_draw', (state) => {

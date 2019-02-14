@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import {addHandler, handle, clearHandlers} from '../src/event';
+import {addHandler, handle} from '../src/event';
 
 suite('Event');
 
@@ -9,15 +9,11 @@ beforeEach(() => {
     state = {skid: {}};
 });
 
-afterEach(() => {
-    clearHandlers();
-});
-
 test('calls handler - string', () => {
-    addHandler('a', () => {
+    addHandler('a1', () => {
         state.a = 1;
     });
-    handle(state, 'a');
+    handle(state, 'a1');
     assert(state.a === 1);
 });
 
@@ -30,47 +26,47 @@ test('calls handler - number', () => {
 });
 
 test('event with no handler', () => {
-    addHandler('a', () => {
+    addHandler('a2', () => {
         state.a = 1;
     });
-    handle(state, 'b');
+    handle(state, 'b2');
     assert(state.a === undefined);
 });
 
 test('2 handlers on same event', () => {
-    addHandler('a', () => {
+    addHandler('a3', () => {
         state.a = 1;
     });
-    addHandler('a', () => {
+    addHandler('a3', () => {
         state.a += 1;
     });
-    handle(state, 'a');
+    handle(state, 'a3');
     assert(state.a === 2);
 });
 
 test('2 events for same handler', () => {
-    addHandler('a', () => {
+    addHandler('a4', () => {
         state.a = 1;
     });
-    addHandler('a b', () => {
+    addHandler('a4 b4', () => {
         state.a += 1;
     });
-    handle(state, 'a');
+    handle(state, 'a4');
     assert(state.a === 2);
-    handle(state, 'b');
+    handle(state, 'b4');
     assert(state.a === 3);
 });
 
 test('2 events for same handler - array', () => {
-    addHandler('a', () => {
+    addHandler('a5', () => {
         state.a = 1;
     });
-    addHandler(['a', 'b'], () => {
+    addHandler(['a5', 'b5'], () => {
         state.a += 1;
     });
-    handle(state, 'a');
+    handle(state, 'a5');
     assert(state.a === 2);
-    handle(state, 'b');
+    handle(state, 'b5');
     assert(state.a === 3);
 });
 

@@ -43,24 +43,3 @@ is.iterable = function(a) {
 is.generatorFunction = function(a) {
     return a != null && a.constructor.name === 'GeneratorFunction'
 }
-
-function composeOr(funcA, funcB) {
-    return addCompositorsTo((a) => funcA(a) || funcB(a))
-}
-
-function makeCompositions(func, compositor) {
-    const result = {}
-    for(let key in is) {
-        const otherFunc = is[key]
-        Object.defineProperty(result, key, {get: () => compositor(func, otherFunc)})
-    }
-    return result
-}
-
-function addCompositorsTo(func) {
-    func.or = makeCompositions(func, composeOr)
-    return func
-}
-for(var key in is) {
-    addCompositorsTo(is[key])
-}

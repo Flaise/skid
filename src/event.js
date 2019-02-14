@@ -70,10 +70,3 @@ export function handle(state, code, arg) {
         handling -= 1;
     }
 }
-
-// For unit testing; don't call in production code
-export function clearHandlers() {
-    for (const key in handlers) {
-        delete handlers[key];
-    }
-}

@@ -2,6 +2,7 @@ import assert from 'power-assert'
 import sinon from 'sinon'
 import {makeInterpoland} from '../src/interpolands'
 import * as tween from '../src/tween'
+import {handle} from '../src/event'
 
 suite('Interpoland')
 
@@ -23,7 +24,7 @@ test('recycles second of 3', function() {
     assert(interpolands.interpolands.length === 3)
 
     b.remove()
-    interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(interpolands.interpolands.length === 2)
 
     assert(a.curr === 1)
@@ -42,7 +43,7 @@ test('recycles second and third of 5', function() {
 
     b.remove()
     c.remove()
-    interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(interpolands.interpolands.length === 3)
 
     assert(a.curr === 1)
@@ -62,7 +63,7 @@ test('recycles tween of destroyed interpolands', function() {
     assert(onDone.callCount === 0)
 
     inter.remove()
-    interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(interpolands.tweens.length === 0)
 
     inter = makeInterpoland(state, 9)
@@ -84,16 +85,16 @@ test('interpolates linearly', function() {
     val.mod(2, 1, tween.power_fac(1), onDone)
     assert(onDone.callCount === 0)
     assert(val.dest === 3)
-    interpolands.update(.5)
+    handle(state, 'before_draw', .5)
     assert(onDone.callCount === 0)
     assert(val.curr === 2)
 
-    interpolands.update(.5)
+    handle(state, 'before_draw', .5)
     assert(onDone.called)
     assert(val.curr === 3)
 
     onDone.reset()
-    interpolands.update(1)
+    handle(state, 'before_draw', 1)
     assert(onDone.callCount === 0)
     assert(val.curr === 3)
 })
@@ -114,7 +115,7 @@ test('supports concurrent interpolations', function() {
     assert(inter.dest === -2)
     assert(interpolands.tweens.length === 2)
 
-    interpolands.update(1)
+    handle(state, 'before_draw', 1)
     assert(onDoneA.called)
     assert(onDoneB.callCount === 0)
     assert(inter.curr === -1)
@@ -122,7 +123,7 @@ test('supports concurrent interpolations', function() {
     assert(interpolands.tweens.length === 1)
 
     onDoneA.reset()
-    interpolands.update(1)
+    handle(state, 'before_draw', 1)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.called)
     assert(inter.curr === -2)
@@ -177,14 +178,14 @@ test('interpolates to a destination', function() {
     assert(inter.dest === 2)
     assert(interpolands.tweens.length === 2)
 
-    interpolands.update(.5)
+    handle(state, 'before_draw', .5)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.callCount === 0)
     assert(inter.curr === -1)
     assert(inter.dest === 2)
     assert(interpolands.tweens.length === 2)
 
-    interpolands.update(.5)
+    handle(state, 'before_draw', .5)
     assert(onDoneA.called)
     assert(onDoneB.called)
     assert(inter.curr === 2)
@@ -204,17 +205,17 @@ test('maintains precision when chaining interpolations', function() {
     inter.mod(1, 1000, tween.linear, onDoneA)
     assert(inter.dest === 1)
 
-    interpolands.update(100)
+    handle(state, 'before_draw', 100)
     assert(onDoneA.callCount === 0)
     assert(inter.dest === 1)
 
-    interpolands.update(1500)
+    handle(state, 'before_draw', 1500)
     assert(onDoneA.called)
     onDoneA.reset()
     assert(onDoneB.callCount === 0)
     assert(inter.dest === 0)
 
-    interpolands.update(600)
+    handle(state, 'before_draw', 600)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.called)
     assert(inter.curr === 0)
@@ -233,17 +234,17 @@ test('maintains precision when chaining interpolations without remainder paramet
     inter.mod(1, 1000, tween.linear, onDoneA)
     assert(inter.dest === 1)
 
-    interpolands.update(100)
+    handle(state, 'before_draw', 100)
     assert(onDoneA.callCount === 0)
     assert(inter.dest === 1)
 
-    interpolands.update(1500)
+    handle(state, 'before_draw', 1500)
     assert(onDoneA.called)
     onDoneA.reset()
     assert(onDoneB.callCount === 0)
     assert(inter.dest === 0)
 
-    interpolands.update(600)
+    handle(state, 'before_draw', 600)
     assert(onDoneA.callCount === 0)
     assert(onDoneB.called)
     assert(inter.curr === 0)
@@ -264,23 +265,23 @@ test('interpolates with no net change', function() {
     assert(inter.curr === 5)
     assert(inter.dest === 5)
 
-    interpolands.update(250)
+    handle(state, 'before_draw', 250)
     assert(inter.curr === 7)
     assert(inter.dest === 5)
 
-    interpolands.update(250)
+    handle(state, 'before_draw', 250)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
 
-    interpolands.update(250)
+    handle(state, 'before_draw', 250)
     assert(inter.curr === 3)
     assert(inter.dest === 5)
 
-    interpolands.update(250)
+    handle(state, 'before_draw', 250)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
 
-    interpolands.update(100)
+    handle(state, 'before_draw', 100)
     assert(inter.curr === 5)
     assert(inter.dest === 5)
 })
@@ -300,7 +301,7 @@ test('removes one interpoland without disturbing tweens of others', function() {
     assert(interpolands.tweens.length === 5)
 
     interA.remove()
-    interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(interB.dest === 8)
     assert(interpolands.interpolands.length === 1)
     assert(interpolands.tweens.length === 2)
@@ -315,7 +316,7 @@ test('will not update tweens that are added during update', function() {
     })
     var tweenA = inter.mod(1, 100, tween.linear, onDone)
 
-    interpolands.update(100)
+    handle(state, 'before_draw', 100)
     assert(onDone.calledOnce)
     assert(inter.curr === 1)
     assert(inter.dest === 0)

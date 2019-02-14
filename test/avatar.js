@@ -2,6 +2,7 @@ import assert from 'power-assert'
 import sinon from 'sinon'
 import {Translation} from '../src/scene/translation'
 import {makeViewport} from '../src/scene/viewport'
+import {handle} from '../src/event'
 
 suite('Avatar')
 
@@ -31,9 +32,6 @@ test('does not sort new avatars', function() {
     assert(a.layer === 10)
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
-
-    // yield browser.url('http://www.google.com')
-    // assert((yield browser.getTitle()) === 'Google')
 })
 
 test('sorts avatars ascendingly', function() {
@@ -149,14 +147,14 @@ test('leaves no interpolands behind after removal', function() {
     const av = new Translation(state, avatars)
     av.remove()
     assert(av.removed)
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 0)
     assert(state.skid.interpolands.interpolands.length === 0)
 
     // double-removal should have no effect
     av.remove()
     assert(av.removed)
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 0)
     assert(state.skid.interpolands.interpolands.length === 0)
 })
@@ -169,7 +167,7 @@ test('leaves no interpolands behind after multi-removal and calls all onRemoves'
     a.remove()
     b.remove()
     c.remove()
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 0)
     assert(state.skid.interpolands.interpolands.length === 0)
 })
@@ -185,7 +183,7 @@ test('handles multiple creations and removals', function() {
     assert(state.skid.interpolands.interpolands.length === 10)
 
     d.remove()
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
     assert(avatars.contents[2] === c)
@@ -201,7 +199,7 @@ test('handles multiple creations and removals', function() {
     assert(avatars.contents[4] === d)
 
     a.remove()
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 4)
     assert(state.skid.interpolands.interpolands.length === 8)
     assert(avatars.contents[0] === b)
@@ -219,7 +217,7 @@ test('handles multiple creations and removals', function() {
     c.remove()
     b.remove()
     e.remove()
-    state.skid.interpolands.update(0)
+    handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 2)
     assert(state.skid.interpolands.interpolands.length === 4)
     assert(avatars.contents[0] === d)

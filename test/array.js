@@ -65,6 +65,13 @@ test('filters last element', () => {
     assert.deepEqual(arr, [0, 1, 2, 3, 4, 5, 6, 7, 8])
 })
 
+test('filters into another array', () => {
+    const into = [];
+    filter(arr, (a) => a <= 6, into);
+    assert.deepEqual(arr, [0, 1, 2, 3, 4, 5, 6]);
+    assert.deepEqual(into, [7, 8, 9]);
+})
+
 test('removes one element - first', () => {
     remove(arr, 0)
     assert.deepEqual(arr, [1, 2, 3, 4, 5, 6, 7, 8, 9])

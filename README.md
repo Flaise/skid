@@ -299,17 +299,19 @@ addHandler('game_over', (state) => {
 
 The contents of the third argument, `howlArgs`, are passed directly to Howler.js, except for the `src` attribute, which is used by Skid to generate preloader information.
 
-If Skid's API isn't sufficient for your purposes, `loadAudio` returns a `Promise`, so you can make the abstraction leak as follows:
+If Skid's API isn't sufficient for your purposes, you can make the abstraction leak with the `_load_done` event that corresponds to the audio to be loaded. For example:
 
 ```
 addHandler('load', (state) => {
     loadAudio(state, 'music', {
         src: ['./assets/music.ogg', './assets/music.mp3'],
         loop: true,
-    }).then((sound) => {
-        // `sound` is a Howl object.
-        sound.play();
     });
+});
+
+addHandler('music_load_done', (state, sound) => {
+    // `sound` is a Howl object.
+    sound.play();
 });
 ```
 

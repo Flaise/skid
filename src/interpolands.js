@@ -1,4 +1,3 @@
-import {is} from './is'
 import {filter, remove} from './array'
 import {handle, addHandler} from './event'
 

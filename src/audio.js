@@ -1,19 +1,16 @@
 import {extname} from 'path';
 import {Howl, Howler} from 'howler';
 import {loadData, startLoading, doneLoading, errorLoading} from './load';
-import {addHandler} from './event';
+import {addHandler, handle} from './event';
 
 function load(state, eventCode, howlArgs, id) {
-    return new Promise((resolve, reject) => {
-        const sound = new Howl(howlArgs);
-        addHandler(eventCode, () => sound.play());
-        addHandler(`${eventCode}_stop`, () => sound.stop());
-        sound.once('loaderror', (id, error) => errorLoading(state));
-        sound.once('load', () => {
-            resolve(sound);
-            doneLoading(state, id);
-        });
+    const sound = new Howl(howlArgs);
+    sound.once('loaderror', (id, error) => errorLoading(state));
+    sound.once('load', () => {
+        doneLoading(state, id);
+        handle(state, `${eventCode}_load_done`, sound);
     });
+    return sound;
 }
 
 export function loadAudio(state, eventCode, howlArgs) {
@@ -23,15 +20,23 @@ export function loadAudio(state, eventCode, howlArgs) {
     for (const path of src) {
         const extension = extname(path).substr(1);
         if (Howler.codecs(extension)) {
-            return loadData(state, path, undefined, () => Promise.resolve(howlArgs.src))
+            let sound;
+            loadData(state, path, undefined, () => Promise.resolve(howlArgs.src))
                 .then((source) => {
                     const args = { ...howlArgs, src: source, format: [extension] };
-                    return load(state, eventCode, args, id);
+                    sound = load(state, eventCode, args, id);
                 });
+
+            addHandler(eventCode, () => {
+                if (sound) sound.play();
+            });
+            addHandler(`${eventCode}_stop`, () => {
+                if (sound) sound.stop();
+            });
+            return;
         }
     }
-    setTimeout(() => errorLoading(state), 0); // Needs to be async call
-    return new Promise(() => {});
+    errorLoading(state);
 }
 
 export function muted() {

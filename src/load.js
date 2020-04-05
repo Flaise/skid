@@ -81,45 +81,43 @@ export function errorLoading(state) {
     handle(state, 'load_error');
 }
 
-export function reloadData(state, url, alternate) {
+export function reloadData(state, url, processFunc) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
         xhr.onloadend = () => {
-            if (!xhr.status.toString().match(/^2/)) {
-                if (alternate) {
-                    // Fallback for file:// protocol
-                    alternate()
-                        .then((result) => {
-                            resolve(result);
-                        })
-                        // TODO: .catch(() => ...);
-                } else {
-                    // TODO: report error
+            let data = undefined;
+            if (xhr.status.toString().match(/^2/)) {
+                const options = {};
+                const headers = xhr.getAllResponseHeaders();
+                const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
+
+                if (match && match[1]) {
+                    options.type = match[1];
                 }
-                return;
+
+                const blob = new Blob([xhr.response], options);
+                data = window.URL.createObjectURL(blob);
             }
-
-            const options = {};
-            const headers = xhr.getAllResponseHeaders();
-            const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
-
-            if (match && match[1]) {
-                options.type = match[1];
+            
+            if (processFunc) {
+                // TODO: save processFunc from loadData() call?
+                processFunc().then((a) => {
+                    resolve(a);
+                }, (error) => {
+                    errorLoading(state);
+                });
             }
-
-            const blob = new Blob([xhr.response], options);
-            resolve(window.URL.createObjectURL(blob));
         };
 
         setTimeout(() => xhr.send()); // Errors must happen asynchronously.
     });
 }
 
-export function loadData(state, url, total, alternate) {
+export function loadData(state, url, total, processFunc) {
     const id = startLoading(state, total);
-    return new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
@@ -131,36 +129,32 @@ export function loadData(state, url, total, alternate) {
         };
 
         xhr.onloadend = () => {
-            if (!xhr.status.toString().match(/^2/)) {
-                if (alternate) {
-                    // Fallback for file:// protocol
-                    alternate()
-                        .then((result) => {
-                            progressLoading(state, id, 1, 1);
-                            resolve(result);
-                            doneLoading(state, id);
-                        })
-                        .catch(() => errorLoading(state));
-                } else {
-                    errorLoading(state);
+            let data = undefined;
+            if (xhr.status.toString().match(/^2/)) {
+                const options = {};
+                const headers = xhr.getAllResponseHeaders();
+                const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
+
+                if (match && match[1]) {
+                    options.type = match[1];
                 }
-                return;
+
+                const blob = new Blob([xhr.response], options);
+                progressLoading(state, id, blob.size, blob.size);
+                data = window.URL.createObjectURL(blob);
             }
-
-            const options = {};
-            const headers = xhr.getAllResponseHeaders();
-            const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
-
-            if (match && match[1]) {
-                options.type = match[1];
+            
+            if (processFunc) {
+                processFunc().then((a) => {
+                    resolve(a);
+                    doneLoading(state, id);
+                }, (error) => {
+                    errorLoading(state);
+                });
             }
-
-            const blob = new Blob([xhr.response], options);
-            progressLoading(state, id, blob.size, blob.size);
-            resolve(window.URL.createObjectURL(blob));
-            doneLoading(state, id);
         };
 
         setTimeout(() => xhr.send()); // Errors must happen asynchronously.
     });
+    return promise;
 }

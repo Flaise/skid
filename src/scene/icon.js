@@ -93,14 +93,19 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         const icon = new Icon();
         const image = new window.Image();
         icon.image = image;
-        loadData(state, source, sizeBytes, () => Promise.resolve(source))
-            .then((data) => {
-                image.onload = () => {
-                    icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                                image.width, image.height, true);
-                };
+        loadData(state, source, sizeBytes, (data) => new Promise((resolve, reject) => {
+            image.onload = () => {
+                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                                            image.width, image.height, true);
+                resolve();
+            };
+            if (data) {
                 image.src = data;
-            });
+            } else {
+                // HTTP request failed, probably because running on localhost
+                image.src = source;
+            }
+        }));
         return icon;
     } else {
         return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,
@@ -173,7 +178,7 @@ function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,
     }
     else {
         // Corrects for seams in tile fields caused by precision loss
-        // TODO: experiment with splitting numerator from denomonator instead
+        // TODO: experiment with splitting numerator from denominator instead
         if(localX % 2 !== 0) {
             localX -= 1
             localW += 1

@@ -1,10 +1,11 @@
 import {Group} from './group'
 import {is} from '../is'
+import {makeInterpoland} from '../interpolands'
 
 export class Opacity extends Group {
-    constructor(group, alpha) {
+    constructor(state, group, alpha) {
         super(group)
-        this.alpha = group.interpolands.make(is.defined(alpha)? alpha: 1)
+        this.alpha = makeInterpoland(state, is.defined(alpha)? alpha: 1)
     }
 
     draw(context) {

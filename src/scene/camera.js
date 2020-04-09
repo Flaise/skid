@@ -3,6 +3,8 @@ import {makeInterpoland} from '../interpolands'
 
 export class Camera extends Group {
     constructor(state, group) {
+        if (!group) group = state.skid.viewport.root
+        if (!group) throw new Error('initialize viewport before constructing camera')
         super(group)
         this.x = makeInterpoland(state, 0)
         this.y = makeInterpoland(state, 0)

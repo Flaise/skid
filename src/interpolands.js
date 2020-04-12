@@ -31,6 +31,8 @@ class Interpoland {
         this.modNow(dest - this.dest)
     }
     setTo(dest) {
+        if(arguments.length > 1)
+            throw new Error('setTo() takes only 1 argument. Did you mean modTo()?');
         if(isNaN(dest))
             throw new Error()
         if(this.base === dest && this.tweenCount === 0)

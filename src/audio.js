@@ -5,7 +5,11 @@ import {addHandler, handle} from './event';
 
 function load(state, eventCode, howlArgs, id) {
     const sound = new Howl(howlArgs);
-    sound.once('loaderror', (id, error) => errorLoading(state));
+    sound.once('loaderror', (id, error) => {
+        console.error('sound load error ' + error);
+        if (!state.load) return; // NOTE: not yet sure what causes this
+        errorLoading(state)
+    });
     sound.once('load', () => {
         handle(state, `${eventCode}_load_done`, sound);
         doneLoading(state, id);

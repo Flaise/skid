@@ -99,6 +99,7 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
                                             image.width, image.height, true);
                 resolve();
             };
+            image.onerror = reject;
             if (data) {
                 image.src = data;
             } else {

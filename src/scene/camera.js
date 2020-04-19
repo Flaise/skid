@@ -13,6 +13,7 @@ export class Camera extends Group {
         this.anchorX = makeInterpoland(state, 0)
         this.anchorY = makeInterpoland(state, 0)
         this.angle = makeInterpoland(state, 0)
+        this.transform = undefined
     }
 
     subremove() {
@@ -35,6 +36,8 @@ export class Camera extends Group {
         const dy = -this.y.curr + this.h.curr * this.anchorY.curr
         if(dx || dy)
             context.translate(dx, dy)
+        
+        this.transform = DOMMatrix.fromMatrix(context.getTransform());
 
         super.draw(context)
 

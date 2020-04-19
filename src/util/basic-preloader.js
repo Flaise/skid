@@ -2,9 +2,12 @@ import {PieAvatar} from '../scene/pie-avatar';
 import {Translation} from '../scene/translation';
 import {TextAvatar} from '../scene/text-avatar';
 import {Camera} from '../scene/camera';
+import {ClearAll} from '../scene/clear-all';
 import {addHandler, handle} from '../event';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
+    const clear = new ClearAll(camera);
+    
     const meter = new PieAvatar(state, camera);
     meter.x.setTo(.5);
     meter.y.setTo(camera.h.curr / 2);
@@ -24,7 +27,7 @@ export function initPreloader(state, camera, fillStyle = 'black') {
     text.font = '18px verdana';
     text.text = 'Loading...';
 
-    state.skid.preloader = {meter, textPosition, text};
+    state.skid.preloader = {meter, textPosition, text, clear};
 }
 
 addHandler('load_progress', (state, progress) => {
@@ -41,6 +44,7 @@ addHandler('load_done', (state) => {
     state.skid.preloader.meter.remove();
     state.skid.preloader.textPosition.remove();
     state.skid.preloader.text.remove();
+    state.skid.preloader.clear.remove();
     state.skid.preloader = undefined;
     handle(state, 'request_draw');
 });

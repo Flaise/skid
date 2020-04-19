@@ -8,7 +8,7 @@ function load(state, eventCode, howlArgs, id) {
     sound.once('loaderror', (id, error) => {
         console.error('sound load error ' + error);
         if (!state.load) return; // NOTE: not yet sure what causes this
-        errorLoading(state)
+        errorLoading(state);
     });
     sound.once('load', () => {
         handle(state, `${eventCode}_load_done`, sound);

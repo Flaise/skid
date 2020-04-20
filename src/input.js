@@ -20,9 +20,9 @@ function mouseXY(event, component) {
     return {x, y};
 }
 
-export function startMouseEvent(state, name, component) {
+export function startMouseEvent(state, name, component, skidEventName=name) {
     component.addEventListener(name, (event) => {
-        handle(state, name, mouseXY(event, component));
+        handle(state, skidEventName, mouseXY(event, component));
     });
 }
 

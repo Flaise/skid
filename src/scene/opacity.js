@@ -14,7 +14,7 @@ export class Opacity extends Group {
 
         const prev = context.globalAlpha
         if(prev !== this.alpha.curr)
-            context.globalAlpha = this.alpha.curr
+            context.globalAlpha = Math.max(1, Math.min(0, this.alpha.curr))
         super.draw(context)
         if(prev !== this.alpha.curr)
             context.globalAlpha = prev

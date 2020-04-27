@@ -9,6 +9,8 @@ export class Translation extends Group {
     }
 
     draw(context) {
+        if(!this.visible)
+            return
         if(this.x.curr || this.y.curr)
             context.translate(this.x.curr, this.y.curr)
         super.draw(context)

@@ -22,13 +22,15 @@ export function procrastinate(inCode, outCode, delay) {
     });
 }
 
+function callingLater(state, callback, targetTime) {
+    state.skid.timeRemainder = Math.min(100, Date.now() - targetTime);
+    callback();
+    state.skid.timeRemainder = 0;
+}
+
 export function callLater(state, delay, callback) {
     if (!state.skid.timeRemainder) state.skid.timeRemainder = 0;
     const targetTime = Date.now() + delay - state.skid.timeRemainder;
 
-    return setTimeout(() => {
-        state.skid.timeRemainder = Math.min(100, Date.now() - targetTime);
-        callback();
-        state.skid.timeRemainder = 0;
-    }, delay - state.skid.timeRemainder);
+    return setTimeout(callingLater, delay - state.skid.timeRemainder, state, callback, targetTime);
 }

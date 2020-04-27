@@ -86,6 +86,7 @@ export class Group extends Avatar {
     }
 
     resort(avatar) {
+        // TODO: bubble sort to avoid allocation?
         remove(this.contents, avatar)
         insertSorted(this.contents, avatar, compare)
     }

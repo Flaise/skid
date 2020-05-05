@@ -7,8 +7,10 @@ import {addHandler, handle} from '../event';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
     const clear = new ClearAll(camera);
+    clear.layer = 0;
     
     const meter = new PieAvatar(state, camera);
+    meter.layer = 1;
     meter.x.setTo(.5);
     meter.y.setTo(camera.h.curr / 2);
     meter.w.setTo(.03);
@@ -17,6 +19,7 @@ export function initPreloader(state, camera, fillStyle = 'black') {
     meter.innerRadiusRel.setTo(.6);
 
     const textPosition = new Translation(state, camera);
+    textPosition.layer = 1;
     textPosition.x.setTo(.5);
     textPosition.y.setTo(camera.h.curr / 2 + .032);
 

@@ -75,10 +75,10 @@ export function doneLoading(state, id) {
     }
 }
 
-export function errorLoading(state) {
+export function errorLoading(state, error) {
     if (state.skid.load.error) return;
     state.skid.load.error = true;
-    handle(state, 'load_error');
+    handle(state, 'load_error', error);
 }
 
 export function reloadData(state, url, processFunc) {
@@ -106,7 +106,7 @@ export function reloadData(state, url, processFunc) {
                 processFunc(data).then((a) => {
                     resolve(a);
                 }, (error) => {
-                    errorLoading(state);
+                    errorLoading(state, error);
                 });
             }
         };
@@ -154,7 +154,7 @@ export function loadData(state, url, total, processFunc) {
                     resolve(a);
                     doneLoading(state, id);
                 }, (error) => {
-                    errorLoading(state);
+                    errorLoading(state, error);
                 });
             }
         };

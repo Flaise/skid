@@ -4,7 +4,7 @@ module.exports = function(config) {
     config.set({
         basePath: '',
         frameworks: ['browserify', 'mocha'],
-        
+
         client: {
             mocha: {ui: 'qunit'}
         },
@@ -24,11 +24,32 @@ module.exports = function(config) {
         browserify: {
             debug: true,
             transform: [
-                ['babelify', {sourceMap: 'inline', retainLines: true,
-                              optional: ['runtime'], plugins: ['babel-plugin-espower']}],
-                ['browserify-istanbul', {ignore: ['**/node_modules/**', '**/test/**']}]
-            ]
+                [
+                    require.resolve('babelify'),
+                    {
+                        sourceMap: 'inline',
+                        retainLines: true,
+                        optional: ['runtime'],
+                        plugins: ['babel-plugin-espower'],
+                    },
+                ],
+                [
+                    require.resolve('browserify-istanbul'),
+                    {
+                        ignore: ['**/node_modules/**', '**/test/**'],
+                    },
+                ],
+            ],
         },
+
+        // browserify: {
+        //     debug: true,
+        //     transform: [
+        //         ['babelify', {sourceMap: 'inline', retainLines: true,
+        //                       optional: ['runtime'], plugins: ['babel-plugin-espower']}],
+        //         ['browserify-istanbul', {ignore: ['**/node_modules/**', '**/test/**']}]
+        //     ]
+        // },
 
         reporters: ['dots', 'html', 'coverage'],
 
@@ -52,7 +73,7 @@ module.exports = function(config) {
         logLevel: config.LOG_INFO,
 
         autoWatch: true,
-        
+
         browsers: ['Chrome', 'Firefox'],
 
         singleRun: false

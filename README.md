@@ -18,7 +18,9 @@ Skid is designed primarily with the browser in mind, although its module system 
 License
 =======
 
-Public Domain
+GNU Affero General Public License v3.0
+
+Basically, it stays open source even when run on a remote server. Contact me if you need a proprietary license.
 
 ---
 

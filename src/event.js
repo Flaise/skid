@@ -32,7 +32,7 @@ export function addHandler(code, handler) {
         }
         const prev = handlers[key];
         if (prev) {
-            handlers[key].push(handler);
+            prev.push(handler);
         } else {
             handlers[key] = [handler];
         }

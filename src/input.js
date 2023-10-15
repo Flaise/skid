@@ -1,9 +1,9 @@
-const {addHandler, handle} = require('./event');
+import {addHandler, handle} from './event';
 
 addHandler('load', (state) => {
     window.addEventListener('focus', () => handle(state, 'windowfocus'));
     window.addEventListener('blur', () => handle(state, 'windowblur'));
-    
+
     const resize = (event) => handle(state, 'resize');
     window.addEventListener('resize', resize);
     window.addEventListener('fullscreenchange', resize);

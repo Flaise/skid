@@ -1,5 +1,4 @@
-const {Icon} = require('./scene/icon');
-const {handle} = require('./event');
+import {handle} from './event';
 
 let started = false;
 
@@ -100,7 +99,7 @@ export function reloadData(state, url, processFunc) {
                 const blob = new Blob([xhr.response], options);
                 data = window.URL.createObjectURL(blob);
             }
-            
+
             if (processFunc) {
                 // TODO: save processFunc from loadData() call?
                 processFunc(data).then((a) => {
@@ -145,7 +144,7 @@ export function loadData(state, url, total, processFunc) {
             } else {
                 progressLoading(state, id, 0, 1); // since size info isn't available
             }
-            
+
             if (processFunc) {
                 processFunc(data).then((a) => {
                     if (!data) {

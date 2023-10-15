@@ -1,4 +1,4 @@
-const {inspect} = require('util');
+import {inspect} from 'util';
 
 const handlers = Object.create(null);
 

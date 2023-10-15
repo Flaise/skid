@@ -1,13 +1,9 @@
 import {PieAvatar} from '../scene/pieavatar';
 import {Translation} from '../scene/translation';
 import {TextAvatar} from '../scene/textavatar';
-import {ClearAll} from '../scene/clearall';
 import {addHandler, handle} from '../event';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
-    const clear = new ClearAll(camera);
-    clear.layer = 0;
-
     const meter = new PieAvatar(state, camera);
     meter.layer = 1;
     meter.x.setTo(.5);
@@ -29,24 +25,32 @@ export function initPreloader(state, camera, fillStyle = 'black') {
     text.font = '18px verdana';
     text.text = 'Loading...';
 
-    state.skid.preloader = {meter, textPosition, text, clear};
+    state.skid.preloader = {meter, textPosition, text};
 }
 
 addHandler('load_progress', (state, progress) => {
+    if (!state.skid.preloader) {
+        return;
+    }
     state.skid.preloader.meter.breadth.setTo(-progress);
 });
 
 addHandler('load_error', (state) => {
+    if (!state.skid.preloader) {
+        return;
+    }
     state.skid.preloader.meter.fillStyle = '#b00';
     state.skid.preloader.text.fillStyle = '#b00';
     state.skid.preloader.text.text = `Error`;
 });
 
 addHandler('load_done', (state) => {
+    if (!state.skid.preloader) {
+        return;
+    }
     state.skid.preloader.meter.remove();
     state.skid.preloader.textPosition.remove();
     state.skid.preloader.text.remove();
-    state.skid.preloader.clear.remove();
     state.skid.preloader = undefined;
     handle(state, 'request_draw');
 });

@@ -106,6 +106,21 @@ export function makeInterpoland(state, value) {
     return result
 }
 
+function updateTween(tween, dt) {
+    tween.elapsed += dt
+
+    if(tween.elapsed >= tween.duration) {
+        tween.interpoland.curr += tween.magnitude
+        tween.interpoland.base += tween.magnitude
+        tween.interpoland.tweenCount -= 1
+        return false
+    }
+
+    tween.interpoland.curr += tween.amplitude *
+                              tween.func.call(undefined, tween.elapsed / tween.duration)
+    return true
+}
+
 addHandler('before_draw', (state, dt) => {
     const interpolands = state.skid.interpolands
     if (!interpolands) {
@@ -116,20 +131,7 @@ addHandler('before_draw', (state, dt) => {
         interpolands.interpolands[i].curr = interpolands.interpolands[i].base
     }
 
-    filter(interpolands.tweens, (tween) => {
-        tween.elapsed += dt
-
-        if(tween.elapsed >= tween.duration) {
-            tween.interpoland.curr += tween.magnitude
-            tween.interpoland.base += tween.magnitude
-            tween.interpoland.tweenCount -= 1
-            return false
-        }
-
-        tween.interpoland.curr += tween.amplitude *
-                                  tween.func.call(undefined, tween.elapsed / tween.duration)
-        return true
-    }, interpolands.tweensEnding)
+    filter(interpolands.tweens, updateTween, interpolands.tweensEnding, dt)
 
     for(let i = 0; i < interpolands.tweensEnding.length; i += 1) {
         const tween = interpolands.tweensEnding[i]

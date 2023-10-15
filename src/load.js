@@ -75,10 +75,10 @@ export function doneLoading(state, id) {
     }
 }
 
-export function errorLoading(state) {
+export function errorLoading(state, error) {
     if (state.skid.load.error) return;
     state.skid.load.error = true;
-    handle(state, 'load_error');
+    handle(state, 'load_error', error);
 }
 
 export function reloadData(state, url, processFunc) {
@@ -103,10 +103,10 @@ export function reloadData(state, url, processFunc) {
             
             if (processFunc) {
                 // TODO: save processFunc from loadData() call?
-                processFunc().then((a) => {
+                processFunc(data).then((a) => {
                     resolve(a);
                 }, (error) => {
-                    errorLoading(state);
+                    errorLoading(state, error);
                 });
             }
         };
@@ -142,14 +142,19 @@ export function loadData(state, url, total, processFunc) {
                 const blob = new Blob([xhr.response], options);
                 progressLoading(state, id, blob.size, blob.size);
                 data = window.URL.createObjectURL(blob);
+            } else {
+                progressLoading(state, id, 0, 1); // since size info isn't available
             }
             
             if (processFunc) {
-                processFunc().then((a) => {
+                processFunc(data).then((a) => {
+                    if (!data) {
+                        progressLoading(state, id, 1, 1);
+                    }
                     resolve(a);
                     doneLoading(state, id);
                 }, (error) => {
-                    errorLoading(state);
+                    errorLoading(state, error);
                 });
             }
         };

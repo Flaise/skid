@@ -3,6 +3,8 @@ import {makeInterpoland} from '../interpolands'
 
 export class Camera extends Group {
     constructor(state, group) {
+        if (!group) group = state.skid.viewport.root
+        if (!group) throw new Error('initialize viewport before constructing camera')
         super(group)
         this.x = makeInterpoland(state, 0)
         this.y = makeInterpoland(state, 0)
@@ -11,6 +13,7 @@ export class Camera extends Group {
         this.anchorX = makeInterpoland(state, 0)
         this.anchorY = makeInterpoland(state, 0)
         this.angle = makeInterpoland(state, 0)
+        this.transform = undefined
     }
 
     subremove() {
@@ -33,6 +36,8 @@ export class Camera extends Group {
         const dy = -this.y.curr + this.h.curr * this.anchorY.curr
         if(dx || dy)
             context.translate(dx, dy)
+        
+        this.transform = DOMMatrix.fromMatrix(context.getTransform());
 
         super.draw(context)
 

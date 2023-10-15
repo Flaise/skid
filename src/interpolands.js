@@ -2,15 +2,6 @@ import {filter, remove} from './array'
 import {handle, addHandler} from './event'
 
 class Interpoland {
-    constructor(state, value) {
-        value = value || 0
-        this.curr = value
-        this.base = value
-        this.dest = value
-        this.state = state
-        this.tweenCount = 0
-    }
-
     mod(delta, duration, tweenFunc, onDone) {
         if(!delta && !onDone)
             return
@@ -31,6 +22,8 @@ class Interpoland {
         this.modNow(dest - this.dest)
     }
     setTo(dest) {
+        if(arguments.length > 1)
+            throw new Error('setTo() takes only 1 argument. Did you mean modTo()?');
         if(isNaN(dest))
             throw new Error()
         if(this.base === dest && this.tweenCount === 0)
@@ -55,6 +48,7 @@ function removeInterpoland(state, interpoland) {
     const interpolands = state.skid.interpolands
     remove(interpolands.interpolands, interpoland)
     removeTweensOf(state, interpoland)
+    interpolands.interpolandsUnused.push(interpoland)
 }
 
 function removeTweensOf(state, interpoland) {
@@ -87,16 +81,44 @@ export function makeInterpoland(state, value) {
     if (!state.skid.interpolands) {
         state.skid.interpolands = {
             tweens: [],
-            ending: [],
+            tweensEnding: [],
             interpolands: [],
+            interpolandsUnused: [],
             // TODO: merge with state.skid.timeRemainder; need to modify animationFrame
             remainder: 0,
         }
     }
     const interpolands = state.skid.interpolands
-    const result = new Interpoland(state, value)
+    let result
+    if (interpolands.interpolandsUnused.length) {
+        result = interpolands.interpolandsUnused.pop()
+    } else {
+        result = new Interpoland()
+    }
+    value = value || 0
+    result.curr = value
+    result.base = value
+    result.dest = value
+    result.state = state
+    result.tweenCount = 0
+    
     interpolands.interpolands.push(result)
     return result
+}
+
+function updateTween(tween, dt) {
+    tween.elapsed += dt
+
+    if(tween.elapsed >= tween.duration) {
+        tween.interpoland.curr += tween.magnitude
+        tween.interpoland.base += tween.magnitude
+        tween.interpoland.tweenCount -= 1
+        return false
+    }
+
+    tween.interpoland.curr += tween.amplitude *
+                              tween.func.call(undefined, tween.elapsed / tween.duration)
+    return true
 }
 
 addHandler('before_draw', (state, dt) => {
@@ -105,33 +127,21 @@ addHandler('before_draw', (state, dt) => {
         return
     }
 
-    for(let i = 0; i < interpolands.interpolands.length; i += 1)
+    for (let i = 0; i < interpolands.interpolands.length; i += 1) {
         interpolands.interpolands[i].curr = interpolands.interpolands[i].base
+    }
 
-    filter(interpolands.tweens, (tween) => {
-        tween.elapsed += dt
+    filter(interpolands.tweens, updateTween, interpolands.tweensEnding, dt)
 
-        if(tween.elapsed >= tween.duration) {
-            tween.interpoland.curr += tween.magnitude
-            tween.interpoland.base += tween.magnitude
-            tween.interpoland.tweenCount -= 1
-            return false
-        }
-
-        tween.interpoland.curr += tween.amplitude *
-                                  tween.func.call(undefined, tween.elapsed / tween.duration)
-        return true
-    }, interpolands.ending)
-
-    for(let i = 0; i < interpolands.ending.length; i += 1) {
-        const tween = interpolands.ending[i]
+    for(let i = 0; i < interpolands.tweensEnding.length; i += 1) {
+        const tween = interpolands.tweensEnding[i]
         if (!tween.onDone) {
             continue;
         }
         interpolands.remainder = tween.elapsed - tween.duration
         tween.onDone.call()
     }
-    interpolands.ending.length = 0
+    interpolands.tweensEnding.length = 0
     interpolands.remainder = 0
 })
 

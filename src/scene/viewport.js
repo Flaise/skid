@@ -16,33 +16,37 @@ addHandler('request_draw', (state) => {
     if (is.nullish(state.skid.lastFrame)) {
         state.skid.lastFrame = Date.now()
     }
+    
+    if (is.nullish(state.skid.drawFunc)) {
+        state.skid.drawFunc = () => {
+            const currentFrame = Date.now()
+            handle(state, 'before_draw', currentFrame - state.skid.lastFrame)
+            const viewport = state.skid.viewport
+            if (viewport && viewport.canvas) {
+                const context = viewport.canvas.getContext('2d')
+                viewport.root.draw(context)
+            }
+            state.skid.willDraw = false
+            handle(state, 'after_draw')
+            if (state.skid.willDraw) {
+                state.skid.lastFrame = currentFrame
+            } else {
+                state.skid.lastFrame = undefined
+            }
+        }
+    }
 
-    animationFrame(() => {
-        const currentFrame = Date.now()
-        handle(state, 'before_draw', currentFrame - state.skid.lastFrame)
-        const viewport = state.skid.viewport
-        if (viewport && viewport.canvas) {
-            const context = viewport.canvas.getContext('2d')
-            viewport.root.draw(context)
-        }
-        state.skid.willDraw = false
-        handle(state, 'after_draw')
-        if (state.skid.willDraw) {
-            state.skid.lastFrame = currentFrame
-        } else {
-            state.skid.lastFrame = undefined
-        }
-    })
+    animationFrame(state.skid.drawFunc)
 })
 
 addHandler('load_done', (state) => {
-    if(typeof window !== 'undefined') { // for unit testing in Node
+    if (typeof window !== 'undefined') { // for unit testing in Node
         window.addEventListener('resize', () => handle(state, 'request_draw'))
     }
 })
 
 let func
-if(typeof window === 'undefined')
+if (typeof window === 'undefined')
     // for unit testing in Node
     func = (callback => setTimeout(callback, 1000 / 60))
 else {

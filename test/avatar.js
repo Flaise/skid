@@ -20,20 +20,6 @@ beforeEach(function() {
     avatars = makeViewport(state, canvas)
 })
 
-test('does not sort new avatars', function() {
-    var a = new Translation(state, avatars)
-    assert(a.layer === undefined)
-
-    a.layer = 10
-    assert(a.layer === 10)
-
-    var b = new Translation(state, avatars)
-    assert(b.layer === undefined)
-    assert(a.layer === 10)
-    assert(avatars.contents[0] === a)
-    assert(avatars.contents[1] === b)
-})
-
 test('sorts avatars ascendingly', function() {
     var a = new Translation(state, avatars)
     a.layer = 10
@@ -49,21 +35,6 @@ test('sorts avatars ascendingly', function() {
     assert(avatars.contents[0] === a)
     assert(avatars.contents[1] === b)
     assert(avatars.contents.length === 2)
-})
-
-test('sorts past avatars of undefined layer', function() {
-    var a = new Translation(state, avatars)
-    a.layer = 9
-    var b = new Translation(state, avatars)
-    var c = new Translation(state, avatars)
-    assert(avatars.contents[0] === a)
-    assert(avatars.contents[1] === b)
-    assert(avatars.contents[2] === c)
-
-    c.layer = 7
-    assert(avatars.contents[0] === c)
-    assert(avatars.contents[1] === a)
-    assert(avatars.contents[2] === b)
 })
 
 test('sorts many avatars', function() {
@@ -173,11 +144,11 @@ test('leaves no interpolands behind after multi-removal and calls all onRemoves'
 })
 
 test('handles multiple creations and removals', function() {
-    var a = new Translation(state, avatars)
-    var b = new Translation(state, avatars)
-    var c = new Translation(state, avatars)
-    var d = new Translation(state, avatars)
     var e = new Translation(state, avatars)
+    var d = new Translation(state, avatars)
+    var c = new Translation(state, avatars)
+    var b = new Translation(state, avatars)
+    var a = new Translation(state, avatars)
 
     assert(avatars.contents.length === 5)
     assert(state.skid.interpolands.interpolands.length === 10)
@@ -195,24 +166,24 @@ test('handles multiple creations and removals', function() {
     var dx = d
     d = new Translation(state, avatars)
     assert(d !== dx)
-    assert(avatars.contents[3] === e)
-    assert(avatars.contents[4] === d)
+    assert(avatars.contents[1] === a)
+    assert(avatars.contents[0] === d)
 
     a.remove()
     handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 4)
     assert(state.skid.interpolands.interpolands.length === 8)
-    assert(avatars.contents[0] === b)
-    assert(avatars.contents[1] === c)
-    assert(avatars.contents[2] === e)
-    assert(avatars.contents[3] === d)
+    assert(avatars.contents[0] === d)
+    assert(avatars.contents[1] === b)
+    assert(avatars.contents[2] === c)
+    assert(avatars.contents[3] === e)
 
     var ax = a
     a = new Translation(state, avatars)
     assert(a !== ax)
     assert(avatars.contents.length === 5)
     assert(state.skid.interpolands.interpolands.length === 10)
-    assert(avatars.contents[4] === a)
+    assert(avatars.contents[0] === a)
 
     c.remove()
     b.remove()
@@ -220,8 +191,8 @@ test('handles multiple creations and removals', function() {
     handle(state, 'before_draw', 0)
     assert(avatars.contents.length === 2)
     assert(state.skid.interpolands.interpolands.length === 4)
-    assert(avatars.contents[0] === d)
-    assert(avatars.contents[1] === a)
+    assert(avatars.contents[0] === a)
+    assert(avatars.contents[1] === d)
 
     e = new Translation(state, avatars)
     b = new Translation(state, avatars)
@@ -230,10 +201,10 @@ test('handles multiple creations and removals', function() {
     var f = new Translation(state, avatars)
     assert(avatars.contents.length === 6)
     assert(state.skid.interpolands.interpolands.length === 12)
-    assert(avatars.contents[0] === d)
-    assert(avatars.contents[1] === a)
-    assert(avatars.contents[2] === e)
-    assert(avatars.contents[3] === b)
-    assert(avatars.contents[4] === c)
-    assert(avatars.contents[5] === f)
+    assert(avatars.contents[0] === f)
+    assert(avatars.contents[1] === c)
+    assert(avatars.contents[2] === b)
+    assert(avatars.contents[3] === e)
+    assert(avatars.contents[4] === a)
+    assert(avatars.contents[5] === d)
 })

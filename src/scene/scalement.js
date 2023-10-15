@@ -1,11 +1,12 @@
 import {Group} from './group'
 import {is} from '../is'
+import {makeInterpoland} from '../interpolands'
 
 export class Scalement extends Group {
-    constructor(container, w, h) {
+    constructor(state, container, w, h) {
         super(container)
-        this.w = this.interpolands.make(is.defined(w)? w: 1)
-        this.h = this.interpolands.make(is.defined(h)? h: 1)
+        this.w = makeInterpoland(state, is.defined(w)? w: 1)
+        this.h = makeInterpoland(state, is.defined(h)? h: 1)
     }
 
     draw(context) {

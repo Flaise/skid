@@ -3,8 +3,8 @@ import {handle} from '../event';
 
 export class Icon {
     constructor(image, layout) {
-        this._image = image
-        this._layout = layout
+        this.image = image
+        this.layout = layout
         this._avatars = []
     }
 
@@ -15,20 +15,6 @@ export class Icon {
         const index = this._avatars.indexOf(avatar)
         if(index >= 0)
             this._avatars.splice(index, 1)
-    }
-
-    get layout() {
-        return this._layout
-    }
-    set layout(value) {
-        this._layout = value
-    }
-
-    get image() {
-        return this._image
-    }
-    set image(value) {
-        this._image = value
     }
 
     draw(context, x, y, w, h) {
@@ -89,7 +75,7 @@ export function loadImage(state, source, sizeBytes) {
 }
 
 export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
-    if (typeof source === 'string') {
+    if (typeof source === 'string' || source instanceof window.URL) {
         const icon = new Icon();
         const image = new window.Image();
         icon.image = image;
@@ -99,11 +85,16 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
                                             image.width, image.height, true);
                 resolve();
             };
-            image.onerror = reject;
+            image.onerror = () => {
+                // There's an error parameter here but it doesn't contain meaningful details.
+
+                console.error(`Failed to load icon from '${source}'`);
+                reject();
+            };
             if (data) {
                 image.src = data;
             } else {
-                // HTTP request failed, probably because running on localhost
+                // HTTP request failed; may be running on localhost, so try loading without HTTP
                 image.src = source;
             }
         }));
@@ -122,9 +113,8 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
         .then((data) => {
             const image = new window.Image();
             image.onload = () => {
-                // TODO: Putting this here reduces flicker but also increases likelihood
-                // of race condition
-                // TODO: Need a way to mark an image load as canceled
+                // TODO: Putting this here reduces flicker but also introduces race condition.
+                // TODO: Need a way to mark an image load as canceled.
                 icon.image = image;
 
                 icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,

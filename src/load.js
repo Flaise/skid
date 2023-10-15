@@ -81,51 +81,27 @@ export function errorLoading(state, error) {
 }
 
 export function reloadData(state, url, processFunc) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer';
-        xhr.onloadend = () => {
-            let data = undefined;
-            if (xhr.status.toString().match(/^2/)) {
-                const options = {};
-                const headers = xhr.getAllResponseHeaders();
-                const match = headers.match(/^Content-Type\:\s*(.*?)$/mi);
-
-                if (match && match[1]) {
-                    options.type = match[1];
-                }
-
-                const blob = new Blob([xhr.response], options);
-                data = window.URL.createObjectURL(blob);
-            }
-
-            if (processFunc) {
-                // TODO: save processFunc from loadData() call?
-                processFunc(data).then((a) => {
-                    resolve(a);
-                }, (error) => {
-                    errorLoading(state, error);
-                });
-            }
-        };
-
-        setTimeout(() => xhr.send()); // Errors must happen asynchronously.
-    });
+    return doXHR(state, undefined, url, false, processFunc);
 }
 
 export function loadData(state, url, total, processFunc) {
     const id = startLoading(state, total);
+    return doXHR(state, id, url, true, processFunc);
+}
+
+function doXHR(state, id, url, showProgress, processFunc) {
     const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
-        xhr.onprogress = (event) => {
-            if (event.lengthComputable) {
-                progressLoading(state, id, event.loaded, event.total);
-            }
-        };
+        if (showProgress) {
+            xhr.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    progressLoading(state, id, event.loaded, event.total);
+                }
+            };
+        }
 
         xhr.onloadend = () => {
             let data = undefined;
@@ -139,26 +115,42 @@ export function loadData(state, url, total, processFunc) {
                 }
 
                 const blob = new Blob([xhr.response], options);
-                progressLoading(state, id, blob.size, blob.size);
+                if (showProgress) {
+                    progressLoading(state, id, blob.size, blob.size);
+                }
                 data = window.URL.createObjectURL(blob);
-            } else {
-                progressLoading(state, id, 0, 1); // since size info isn't available
             }
 
             if (processFunc) {
+                if (!data && showProgress) {
+                    // XHR failed but it's possible for processFunc to recover and produce a valid
+                    // result anyway.
+
+                    // showing 0 out of anything since size info isn't available
+                    progressLoading(state, id, 0, 1);
+                }
+
                 processFunc(data).then((a) => {
-                    if (!data) {
+                    if (!data && showProgress) {
+                        // completion of above progress indicator
                         progressLoading(state, id, 1, 1);
                     }
                     resolve(a);
-                    doneLoading(state, id);
+
+                    if (showProgress) {
+                        // Skip reporting completion when reloading asset.
+                        doneLoading(state, id);
+                    }
                 }, (error) => {
                     errorLoading(state, error);
+                    reject();
                 });
             }
         };
 
-        setTimeout(() => xhr.send()); // Errors must happen asynchronously.
+        // Explicitly moving to next turn of event loop because some errors will happen
+        // synchronously and Skid needs all outputs from this operation to be asynchronous.
+        setTimeout(() => xhr.send());
     });
     return promise;
 }

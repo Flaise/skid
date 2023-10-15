@@ -1,14 +1,13 @@
-import {PieAvatar} from '../scene/pie-avatar';
+import {PieAvatar} from '../scene/pieavatar';
 import {Translation} from '../scene/translation';
-import {TextAvatar} from '../scene/text-avatar';
-import {Camera} from '../scene/camera';
-import {ClearAll} from '../scene/clear-all';
+import {TextAvatar} from '../scene/textavatar';
+import {ClearAll} from '../scene/clearall';
 import {addHandler, handle} from '../event';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
     const clear = new ClearAll(camera);
     clear.layer = 0;
-    
+
     const meter = new PieAvatar(state, camera);
     meter.layer = 1;
     meter.x.setTo(.5);

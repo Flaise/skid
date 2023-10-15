@@ -1,5 +1,5 @@
-import {TileField} from './tile-field'
-import {IconAvatar} from './icon-avatar'
+import {TileField} from './tilefield'
+import {IconAvatar} from './iconavatar'
 import {is} from '../is'
 
 export class ComputedTileField {

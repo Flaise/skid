@@ -1,5 +1,5 @@
 import assert from 'power-assert'
-import {quake, sine} from '../src/tween-in-place'
+import {quake, sine} from '../src/tweeninplace'
 
 suite('tween in place')
 

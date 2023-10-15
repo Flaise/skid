@@ -1,4 +1,4 @@
-const {inspect} = require('util');
+import {inspect} from 'util';
 
 const handlers = Object.create(null);
 
@@ -32,7 +32,7 @@ export function addHandler(code, handler) {
         }
         const prev = handlers[key];
         if (prev) {
-            handlers[key].push(handler);
+            prev.push(handler);
         } else {
             handlers[key] = [handler];
         }

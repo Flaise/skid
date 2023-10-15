@@ -1,4 +1,4 @@
-const {addHandler, handle} = require('./event')
+import {addHandler, handle} from './event';
 
 const states = Object.create(null)
 

@@ -32,7 +32,7 @@ export class PieAvatar extends Avatar {
 
         context.beginPath()
 
-        if(this.breadth.curr >= 1) {
+        if(this.breadth.curr >= 1 && this.innerRadiusRel.curr >= 1) {
             context.arc(0, 0, .5, 0, Math.PI * 2, false)
         }
         else {

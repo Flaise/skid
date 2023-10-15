@@ -14,6 +14,7 @@ export class Group extends Avatar {
     constructor(container) {
         super(container)
         this.contents = []
+        this.visible = true
     }
 
     walk(callback) {
@@ -27,6 +28,8 @@ export class Group extends Avatar {
     }
 
     draw(context) {
+        if(!this.visible)
+            return
         for(let i = 0; i < this.contents.length; i += 1)
             this.contents[i].draw(context)
     }
@@ -86,6 +89,7 @@ export class Group extends Avatar {
     }
 
     resort(avatar) {
+        // TODO: bubble sort to avoid allocation?
         remove(this.contents, avatar)
         insertSorted(this.contents, avatar, compare)
     }

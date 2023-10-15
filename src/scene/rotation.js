@@ -1,9 +1,10 @@
 import {Group} from './group'
+import {makeInterpoland} from '../interpolands'
 
 export class Rotation extends Group {
-    constructor(container, angle) {
+    constructor(state, container, angle) {
         super(container)
-        this.angle = this.interpolands.make(angle || 0)
+        this.angle = makeInterpoland(state, angle || 0)
     }
 
     draw(context) {

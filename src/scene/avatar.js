@@ -1,6 +1,6 @@
 export class Avatar {
     constructor(container) {
-        this._layer = undefined
+        this._layer = 0
         this.removed = false
         if(container)
             container.insert(this)

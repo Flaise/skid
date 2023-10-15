@@ -3,11 +3,11 @@
  * Like Array#filter except modifies the array instead of consuming the resources to create a new
  * one. Return `true` from the predicate to keep an element passed to it.
  */
-export function filter(arr, predicate, outcasts) {
+export function filter(arr, predicate, outcasts, param) {
     let shiftBy = 0
     for(let i = 0; i < arr.length; i += 1) {
         const element = arr[i]
-        if(predicate(element))
+        if(predicate(element, param))
             arr[i - shiftBy] = arr[i]
         else {
             shiftBy += 1

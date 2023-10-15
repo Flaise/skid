@@ -5,3 +5,5 @@ benchmarks/
 .gobble-build/
 reports/
 helpers/
+karma.conf.js
+gobblefile.js

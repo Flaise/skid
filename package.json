@@ -42,9 +42,15 @@
     "karma-watch": "karma start"
   },
   "exports": {
-    "./*": "./src/*.js",
-    "./scene/*": "./src/scene/*.js",
-    "./util/*": "./src/util/*.js"
+    "./*": {
+      "import": "./src/*.js"
+    },
+    "./scene/*": {
+      "import": "./src/scene/*.js"
+    },
+    "./util/*": {
+      "import": "./src/util/*.js"
+    }
   },
   "dependencies": {
     "howler": "2.0.9"

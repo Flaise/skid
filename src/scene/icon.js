@@ -44,8 +44,10 @@ export class Icon {
      */
     bounds(x, y, w, h) {
         const data = this.layout
-        if(!data)
+        if(!data) {
+            console.warn('Icon has no bounds data because layout not initialized')
             return [x, y, 0, 0]
+        }
         else if(data.solid)
             return [x + data.wFactor * w, y + data.hFactor * h, w * data.sx, h * data.sy]
         else

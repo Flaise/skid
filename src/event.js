@@ -53,7 +53,7 @@ let handling = 0;
 export function handle(state, code, arg) {
     if (!state) throw new Error();
     if (typeof state !== 'object') throw new Error('state must be an object');
-    if (state.skid.debug && silences.indexOf(code) < 0) {
+    if (state.skid && state.skid.debug && silences.indexOf(code) < 0) {
         console.log('[event]', code, inspect(arg, {depth: 0}));
     }
     const list = handlers[code];

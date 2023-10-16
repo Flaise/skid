@@ -130,13 +130,19 @@ function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,
     layout.w = sourceW
     layout.h = sourceH
 
-    if(isNaN(ax))
-        ax = untrimmedWidth / 2
-    var axRel = ax / untrimmedWidth
+    var axRel
+    if(isNaN(ax)) {
+        axRel = .5
+    } else {
+        axRel = ax / untrimmedWidth
+    }
 
-    if(isNaN(ay))
-        ay = untrimmedHeight / 2
-    var ayRel = ay / untrimmedHeight
+    var ayRel
+    if(isNaN(ay)) {
+        ayRel = .5
+    } else {
+        ayRel = ay / untrimmedHeight
+    }
 
     if(isNaN(diameter)) {
         // fill square tile if no diameter is specified

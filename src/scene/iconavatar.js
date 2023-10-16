@@ -7,39 +7,17 @@ export class IconAvatar extends Avatar {
         this.y = y
         this.w = w
         this.h = h
-        this._icon = icon
-        this._add()
-    }
-
-    _add() {
-        if(this._icon)
-            this._icon.addAvatar(this)
-    }
-    _remove() {
-        if(this._icon)
-            this._icon.removeAvatar(this)
-    }
-
-    set icon(value) {
-        if(this._icon === value)
-            return
-        this._remove()
-        this._icon = value
-        this._add()
-    }
-
-    subremove() {
-        this._remove()
+        this.icon = icon
     }
 
     draw(context) {
-        if(this._icon)
-            this._icon.draw(context, this.x, this.y, this.w, this.h)
+        if(this.icon)
+            this.icon.draw(context, this.x, this.y, this.w, this.h)
     }
 
     bounds() {
-        if(!this._icon)
+        if(!this.icon)
             return [this.x, this.y, 0, 0]
-        return this._icon.bounds(this.x, this.y, this.w, this.h)
+        return this.icon.bounds(this.x, this.y, this.w, this.h)
     }
 }

@@ -5,16 +5,6 @@ export class Icon {
     constructor(image, layout) {
         this.image = image
         this.layout = layout
-        this._avatars = []
-    }
-
-    addAvatar(avatar) {
-        this._avatars.push(avatar)
-    }
-    removeAvatar(avatar) {
-        const index = this._avatars.indexOf(avatar)
-        if(index >= 0)
-            this._avatars.splice(index, 1)
     }
 
     draw(context, x, y, w, h) {

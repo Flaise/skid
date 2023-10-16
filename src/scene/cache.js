@@ -3,15 +3,21 @@ import {Translation} from './translation'
 import {Scalement} from './scalement'
 
 export class Cache extends Group {
-    constructor(container, tileSize) {
+    constructor(container, tileSize, imageSmoothingEnabled) {
         super(container)
 
+        // must set to true when altering any field
+        this.altered = false
+
+        this.imageSmoothingEnabled = imageSmoothingEnabled
+
         // affects granularity of saved image data but not final size/position
-        this._tileSize = tileSize
+        this.tileSize = tileSize
+
+        // Don't directly change these fields from external code:
 
         this._canvas = document.createElement('canvas')
         this._context = this._canvas.getContext('2d')
-        this._altered = false
         this._x = 0
         this._y = 0
         this._width = 0
@@ -20,23 +26,23 @@ export class Cache extends Group {
 
     insert(avatar) {
         super.insert(avatar)
-        this._altered = true
+        this.altered = true
     }
 
     removeAvatar(avatar) {
         super.removeAvatar(avatar)
-        this._altered = true
+        this.altered = true
     }
 
     draw(context) {
-        if(this._altered) {
-            this._altered = false
+        if(this.altered) {
+            this.altered = false
 
             const bounds = this.bounds()
             if(bounds) {
                 ;[this._x, this._y, this._width, this._height] = bounds
-                this._canvas.width = Math.ceil(this._width * this._tileSize)
-                this._canvas.height = Math.ceil(this._height * this._tileSize)
+                this._canvas.width = Math.ceil(this._width * this.tileSize)
+                this._canvas.height = Math.ceil(this._height * this.tileSize)
             } else {
                 this._canvas.width = 0
                 this._canvas.height = 0
@@ -45,8 +51,13 @@ export class Cache extends Group {
             if(!this._canvas.width || !this._canvas.height)
                 return
 
+            if (this.imageSmoothingEnabled !== undefined) {
+                this._context.imageSmoothingEnabled = this.imageSmoothingEnabled
+                this._context.mozImageSmoothingEnabled = this.imageSmoothingEnabled
+            }
+
             // Scale and translate so draw operations fit in the canvas
-            Scalement.draw(this._context, this._tileSize, this._tileSize, () => {
+            Scalement.draw(this._context, this.tileSize, this.tileSize, () => {
                 Translation.draw(this._context, -this._x, -this._y, () => {
                     // Draw all contents to the saved canvas. The scale/translate operations make it
                     // so that no changes to the contained avatars are necessary.

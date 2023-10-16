@@ -3,8 +3,8 @@ import {IconAvatar} from './iconavatar'
 import {is} from '../is'
 
 export class ComputedTileField {
-    constructor(root, tileSize) {
-        this.field = new TileField(root, tileSize)
+    constructor(root, tileSize, imageSmoothingEnabled) {
+        this.field = new TileField(root, tileSize, imageSmoothingEnabled)
         this.avatars = Object.create(null) // {position: {[type]: [avatar, ...]}}
     }
 

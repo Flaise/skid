@@ -1,6 +1,8 @@
 import {Cache} from './cache'
 import {Group} from './group'
 
+const TILES_PER_SEGMENT = 6;
+
 export class TileField {
     constructor(root, tileSize) {
         this.root = root
@@ -11,7 +13,7 @@ export class TileField {
     }
 
     _keyOf(x, y) {
-        return Math.floor(x / 6) + ',' + Math.floor(y)
+        return Math.floor(x / TILES_PER_SEGMENT) + ',' + Math.floor(y)
     }
     _ensureRow(y) {
         let result = this._rows[y]
@@ -27,7 +29,12 @@ export class TileField {
         let result = this._segments[key]
         if(!result) {
             result = new Cache(this._ensureRow(y), this._tileSize)
-            result.layer = x
+
+            // This will be different depending on what order in which the avatars are added to the
+            // segment but the sorting order compared to other segments on the row will be the same
+            // regardless because their ranges don't overlap.
+            result.layer = x;
+
             this._segments[key] = result
         }
         return result

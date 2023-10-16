@@ -4,12 +4,16 @@ import {Group} from './group'
 const TILES_PER_SEGMENT = 6;
 
 export class TileField {
-    constructor(root, tileSize) {
+    constructor(root, tileSize, imageSmoothingEnabled) {
         this.root = root
         this._tileSize = tileSize
         this._rows = Object.create(null)
         this._segments = Object.create(null)
         this.layerOffset = 0
+
+        // In the current imlementation, altering this field after a row has been created will have
+        // no effect on that row.
+        this.imageSmoothingEnabled = imageSmoothingEnabled
     }
 
     _keyOf(x, y) {
@@ -28,7 +32,7 @@ export class TileField {
         const key = this._keyOf(x, y)
         let result = this._segments[key]
         if(!result) {
-            result = new Cache(this._ensureRow(y), this._tileSize)
+            result = new Cache(this._ensureRow(y), this._tileSize, this.imageSmoothingEnabled)
 
             // This will be different depending on what order in which the avatars are added to the
             // segment but the sorting order compared to other segments on the row will be the same

@@ -7,7 +7,7 @@ export function one(x) {
 export function linear(x) {
     return x;
 }
-export function power_fac(exp) {
+export function powerFac(exp) {
     if (exp === 1) {
         return linear;
     }
@@ -36,10 +36,10 @@ export function quartic(x) {
 export function sine(x) {
     return Math.sin(x * Math.PI / 2);
 }
-export function sine_2(x) {
+export function sine2(x) {
     return sine(sine(x));
 }
-export function sine_3(x) {
+export function sine3(x) {
     return sine(sine(sine(x)));
 }
 export function cosine(x) {

@@ -43,7 +43,7 @@
     "apt-get": "apt-get install xvfb",
     "karma": "karma start --single-run",
     "karma-watch": "karma start",
-    "lint": "npx eslint ./src/**/*.js ./test/**/*.js ./helpers/**/*.*js"
+    "lint": "npx eslint ./test ./src ./helpers/**"
   },
   "exports": {
     "./*": {

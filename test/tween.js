@@ -5,14 +5,14 @@ suite('tween');
 
 const funcs = [];
 for (const key of Object.keys(tween)) {
-    if (!/.*_fac$/.test(key)) {
+    if (!/.*Fac$/.test(key)) {
         funcs.push(tween[key]);
     }
 }
-funcs.push(tween.power_fac(1));
-funcs.push(tween.power_fac(2));
-funcs.push(tween.power_fac(3));
-funcs.push(tween.power_fac(1.5));
+funcs.push(tween.powerFac(1));
+funcs.push(tween.powerFac(2));
+funcs.push(tween.powerFac(3));
+funcs.push(tween.powerFac(1.5));
 
 for (const func of funcs) {
     test(func.name, () => {

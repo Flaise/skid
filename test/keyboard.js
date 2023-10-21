@@ -5,7 +5,7 @@ import * as key from '../src/key';
 
 suite('keyboard');
 
-const keyCodes = Object.keys(key).filter(a => a !== 'nameOf').map(a => key[a]);
+const keyCodes = Object.keys(key).filter((a) => a !== 'nameOf').map((a) => key[a]);
 
 beforeEach(() => {
     reset();

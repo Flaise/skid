@@ -28,8 +28,8 @@ export function stateOf(keyCode) {
 }
 
 addHandler('load_done', (state) => {
-    window.addEventListener('keydown', event => onKey(state, event));
-    window.addEventListener('keyup', event => onKey(state, event));
+    window.addEventListener('keydown', (event) => onKey(state, event));
+    window.addEventListener('keyup', (event) => onKey(state, event));
 });
 
 function onKey(state, event) {

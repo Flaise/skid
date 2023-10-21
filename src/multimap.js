@@ -68,7 +68,7 @@ export class MultiMap {
     }
 
     forEachMapping(callback) {
-        Object.keys(this.data).forEach(key => {
+        Object.keys(this.data).forEach((key) => {
             const arr = this.data[key];
             if (arr.length > 0) {
                 callback(key, arr);

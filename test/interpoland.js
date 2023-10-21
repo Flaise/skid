@@ -82,7 +82,7 @@ test('interpolates linearly', function() {
     assert(interpolands.interpolands.length === 1);
     assert(val.curr === 1);
 
-    val.mod(2, 1, tween.power_fac(1), onDone);
+    val.mod(2, 1, tween.powerFac(1), onDone);
     assert(onDone.callCount === 0);
     assert(val.dest === 3);
     handle(state, 'before_draw', 0.5);
@@ -104,12 +104,12 @@ test('supports concurrent interpolations', function() {
     const onDoneB = sinon.spy();
 
     const inter = makeInterpoland(state, 5);
-    inter.mod(-5, 1, tween.power_fac(1), onDoneA);
+    inter.mod(-5, 1, tween.powerFac(1), onDoneA);
     assert(onDoneA.callCount === 0);
     assert(inter.curr === 5);
     assert(inter.dest === 0);
 
-    inter.mod(-2, 2, tween.power_fac(1), onDoneB);
+    inter.mod(-2, 2, tween.powerFac(1), onDoneB);
     assert(onDoneB.callCount === 0);
     assert(inter.curr === 5);
     assert(inter.dest === -2);
@@ -135,7 +135,7 @@ test('can halt interpolation and snap to a value', function() {
     const onDone = sinon.spy();
 
     const inter = makeInterpoland(state, 8);
-    inter.mod(2, 1, tween.power_fac(1), onDone);
+    inter.mod(2, 1, tween.powerFac(1), onDone);
     assert(interpolands.tweens.length === 1);
     assert(onDone.callCount === 0);
     assert(inter.curr === 8);
@@ -150,7 +150,7 @@ test('can halt interpolation and snap to a value', function() {
 
 test('can snap value without halting interpolation', function() {
     const inter = makeInterpoland(state, 9);
-    inter.mod(5, 1, tween.power_fac(1));
+    inter.mod(5, 1, tween.powerFac(1));
     inter.modNow(1);
     assert(interpolands.tweens.length === 1);
     assert(inter.curr === 10);
@@ -165,13 +165,13 @@ test('interpolates to a destination', function() {
     const onDoneB = sinon.spy();
 
     const inter = makeInterpoland(state, -4);
-    inter.mod(2, 1, tween.power_fac(1), onDoneA);
+    inter.mod(2, 1, tween.powerFac(1), onDoneA);
     assert(onDoneA.callCount === 0);
     assert(inter.curr === -4);
     assert(inter.dest === -2);
     assert(interpolands.tweens.length === 1);
 
-    inter.modTo(2, 1, tween.power_fac(1), onDoneB);
+    inter.modTo(2, 1, tween.powerFac(1), onDoneB);
     assert(onDoneA.callCount === 0);
     assert(onDoneB.callCount === 0);
     assert(inter.curr === -4);

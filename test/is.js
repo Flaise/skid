@@ -24,7 +24,7 @@ const configuration = [
     [undefined, 'nullish'],
     [() => {}, 'defined', 'function'],
     [function() {}, 'defined', 'function'],
-    [function * () {}, 'defined', 'function', 'generatorFunction'],
+    [function* () {}, 'defined', 'function', 'generatorFunction'],
 ];
 
 for (const entry of configuration) {

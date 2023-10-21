@@ -26,7 +26,8 @@
         "no-extra-semi": "error",
         "block-spacing": ["error", "always"],
         "no-multiple-empty-lines": ["error", { "max": 1 }],
-        "arrow-parens": ["error", "always"]
+        "arrow-parens": ["error", "always"],
+        "generator-star-spacing": ["error", { "before": false, "after": true }]
     },
     "globals": {
         "process": false,

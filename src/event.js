@@ -1,4 +1,5 @@
 import { inspect } from 'util';
+import { isArray, isFunction, isHash, isString } from './is';
 
 const handlers = Object.create(null);
 
@@ -9,20 +10,22 @@ function identity(a) {
 let warned = false;
 
 export function addHandler(code, handler) {
-    if (typeof handler !== 'function') {
-        throw new Error('handler must be a function');
-    }
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isFunction(handler)) {
+            throw new Error('handler must be a function');
+        }
 
-    if (handling > 0 && !warned) {
-        warned = true;
-        console.warn('addHandler should only be called during program initialization, ' +
-                     'not after events are triggered');
+        if (handling > 0 && !warned) {
+            warned = true;
+            console.warn('addHandler should only be called during program initialization, ' +
+                         'not after events are triggered');
+        }
     }
 
     let keys;
-    if (typeof code === 'string') {
+    if (isString(code)) {
         keys = code.split(' ').filter(identity);
-    } else if (Array.isArray(code)) {
+    } else if (isArray(code)) {
         keys = code;
     } else {
         keys = [code];
@@ -42,26 +45,32 @@ export function addHandler(code, handler) {
 }
 
 const silences = [];
+
 export function silence(code) {
-    if (Array.isArray(code)) {
-        silences.push(...code);
-    } else {
-        silences.push(code);
+    if (process.env.NODE_ENV !== 'production') {
+        if (isArray(code)) {
+            silences.push(...code);
+        } else {
+            silences.push(code);
+        }
     }
 }
 
 let handling = 0;
 
 export function handle(state, code, arg) {
-    if (!state) {
-        throw new Error();
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isHash(state)) {
+            throw new Error('state must be an object');
+        }
     }
-    if (typeof state !== 'object') {
-        throw new Error('state must be an object');
+    if (process.env.NODE_ENV === 'development') {
+        // No logging in production or test modes
+        if (silences.indexOf(code) < 0) {
+            console.log('[event]', code, inspect(arg, { depth: 0 }));
+        }
     }
-    if (state.skid && state.skid.debug && silences.indexOf(code) < 0) {
-        console.log('[event]', code, inspect(arg, { depth: 0 }));
-    }
+
     const list = handlers[code];
     if (!list) {
         return;

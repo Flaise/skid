@@ -1,6 +1,6 @@
 
 export function isNumber(a) {
-    return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a);
+    return Number.isFinite(a);
 }
 
 export function isDefined(a) {
@@ -28,7 +28,7 @@ export function isObject(a) {
 }
 
 export function isArray(a) {
-    return !!a && a.constructor === Array;
+    return Array.isArray(a);
 }
 
 export function isString(a) {
@@ -41,4 +41,8 @@ export function isIterable(a) {
 
 export function isGeneratorFunction(a) {
     return a != null && a.constructor.name === 'GeneratorFunction';
+}
+
+export function isHash(a) {
+    return !!a && typeof a === 'object' && !isArray(a);
 }

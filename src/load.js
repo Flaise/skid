@@ -2,16 +2,19 @@ import { handle } from './event';
 
 let started = false;
 
-export function start(debug) {
+export function start() {
+    if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length > 0) {
+            throw new Error('start() takes no arguments');
+        }
+    }
+
     if (started) {
         throw new Error('call start() only once');
     }
     started = true;
     const state = Object.create(null);
     state.skid = Object.create(null);
-    if (debug) {
-        state.skid.debug = true;
-    }
     if (typeof window !== 'undefined') {
         window.getState = () => state;
     }
@@ -148,7 +151,7 @@ function doXHR(state, id, url, showProgress, processFunc) {
                     // XHR failed but it's possible for processFunc to recover and produce a valid
                     // result anyway.
 
-                    // showing 0 out of anything since size info isn't available
+                    // for progress: showing 0 out of anything since size info isn't available
                     progressLoading(state, id, 0, 1);
                 }
 

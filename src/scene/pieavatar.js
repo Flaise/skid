@@ -10,6 +10,7 @@ export class PieAvatar extends Avatar {
         this.w = makeInterpoland(state, 0);
         this.h = makeInterpoland(state, 0);
         // Distance of second jaw from first jaw. Positive is clockwise.
+        // 0 = nothing rendered. 1 = full circle.
         this.breadth = makeInterpoland(state, 0);
         // Distance of first jaw from north. Positive is clockwise.
         this.startAngle = makeInterpoland(state, 0);

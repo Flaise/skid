@@ -1,5 +1,6 @@
 import { loadData, reloadData, startLoading, doneLoading } from '../load';
 import { handle } from '../event';
+import { isString } from '../is';
 
 export class Icon {
     constructor(image, layout) {
@@ -72,7 +73,7 @@ export function loadImage(state, source, sizeBytes) {
 }
 
 export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
-    if (typeof source === 'string' || source instanceof window.URL) {
+    if (isString(source) || source instanceof window.URL) {
         const icon = new Icon();
         const image = new window.Image();
         icon.image = image;

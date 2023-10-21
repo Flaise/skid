@@ -1,12 +1,12 @@
 import { Avatar } from './avatar';
-import { is } from '../is';
+import { isNullish } from '../is';
 import { insertSorted, remove } from '../array';
 
 function compare(a, b) {
-    if (is.nullish(a._layer)) {
+    if (isNullish(a._layer)) {
         return -1;
     }
-    if (is.nullish(b._layer)) {
+    if (isNullish(b._layer)) {
         return 1;
     }
     return b._layer - a._layer;

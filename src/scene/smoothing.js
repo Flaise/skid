@@ -1,5 +1,5 @@
 import { Group } from './group';
-import { is } from '../is';
+import { isDefined } from '../is';
 
 export class Smoothing extends Group {
     constructor(container, enabled) {
@@ -8,13 +8,13 @@ export class Smoothing extends Group {
     }
 
     draw(context) {
-        if (is.defined(this.enabled)) {
+        if (isDefined(this.enabled)) {
             context.save();
             context.imageSmoothingEnabled = this.enabled;
             context.mozImageSmoothingEnabled = this.enabled;
         }
         super.draw(context);
-        if (is.defined(this.enabled)) {
+        if (isDefined(this.enabled)) {
             context.restore();
         }
     }

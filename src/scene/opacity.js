@@ -1,11 +1,11 @@
 import { Group } from './group';
-import { is } from '../is';
+import { isDefined } from '../is';
 import { makeInterpoland } from '../interpolands';
 
 export class Opacity extends Group {
     constructor(state, group, alpha) {
         super(group);
-        if (!is.defined(alpha)) {
+        if (!isDefined(alpha)) {
             alpha = 1;
         }
         this.alpha = makeInterpoland(state, alpha);

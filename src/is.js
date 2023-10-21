@@ -1,45 +1,44 @@
-export const is = {};
 
-is.number = function(a) {
+export function isNumber(a) {
     return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a);
-};
+}
 
-is.defined = function(a) {
+export function isDefined(a) {
     return a != null;
-};
+}
 
-is.nullish = function(a) {
+export function isNullish(a) {
     return a == null;
-};
+}
 
-is.integer = function(a) {
+export function isInteger(a) {
     return Number.isInteger(a);
-};
+}
 
-is.boolean = function(a) {
+export function isBoolean(a) {
     return !!a === a;
-};
+}
 
-is.function = function(a) {
+export function isFunction(a) {
     return typeof a === 'function';
-};
+}
 
-is.object = function(a) {
+export function isObject(a) {
     return typeof a === 'string' || (!!a && typeof a === 'object');
-};
+}
 
-is.array = function(a) {
+export function isArray(a) {
     return !!a && a.constructor === Array;
-};
+}
 
-is.string = function(a) {
+export function isString(a) {
     return typeof a === 'string';
-};
+}
 
-is.iterable = function(a) {
+export function isIterable(a) {
     return !!(a != null && a[Symbol.iterator]);
-};
+}
 
-is.generatorFunction = function(a) {
+export function isGeneratorFunction(a) {
     return a != null && a.constructor.name === 'GeneratorFunction';
-};
+}

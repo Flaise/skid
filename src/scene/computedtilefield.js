@@ -1,6 +1,6 @@
 import { TileField } from './tilefield';
 import { IconAvatar } from './iconavatar';
-import { is } from '../is';
+import { isIterable, isFunction } from '../is';
 
 export class ComputedTileField {
     constructor(root, tileSize, imageSmoothingEnabled) {
@@ -13,7 +13,7 @@ export class ComputedTileField {
         if (!map) {
             return false;
         }
-        if (is.iterable(types)) {
+        if (isIterable(types)) {
             for (const type of types) {
                 if (map[type] && map[type].length) {
                     return true;
@@ -72,7 +72,7 @@ export class ComputedTileField {
         const segment = this.field.nodeAt(x, y);
         const avatar = new IconAvatar(segment, undefined, x + 0.25 * sx, y + 0.25 * sy, 0.5, 0.5);
         avatar.layer = layer;
-        if (is.function(icon)) {
+        if (isFunction(icon)) {
             avatar.updater = icon;
         } else {
             avatar.icon = icon;

@@ -1,14 +1,14 @@
 import { Group } from './group';
-import { is } from '../is';
+import { isDefined } from '../is';
 import { makeInterpoland } from '../interpolands';
 
 export class Scalement extends Group {
     constructor(state, container, w, h) {
         super(container);
-        if (!is.defined(w)) {
+        if (!isDefined(w)) {
             w = 1;
         }
-        if (!is.defined(h)) {
+        if (!isDefined(h)) {
             h = 1;
         }
         this.w = makeInterpoland(state, w);

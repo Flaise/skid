@@ -1,5 +1,5 @@
 import { Group } from './group';
-import { is } from '../is';
+import { isNullish } from '../is';
 import { addHandler, handle } from '../event';
 
 export function makeViewport(state, canvas) {
@@ -13,11 +13,11 @@ addHandler('request_draw', (state) => {
         return;
     }
     state.skid.willDraw = true;
-    if (is.nullish(state.skid.lastFrame)) {
+    if (isNullish(state.skid.lastFrame)) {
         state.skid.lastFrame = Date.now();
     }
 
-    if (is.nullish(state.skid.drawFunc)) {
+    if (isNullish(state.skid.drawFunc)) {
         state.skid.drawFunc = () => {
             const currentFrame = Date.now();
             handle(state, 'before_draw', currentFrame - state.skid.lastFrame);

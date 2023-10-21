@@ -1,5 +1,5 @@
 import { Avatar } from './avatar';
-import { is } from '../is';
+import { isFunction } from '../is';
 import { makeInterpoland } from '../interpolands';
 
 export class TextAvatar extends Avatar {
@@ -24,7 +24,7 @@ export class TextAvatar extends Avatar {
 
         context.save();
 
-        if (is.function(this.font)) {
+        if (isFunction(this.font)) {
             context.font = this.font(cw, ch);
         } else {
             context.font = this.font;
@@ -43,7 +43,7 @@ export class TextAvatar extends Avatar {
         context.textBaseline = this.textBaseline;
 
         if (this.strokeStyle) {
-            if (is.function(this.lineWidth)) {
+            if (isFunction(this.lineWidth)) {
                 context.lineWidth = this.lineWidth(cw, ch);
             } else {
                 context.lineWidth = this.lineWidth;

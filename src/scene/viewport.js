@@ -48,7 +48,7 @@ addHandler('load_done', (state) => {
 let func;
 if (typeof window === 'undefined') {
     // for unit testing in Node
-    func = callback => setTimeout(callback, 1000 / 60);
+    func = (callback) => setTimeout(callback, 1000 / 60);
 } else {
     func = (
         window.requestAnimationFrame ||
@@ -60,7 +60,7 @@ if (typeof window === 'undefined') {
     if (func) {
         func = func.bind(window);
     } else {
-        func = callback => window.setTimeout(callback, 1000 / 60);
+        func = (callback) => window.setTimeout(callback, 1000 / 60);
     }
 }
 

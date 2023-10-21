@@ -47,7 +47,7 @@ export class TileField {
     }
 
     clear() {
-        Object.keys(this._rows).forEach(key => this._rows[key].remove());
+        Object.keys(this._rows).forEach((key) => this._rows[key].remove());
         this._rows = Object.create(null);
         this._segments = Object.create(null);
     }

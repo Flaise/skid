@@ -62,7 +62,7 @@ export class Group extends Avatar {
     bounds() {
         let first = true;
         let left, top, right, bottom;
-        this.walkContents(avatar => {
+        this.walkContents((avatar) => {
             const rect = avatar.bounds();
             if (!rect) {
                 return;

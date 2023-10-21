@@ -25,7 +25,8 @@
         "brace-style": ["error", "1tbs"],
         "no-extra-semi": "error",
         "block-spacing": ["error", "always"],
-        "no-multiple-empty-lines": ["error", { "max": 1 }]
+        "no-multiple-empty-lines": ["error", { "max": 1 }],
+        "arrow-parens": ["error", "always"]
     },
     "globals": {
         "process": false,

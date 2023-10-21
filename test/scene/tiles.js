@@ -9,7 +9,7 @@ test('clear', () => {
     field.makeTile(undefined, 0, 1, 0, 0);
     assert(Object.keys(field.field._segments).length === 2);
 
-    const segments = Object.keys(field.field._segments).map(key => field.field._segments[key]);
+    const segments = Object.keys(field.field._segments).map((key) => field.field._segments[key]);
 
     field.clear();
     assert(Object.keys(field.field._segments).length === 0);

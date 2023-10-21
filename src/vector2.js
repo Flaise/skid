@@ -23,11 +23,11 @@ export class Vec2 {
     }
 
     distance4(other) {
-        return distance4(this.x, this.y, other.x, other.y);
+        return distance4XY(this.x, this.y, other.x, other.y);
     }
 
     distance8(other) {
-        return distance8(this.x, this.y, other.x, other.y);
+        return distance8XY(this.x, this.y, other.x, other.y);
     }
 
     rotatedTurns(angle) {
@@ -57,7 +57,7 @@ export function distance(a, b) {
     return Math.sqrt(x * x + y * y);
 }
 
-// TODO: distanceXYsq
+// TODO: distanceSqXY
 export function distanceXY(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }

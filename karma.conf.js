@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = function(config) {
     config.set({
@@ -6,19 +6,19 @@ module.exports = function(config) {
         frameworks: ['browserify', 'mocha'],
 
         client: {
-            mocha: {ui: 'qunit'}
+            mocha: { ui: 'qunit' },
         },
 
         files: [
             'src/**/*.js',
-            'test/**/*.js'
+            'test/**/*.js',
         ],
         exclude: [
         ],
 
         preprocessors: {
             'src/**/*.js': ['browserify'],
-            'test/**/*.js': ['browserify']
+            'test/**/*.js': ['browserify'],
         },
 
         browserify: {
@@ -68,6 +68,6 @@ module.exports = function(config) {
 
         browsers: ['Chrome', 'Firefox'],
 
-        singleRun: false
-    })
-}
+        singleRun: false,
+    });
+};

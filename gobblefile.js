@@ -1,5 +1,5 @@
-'use strict'
-var gobble = require('gobble')
+'use strict';
+const gobble = require('gobble');
 
 module.exports = gobble('./src')
-    .transform('babel', {optional: 'runtime'})
+    .transform('babel', { optional: 'runtime' });

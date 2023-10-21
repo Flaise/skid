@@ -11,17 +11,24 @@ Skid
 Installation
 ============
 
-    $ npm install --save skid
+    $ npm install --save-exact skid
 
-Skid is designed primarily with the browser in mind, although its module system requires Commonjs or ES6 module support. If using Browserify or Webpack, import modules from `'skid/lib/*'`, such as `const {addHandler} = require('skid/lib/event');`. If using a module-aware packaging system such as Rollup, you can import from `'skid/src/*'` instead.
+Skid is designed primarily with the browser in mind, although its module system requires Commonjs or ES6 module support. The easiest way to do this is with [Parcel](https://parceljs.org/). Since Skid is packaged to work with both styles of bundling, you will have to tell Parcel how to locate Skid's files by adding the following to your `package.json`:
+
+```
+    "@parcel/resolver-default": {
+        "packageExports": true
+    }
+```
 
 License
 =======
 
-GNU Affero General Public License v3.0
+GNU Affero General Public License v3.0: Basically, it stays open source even when run on a remote server. Linking to closed-source software is not allowed.
 
-Basically, it stays open source even when run on a remote server. Contact me if you need a proprietary license.
+Contact me if you need a proprietary license.
 
+---
 ---
 
 How to get the most out of Skid
@@ -32,10 +39,10 @@ How to get the most out of Skid
 Design your code around the data, not the other way around. A game is a data structure that changes in response to user input and the passage of time. In Skid, all such changes start with event handlers:
 
 ```
-const {addHandler, handleInterval} = require('skid/lib/event');
+import { addHandler, handleInterval } from 'skid/lib/event';
 
 // This line makes the 'key' event begin working
-require('skid/lib/keyboard');
+import 'skid/lib/keyboard';
 
 addHandler('load', (state) => {
     // This executes when the application begins to load
@@ -61,22 +68,22 @@ The `state` parameter to each of the above handlers is the root data structure f
 A typical entry point module using Skid looks similar to this:
 
 ```
-require('./network');
-require('./appearance');
-require('./physics');
-require('./music');
-require('./score');
-require('./something_else');
-require('./another_module');
-require('./et_cetera');
-require('./et_all');
-require('./yeah_ok');
+import './network';
+import './appearance';
+import './physics';
+import './music';
+import './score';
+import './something_else';
+import './another_module';
+import './et_cetera';
+import './et_all';
+import './yeah_ok';
 
-const {start} = require('skid/lib/load');
+import { start } from 'skid/lib/load';
 start();
 ```
 
-The entry point requires all of the game modules, which implicitly runs their initialization code, which should do little more than export some top-level functions and register event handlers. When all the handlers are ready, it calls `start()`, which creates the global `state` object and starts the loading sequence. Call `start(true)` instead to see each event logged to the console as it is triggered.
+The entry point requires all of the game modules, which implicitly runs their initialization code, which should do little more than export some top-level functions and register event handlers. When all the handlers are ready, it calls `start()`, which creates the global `state` object and starts the loading sequence.
 
 ## Favor explicit conditionals
 
@@ -117,14 +124,14 @@ In the Skid program architecture, there isn't a proper concept of data "ownershi
 A good rule of thumb for following this principle is that you should strive to make your modules so that you can rip them out of your program by commenting out the import statements that initialize them without breaking the behavior of the rest of the modules in the program. For example:
 
 ```
-require('./physics');
-require('./monsters');
-require('./player');
-// require('./background');
+import './physics';
+import './monsters';
+import './player';
+// import './background';
 // ^-- The background is gone but the game should execute without error
 // and remain playable.
 
-const {start} = require('skid/lib/load');
+import { start } from 'skid/lib/load';
 start();
 ```
 
@@ -193,6 +200,7 @@ Stop overthinking everything.
 Your modules should be made out of top-level functions that compute results from their inputs, top-level functions that modify their inputs, and when an existing behavior must be modified, use an event handler. That makes up 90+% of a Skid application. Pretend you're programming in a memory-managed version of C.
 
 ---
+---
 
 API
 ===
@@ -215,7 +223,7 @@ addHandler('load', (state) => {
     handle(state, 'something', 3);
 });
 
-const {start} = require('skid/lib/load');
+import { start } from 'skid/lib/load';
 start(); // This triggers the 'load' event.
 ```
 
@@ -245,10 +253,10 @@ addHandler('b', ...);
 Call this to filter events from the event log when running in debug mode to keep the console from getting too noisy. Example:
 
 ```
-const {silence} = require('skid/lib/event');
+import { silence } from 'skid/lib/event';
 silence(['before_draw', 'after_draw']);
 
-const {start} = require('skid/lib/load');
+import { start } from 'skid/lib/load';
 start();
 ```
 

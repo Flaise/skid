@@ -1,4 +1,5 @@
 import assert from 'power-assert';
+import { inspect } from 'util';
 import * as functions from '../src/is';
 
 suite('is');
@@ -30,15 +31,7 @@ const configuration = [
 for (const entry of configuration) {
     const item = entry[0];
     const methods = entry.slice(1);
-
-    let title;
-    if (Number.isNaN(item) || item === Infinity || item === -Infinity) {
-        title = '' + item;
-    } else if (typeof item === 'function') {
-        title = '<function>';
-    } else {
-        title = JSON.stringify(item);
-    }
+    const title = inspect(item, { depth: 0 });
 
     test(title, () => {
         for (const method of methods) {

@@ -1,4 +1,4 @@
-import {inspect} from 'util';
+import { inspect } from 'util';
 
 const handlers = Object.create(null);
 
@@ -9,12 +9,14 @@ function identity(a) {
 let warned = false;
 
 export function addHandler(code, handler) {
-    if (typeof handler !== 'function') throw new Error('handler must be a function');
+    if (typeof handler !== 'function') {
+        throw new Error('handler must be a function');
+    }
 
     if (handling > 0 && !warned) {
         warned = true;
         console.warn('addHandler should only be called during program initialization, ' +
-                     'not after events are triggered')
+                     'not after events are triggered');
     }
 
     let keys;
@@ -51,13 +53,19 @@ export function silence(code) {
 let handling = 0;
 
 export function handle(state, code, arg) {
-    if (!state) throw new Error();
-    if (typeof state !== 'object') throw new Error('state must be an object');
+    if (!state) {
+        throw new Error();
+    }
+    if (typeof state !== 'object') {
+        throw new Error('state must be an object');
+    }
     if (state.skid && state.skid.debug && silences.indexOf(code) < 0) {
-        console.log('[event]', code, inspect(arg, {depth: 0}));
+        console.log('[event]', code, inspect(arg, { depth: 0 }));
     }
     const list = handlers[code];
-    if (!list) return;
+    if (!list) {
+        return;
+    }
     handling += 1;
     try {
         // for-of syntax gives bad tracebacks
@@ -65,8 +73,7 @@ export function handle(state, code, arg) {
             const func = list[i];
             func(state, arg);
         }
-    }
-    finally {
+    } finally {
         handling -= 1;
     }
 }

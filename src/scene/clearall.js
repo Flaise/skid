@@ -1,4 +1,4 @@
-import {Avatar} from './avatar'
+import { Avatar } from './avatar';
 
 /*
  * Clears the entire canvas. It is advisable to use this when the entire canvas is not being drawn
@@ -7,7 +7,7 @@ import {Avatar} from './avatar'
  */
 export class ClearAll extends Avatar {
     draw(context) {
-        const canvas = context.canvas
-        context.clearRect(0, 0, canvas.width, canvas.height)
+        const canvas = context.canvas;
+        context.clearRect(0, 0, canvas.width, canvas.height);
     }
 }

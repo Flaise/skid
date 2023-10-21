@@ -1,4 +1,4 @@
-import {addHandler, handle} from './event';
+import { addHandler, handle } from './event';
 
 addHandler('load', (state) => {
     window.addEventListener('focus', () => handle(state, 'windowfocus'));
@@ -20,14 +20,14 @@ addHandler('load', (state) => {
 export function mouseXY(event, component) {
     const x = event.pageX - (component.offsetLeft || 0);
     const y = event.pageY - (component.offsetTop || 0);
-    return {x, y};
+    return { x, y };
 }
 
-export function startMouseEvent(state, name, component, skidEventName=name) {
+export function startMouseEvent(state, name, component, skidEventName = name) {
     component.addEventListener(name, (event) => {
         handle(state, skidEventName, mouseXY(event, component));
     });
 }
 
-window.addEventListener('drop', ((event) => event.preventDefault()), true);
-window.addEventListener('dragover', ((event) => event.preventDefault()), true);
+window.addEventListener('drop', (event) => event.preventDefault(), true);
+window.addEventListener('dragover', (event) => event.preventDefault(), true);

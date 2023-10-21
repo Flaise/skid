@@ -1,22 +1,22 @@
-import {PieAvatar} from '../scene/pieavatar';
-import {Translation} from '../scene/translation';
-import {TextAvatar} from '../scene/textavatar';
-import {addHandler, handle} from '../event';
+import { PieAvatar } from '../scene/pieavatar';
+import { Translation } from '../scene/translation';
+import { TextAvatar } from '../scene/textavatar';
+import { addHandler, handle } from '../event';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
     const meter = new PieAvatar(state, camera);
     meter.layer = 1;
-    meter.x.setTo(.5);
+    meter.x.setTo(0.5);
     meter.y.setTo(camera.h.curr / 2);
-    meter.w.setTo(.03);
-    meter.h.setTo(.03);
+    meter.w.setTo(0.03);
+    meter.h.setTo(0.03);
     meter.fillStyle = fillStyle;
-    meter.innerRadiusRel.setTo(.6);
+    meter.innerRadiusRel.setTo(0.6);
 
     const textPosition = new Translation(state, camera);
     textPosition.layer = 1;
-    textPosition.x.setTo(.5);
-    textPosition.y.setTo(camera.h.curr / 2 + .032);
+    textPosition.x.setTo(0.5);
+    textPosition.y.setTo(camera.h.curr / 2 + 0.032);
 
     const text = new TextAvatar(state, textPosition, camera);
     text.textAlign = 'center';
@@ -25,7 +25,7 @@ export function initPreloader(state, camera, fillStyle = 'black') {
     text.font = '18px verdana';
     text.text = 'Loading...';
 
-    state.skid.preloader = {meter, textPosition, text};
+    state.skid.preloader = { meter, textPosition, text };
 }
 
 addHandler('load_progress', (state, progress) => {
@@ -41,7 +41,7 @@ addHandler('load_error', (state) => {
     }
     state.skid.preloader.meter.fillStyle = '#b00';
     state.skid.preloader.text.fillStyle = '#b00';
-    state.skid.preloader.text.text = `Error`;
+    state.skid.preloader.text.text = 'Error';
 });
 
 addHandler('load_done', (state) => {

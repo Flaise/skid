@@ -1,45 +1,44 @@
-export const is = {}
 
-is.number = function(a) {
-    return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a)
+export function isNumber(a) {
+    return (typeof a === 'number') && a !== Infinity && a !== -Infinity && !isNaN(a);
 }
 
-is.defined = function(a) {
-    return a != null
+export function isDefined(a) {
+    return a != null;
 }
 
-is.nullish = function(a) {
-    return a == null
+export function isNullish(a) {
+    return a == null;
 }
 
-is.integer = function(a) {
-    return Number.isInteger(a)
+export function isInteger(a) {
+    return Number.isInteger(a);
 }
 
-is.boolean = function(a) {
-    return !!a === a
+export function isBoolean(a) {
+    return !!a === a;
 }
 
-is.function = function(a) {
-    return typeof a === 'function'
+export function isFunction(a) {
+    return typeof a === 'function';
 }
 
-is.object = function(a) {
-    return typeof a === 'string' || (!!a && typeof a === 'object')
+export function isObject(a) {
+    return typeof a === 'string' || (!!a && typeof a === 'object');
 }
 
-is.array = function(a) {
-    return !!a && a.constructor === Array
+export function isArray(a) {
+    return !!a && a.constructor === Array;
 }
 
-is.string = function(a) {
-    return typeof a === 'string'
+export function isString(a) {
+    return typeof a === 'string';
 }
 
-is.iterable = function(a) {
-    return !!(a != null && a[Symbol.iterator])
+export function isIterable(a) {
+    return !!(a != null && a[Symbol.iterator]);
 }
 
-is.generatorFunction = function(a) {
-    return a != null && a.constructor.name === 'GeneratorFunction'
+export function isGeneratorFunction(a) {
+    return a != null && a.constructor.name === 'GeneratorFunction';
 }

@@ -1,40 +1,45 @@
-import {loadData, reloadData, startLoading, doneLoading} from '../load';
-import {handle} from '../event';
+import { loadData, reloadData, startLoading, doneLoading } from '../load';
+import { handle } from '../event';
 
 export class Icon {
     constructor(image, layout) {
-        this.image = image
-        this.layout = layout
+        this.image = image;
+        this.layout = layout;
     }
 
     draw(context, x, y, w, h) {
-        if(w === 0 || h === 0)
-            return
-        if(!w || !h)
-            return console.warn('Invalid destination size ' + w + ', ' + h)
-
-        const data = this.layout
-        if(!data)
-            return
-
-        const image = this.image
-        if(!image)
-            return
-        if(!image.width || !image.height)
-            return // if missing, Firefox throws and Chrome (sometimes?) has performance issues
-
-        if(data.solid) {
-            context.drawImage(image, data.x, data.y, data.w, data.h,
-                              x + data.wFactor * w,
-                              y + data.hFactor * h,
-                              w * data.sx, h * data.sy)
+        if (w === 0 || h === 0) {
+            return;
         }
-        else {
+        if (!w || !h) {
+            return console.warn('Invalid destination size ' + w + ', ' + h);
+        }
+
+        const data = this.layout;
+        if (!data) {
+            return;
+        }
+
+        const image = this.image;
+        if (!image) {
+            return;
+        }
+        if (!image.width || !image.height) {
+            // if missing, Firefox throws and Chrome (sometimes?) has performance issues
+            return;
+        }
+
+        if (data.solid) {
             context.drawImage(image, data.x, data.y, data.w, data.h,
-                              x + data.wFactor * w,
-                              y + data.hFactor * h,
-                              (w + data.insetWRel * w) * data.sx,
-                              (h + data.insetHRel * h) * data.sy)
+                x + data.wFactor * w,
+                y + data.hFactor * h,
+                w * data.sx, h * data.sy);
+        } else {
+            context.drawImage(image, data.x, data.y, data.w, data.h,
+                x + data.wFactor * w,
+                y + data.hFactor * h,
+                (w + data.insetWRel * w) * data.sx,
+                (h + data.insetHRel * h) * data.sy);
         }
     }
 
@@ -43,17 +48,17 @@ export class Icon {
      * will be taken up when this icon is drawn on a tile of the dimensions given.
      */
     bounds(x, y, w, h) {
-        const data = this.layout
-        if(!data) {
-            console.warn('Icon has no bounds data because layout not initialized')
-            return [x, y, 0, 0]
-        }
-        else if(data.solid)
-            return [x + data.wFactor * w, y + data.hFactor * h, w * data.sx, h * data.sy]
-        else
+        const data = this.layout;
+        if (!data) {
+            console.warn('Icon has no bounds data because layout not initialized');
+            return [x, y, 0, 0];
+        } else if (data.solid) {
+            return [x + data.wFactor * w, y + data.hFactor * h, w * data.sx, h * data.sy];
+        } else {
             return [x + data.wFactor * w, y + data.hFactor * h,
-                    (w + data.insetWRel * w) * data.sx,
-                    (h + data.insetHRel * h) * data.sy]
+                (w + data.insetWRel * w) * data.sx,
+                (h + data.insetHRel * h) * data.sy];
+        }
     }
 }
 
@@ -74,14 +79,14 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         loadData(state, source, sizeBytes, (data) => new Promise((resolve, reject) => {
             image.onload = () => {
                 icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                            image.width, image.height, true);
+                    image.width, image.height, true);
                 resolve();
             };
             image.onerror = () => {
                 // There's an error parameter here but it doesn't contain meaningful details.
 
                 console.error(`Failed to load icon from '${source}'`);
-                reject();
+                reject(new Error());
             };
             if (data) {
                 image.src = data;
@@ -93,13 +98,15 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         return icon;
     } else {
         return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,
-                                              source.width, source.height, true));
+            source.width, source.height, true));
     }
 }
 
 export function reloadIcon(state, icon, source, ax, ay, diameter) {
-    let loadId = undefined;
-    if (state.skid.load) loadId = startLoading(state, 0);
+    let loadId;
+    if (state.skid.load) {
+        loadId = startLoading(state, 0);
+    }
 
     reloadData(state, source, () => Promise.resolve(source))
         .then((data) => {
@@ -110,9 +117,11 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
                 icon.image = image;
 
                 icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                                            image.width, image.height, true);
+                    image.width, image.height, true);
 
-                if (loadId) doneLoading(state, loadId);
+                if (loadId) {
+                    doneLoading(state, loadId);
+                }
                 handle(state, 'icon_reloaded', icon);
                 handle(state, 'request_draw');
             };
@@ -120,72 +129,69 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
         });
 }
 
-function computeLayout(ax, ay, diameter, untrimmedWidth, untrimmedHeight,
-                       sourceX, sourceY, sourceW, sourceH,
-                       solid,
-                       localX, localY, localW, localH) {
-    var layout = {}
-    layout.x = sourceX
-    layout.y = sourceY
-    layout.w = sourceW
-    layout.h = sourceH
+function computeLayout(
+    ax, ay, diameter, untrimmedWidth, untrimmedHeight, sourceX, sourceY, sourceW, sourceH, solid,
+    localX, localY, localW, localH,
+) {
+    const layout = {};
+    layout.x = sourceX;
+    layout.y = sourceY;
+    layout.w = sourceW;
+    layout.h = sourceH;
 
-    var axRel
-    if(isNaN(ax)) {
-        axRel = .5
+    let axRel;
+    if (isNaN(ax)) {
+        axRel = 0.5;
     } else {
-        axRel = ax / untrimmedWidth
+        axRel = ax / untrimmedWidth;
     }
 
-    var ayRel
-    if(isNaN(ay)) {
-        ayRel = .5
+    let ayRel;
+    if (isNaN(ay)) {
+        ayRel = 0.5;
     } else {
-        ayRel = ay / untrimmedHeight
+        ayRel = ay / untrimmedHeight;
     }
 
-    if(isNaN(diameter)) {
+    if (isNaN(diameter)) {
         // fill square tile if no diameter is specified
-        if(untrimmedHeight > untrimmedWidth) {
-            layout.sx = 1
-            layout.sy = untrimmedHeight / untrimmedWidth
+        if (untrimmedHeight > untrimmedWidth) {
+            layout.sx = 1;
+            layout.sy = untrimmedHeight / untrimmedWidth;
+        } else {
+            layout.sy = 1;
+            layout.sx = untrimmedWidth / untrimmedHeight;
         }
-        else {
-            layout.sy = 1
-            layout.sx = untrimmedWidth / untrimmedHeight
-        }
-    }
-    else {
-        layout.sx = untrimmedWidth / diameter
-        layout.sy = untrimmedHeight / diameter
+    } else {
+        layout.sx = untrimmedWidth / diameter;
+        layout.sy = untrimmedHeight / diameter;
     }
 
-    if(solid) {
-        layout.solid = true
-        layout.wFactor = layout.sx * -axRel
-        layout.hFactor = layout.sy * -ayRel
-    }
-    else {
+    if (solid) {
+        layout.solid = true;
+        layout.wFactor = layout.sx * -axRel;
+        layout.hFactor = layout.sy * -ayRel;
+    } else {
         // Corrects for seams in tile fields caused by precision loss
         // TODO: experiment with splitting numerator from denominator instead
-        if(localX % 2 !== 0) {
-            localX -= 1
-            localW += 1
+        if (localX % 2 !== 0) {
+            localX -= 1;
+            localW += 1;
         }
-        if(localY % 2 !== 0) {
-            localY -= 1
-            localH += 1
+        if (localY % 2 !== 0) {
+            localY -= 1;
+            localH += 1;
         }
 
-        layout.insetWRel = (localW - untrimmedWidth) / untrimmedWidth
-        layout.insetHRel = (localH - untrimmedHeight) / untrimmedHeight
+        layout.insetWRel = (localW - untrimmedWidth) / untrimmedWidth;
+        layout.insetHRel = (localH - untrimmedHeight) / untrimmedHeight;
 
-        var insetXRel = localX / untrimmedWidth
-        var insetYRel = localY / untrimmedHeight
+        const insetXRel = localX / untrimmedWidth;
+        const insetYRel = localY / untrimmedHeight;
 
-        layout.wFactor = layout.sx * (insetXRel - axRel)
-        layout.hFactor = layout.sy * (insetYRel - ayRel)
+        layout.wFactor = layout.sx * (insetXRel - axRel);
+        layout.hFactor = layout.sy * (insetYRel - ayRel);
     }
 
-    return layout
+    return layout;
 }

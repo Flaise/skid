@@ -1,7 +1,7 @@
 {
   "name": "skid",
   "description": "2d game engine for Node/HTML5",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "Flaise",

@@ -19,18 +19,18 @@ export function start(debug) {
 
     if (typeof window !== 'undefined') {
         window.addEventListener('load', () => {
-            handle(state, 'load');
-            if (state.skid.load.requests === 0) {
-                state.skid.load = undefined;
-                handle(state, 'load_done');
-            }
+            doLoad(state);
         });
     } else {
-        handle(state, 'load');
-        if (state.skid.load.requests === 0) {
-            state.skid.load = undefined;
-            handle(state, 'load_done');
-        }
+        doLoad(state);
+    }
+}
+
+function doLoad(state) {
+    handle(state, 'load');
+    if (state.skid.load.requests === 0) {
+        state.skid.load = undefined;
+        handle(state, 'load_done');
     }
 }
 

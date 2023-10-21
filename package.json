@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "prepublishOnly": "npm prune && npm run test",
-    "prepare": "npm run build",
+    "prepare": "npm run lint && npm run build",
     "test": "npm run headless -- karma start --single-run",
     "test-watch": "npm run headless -- karma start",
     "build": "gobble build -f cjs",
@@ -42,7 +42,8 @@
     "headless": "node ./helpers/headless.mjs",
     "apt-get": "apt-get install xvfb",
     "karma": "karma start --single-run",
-    "karma-watch": "karma start"
+    "karma-watch": "karma start",
+    "lint": "npx eslint ./src/**/*.js ./test/**/*.js ./helpers/**/*.*js"
   },
   "exports": {
     "./*": {
@@ -85,6 +86,8 @@
     "power-assert": "1.1.0",
     "simulate-dom-event": "1.0.3",
     "sinon": "1.17.1",
-    "xvfb": "0.3.0"
+    "xvfb": "0.3.0",
+    "eslint": "8.51.0",
+    "eslint-config-standard": "17.1.0"
   }
 }

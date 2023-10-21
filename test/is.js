@@ -1,7 +1,7 @@
-import assert from 'power-assert'
-import {is} from '../src/is'
+import assert from 'power-assert';
+import { is } from '../src/is';
 
-suite('is')
+suite('is');
 
 const configuration = [
     [[], 'defined', 'array', 'object', 'iterable'],
@@ -9,7 +9,7 @@ const configuration = [
     ['asdf', 'defined', 'string', 'object', 'iterable'],
     ['', 'defined', 'string', 'object', 'iterable'],
     [{}, 'defined', 'object'],
-    [{a: 1}, 'defined', 'object'],
+    [{ a: 1 }, 'defined', 'object'],
     [true, 'defined', 'boolean'],
     [false, 'defined', 'boolean'],
     [1, 'defined', 'integer', 'number'],
@@ -24,27 +24,30 @@ const configuration = [
     [undefined, 'nullish'],
     [() => {}, 'defined', 'function'],
     [function() {}, 'defined', 'function'],
-    [function*() {}, 'defined', 'function', 'generatorFunction']
-]
+    [function * () {}, 'defined', 'function', 'generatorFunction'],
+];
 
-for(let entry of configuration) {
-    const item = entry[0]
-    const methods = entry.slice(1)
+for (const entry of configuration) {
+    const item = entry[0];
+    const methods = entry.slice(1);
 
-    let title
-    if(item !== item || item === Infinity || item === -Infinity)
-        title = '' + item
-    else if(typeof item === 'function')
-        title = '<function>'
-    else
-        title = JSON.stringify(item)
+    let title;
+    if (Number.isNaN(item) || item === Infinity || item === -Infinity) {
+        title = '' + item;
+    } else if (typeof item === 'function') {
+        title = '<function>';
+    } else {
+        title = JSON.stringify(item);
+    }
 
     test(title, () => {
-        for(let method of methods) {
-            assert(is[method](item) === true)
+        for (const method of methods) {
+            assert(is[method](item) === true);
         }
-        for(let key of Object.keys(is))
-            if(methods.indexOf(key) < 0)
-                assert(is[key](item) === false)
-    })
+        for (const key of Object.keys(is)) {
+            if (methods.indexOf(key) < 0) {
+                assert(is[key](item) === false);
+            }
+        }
+    });
 }

@@ -1,13 +1,16 @@
-import {extname} from 'path';
-import {Howl, Howler} from 'howler';
-import {loadData, startLoading, doneLoading, errorLoading} from './load';
-import {addHandler, handle} from './event';
+import { extname } from 'path';
+import { Howl, Howler } from 'howler';
+import { loadData, startLoading, doneLoading, errorLoading } from './load';
+import { addHandler, handle } from './event';
 
 function load(state, eventCode, howlArgs, id) {
     const sound = new Howl(howlArgs);
     sound.once('loaderror', (id, error) => {
         console.error('sound load error ' + error);
-        if (!state.load) return; // NOTE: not yet sure what causes this
+        if (!state.load) {
+            // NOTE: not yet sure what causes this
+            return;
+        }
         errorLoading(state);
     });
     sound.once('load', () => {
@@ -25,7 +28,9 @@ function load(state, eventCode, howlArgs, id) {
 export function loadAudio(state, eventCode, howlArgs) {
     const id = startLoading(state, 0); // 0 size so 'load_progress' event can fire
     let src = howlArgs.src;
-    if (!Array.isArray(src)) src = [src];
+    if (!Array.isArray(src)) {
+        src = [src];
+    }
     for (const path of src) {
         const extension = extname(path).substr(1);
         if (Howler.codecs(extension)) {

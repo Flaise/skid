@@ -1,12 +1,12 @@
 import assert from 'power-assert';
-import {addHandler, handle} from '../src/event';
+import { addHandler, handle } from '../src/event';
 
 suite('Event');
 
 let state;
 
 beforeEach(() => {
-    state = {skid: {}};
+    state = { skid: {} };
 });
 
 test('calls handler - string', () => {

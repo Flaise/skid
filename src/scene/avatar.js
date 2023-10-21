@@ -1,43 +1,50 @@
 export class Avatar {
     constructor(container) {
-        this._layer = 0
-        this.removed = false
-        if(container)
-            container.insert(this)
-        else
-            this.container = undefined
+        this._layer = 0;
+        this.removed = false;
+        if (container) {
+            container.insert(this);
+        } else {
+            this.container = undefined;
+        }
     }
 
     get layer() {
-        return this._layer
+        return this._layer;
     }
+
     set layer(value) {
-        if(value === this._layer)
-            return
-        this._layer = value
-        if(this.container)
-            this.container.resort(this)
+        if (value === this._layer) {
+            return;
+        }
+        this._layer = value;
+        if (this.container) {
+            this.container.resort(this);
+        }
     }
 
     remove() {
-        if(this.removed)
-            return
-        this.removed = true
-        if(this.container)
-            this.container.removeAvatar(this)
-        this.subremove()
+        if (this.removed) {
+            return;
+        }
+        this.removed = true;
+        if (this.container) {
+            this.container.removeAvatar(this);
+        }
+        this.subremove();
     }
+
     subremove() {}
 
     draw(context) {
-        console.warn('Called abstract function Avatar.draw()')
+        console.warn('Called abstract function Avatar.draw()');
     }
 
-    walk(callback) {
-        callback(this)
+    walk(func) {
+        func(this);
     }
 
     bounds() {
-        return undefined
+        return undefined;
     }
 }

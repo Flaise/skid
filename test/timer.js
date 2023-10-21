@@ -1,8 +1,8 @@
 import assert from 'power-assert';
 import lolex from 'lolex';
 import sinon from 'sinon';
-import {addHandler, handle} from '../src/event';
-import {procrastinate} from '../src/timer';
+import { addHandler, handle } from '../src/event';
+import { procrastinate } from '../src/timer';
 
 suite('Timer');
 
@@ -13,7 +13,7 @@ before(() => {
 });
 
 beforeEach(() => {
-    state = {skid: {}};
+    state = { skid: {} };
     callback = sinon.spy();
 });
 

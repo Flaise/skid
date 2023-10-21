@@ -1,4 +1,4 @@
-import {addHandler, handle} from './event';
+import { addHandler, handle } from './event';
 
 export function handleLater(state, delay, code, arg) {
     return callLater(state, delay, handle, state, code, arg);
@@ -11,7 +11,7 @@ export function handleInterval(state, delay, code, arg) {
         timeout = callLater(state, delay, trigger);
     }
     timeout = callLater(state, delay, trigger);
-    return {stop: () => clearTimeout(timeout)};
+    return { stop: () => clearTimeout(timeout) };
 }
 
 export function procrastinate(inCode, outCode, delay) {
@@ -29,9 +29,11 @@ function callingLater(state, callback, targetTime, a, b, c, d) {
 }
 
 export function callLater(state, delay, callback, a, b, c, d) {
-    if (!state.skid.timeRemainder) state.skid.timeRemainder = 0;
+    if (!state.skid.timeRemainder) {
+        state.skid.timeRemainder = 0;
+    }
     const targetTime = Date.now() + delay - state.skid.timeRemainder;
 
     return setTimeout(callingLater, delay - state.skid.timeRemainder, state, callback, targetTime,
-                      a, b, c, d);
+        a, b, c, d);
 }

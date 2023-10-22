@@ -121,10 +121,10 @@ function doXHR(state, id, url, showProgress) {
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
+        // just need nonzero placeholder until actual byte count is known
         let lastKnownTotal = 1;
 
         if (showProgress) {
-            // showing zero out of anything until actual byte count is known
             progressLoading(state, id, 0, lastKnownTotal);
 
             xhr.onprogress = (event) => {
@@ -174,7 +174,7 @@ export function finalizeLoadingPromise(state, loadingID, promise) {
         })
         .catch((error) => {
             errorLoading(state, error);
-            throw error;
+            throw error; // makes it show up in the console
         });
 }
 

@@ -63,28 +63,29 @@ export class Icon {
     }
 }
 
+function imageSrcPromise(image, src, originalSource) {
+    image.src = src;
+    return new Promise((resolve, reject) => {
+        image.onload = () => {
+            resolve();
+        };
+        image.onerror = (_meaninglessError) => {
+            // The error parameter doesn't contain details, so just replacing it.
+            reject(new Error(`Failed to load image from '${originalSource}'`));
+        };
+    });
+}
+
 function dataPromiseToImage(dataPromise, source) {
     const image = new window.Image();
 
     const promise = dataPromise
         .then((data) => {
-            image.src = data;
+            return imageSrcPromise(image, data, source);
         })
         .catch((_error) => {
-            // HTTP request failed; may be running on localhost, so try loading without HTTP
-            image.src = source;
-        })
-        .then(() => {
-            return new Promise((resolve, reject) => {
-                image.onload = () => {
-                    resolve();
-                };
-                image.onerror = () => {
-                    // There's an error parameter here but it doesn't contain meaningful details.
-
-                    reject(new Error(`Failed to load image from '${source}'`));
-                };
-            });
+            // HTTP request failed; may be running on localhost, so try loading without HTTP.
+            return imageSrcPromise(image, source, source);
         });
 
     return { image, promise };

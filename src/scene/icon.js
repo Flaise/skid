@@ -65,7 +65,7 @@ export class Icon {
 
 export function loadImage(state, source, sizeBytes) {
     const image = new window.Image();
-    loadData(state, source, sizeBytes, () => Promise.resolve(source))
+    loadData(state, source, sizeBytes)
         .then((data) => {
             image.src = data;
         });
@@ -77,7 +77,8 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
         const icon = new Icon();
         const image = new window.Image();
         icon.image = image;
-        loadData(state, source, sizeBytes, (data) => new Promise((resolve, reject) => {
+
+        const promise = new Promise((resolve, reject) => {
             image.onload = () => {
                 icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
                     image.width, image.height, true);
@@ -86,16 +87,21 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
             image.onerror = () => {
                 // There's an error parameter here but it doesn't contain meaningful details.
 
-                console.error(`Failed to load icon from '${source}'`);
-                reject(new Error());
+                // console.error(`Failed to load icon from '${source}'`);
+                reject(new Error(`Failed to load icon from '${source}'`));
             };
-            if (data) {
+        });
+
+        loadData(state, source, sizeBytes)
+            .then((data) => {
                 image.src = data;
-            } else {
+                return promise;
+            })
+            .catch((_error) => {
                 // HTTP request failed; may be running on localhost, so try loading without HTTP
                 image.src = source;
-            }
-        }));
+                return promise;
+            });
         return icon;
     } else {
         return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,

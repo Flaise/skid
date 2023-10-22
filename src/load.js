@@ -105,71 +105,70 @@ export function errorLoading(state, error) {
     handle(state, 'load_error', error);
 }
 
-export function reloadData(state, url, processFunc) {
-    return doXHR(state, undefined, url, false, processFunc);
+export function reloadData(state, url) {
+    return doXHR(state, undefined, url, false);
 }
 
-export function loadData(state, url, total, processFunc) {
+export function loadData(state, url, total) {
     const id = startLoading(state, total);
-    return doXHR(state, id, url, true, processFunc);
+    return doXHR(state, id, url, true);
 }
 
-function doXHR(state, id, url, showProgress, processFunc) {
+function doXHR(state, id, url, showProgress) {
     const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
+        let lastKnownTotal = 1;
+
         if (showProgress) {
+            // showing zero out of anything until actual byte count is known
+            progressLoading(state, id, 0, lastKnownTotal);
+
             xhr.onprogress = (event) => {
                 if (event.lengthComputable) {
                     progressLoading(state, id, event.loaded, event.total);
+
+                    lastKnownTotal = event.total;
                 }
             };
         }
 
         xhr.onloadend = () => {
+            const blob = xhrToBlob(xhr);
+
             let data;
-            if (xhr.status.toString().match(/^2/)) {
-                const options = {};
-                const headers = xhr.getAllResponseHeaders();
-                const match = headers.match(/^Content-Type:\s*(.*?)$/mi);
-
-                if (match && match[1]) {
-                    options.type = match[1];
-                }
-
-                const blob = new Blob([xhr.response], options);
+            if (blob) {
                 if (showProgress) {
-                    progressLoading(state, id, blob.size, blob.size);
+                    lastKnownTotal = blob.size;
                 }
                 data = window.URL.createObjectURL(blob);
             }
 
-            if (processFunc) {
-                if (!data && showProgress) {
-                    // XHR failed but it's possible for processFunc to recover and produce a valid
-                    // result anyway.
+            if (showProgress) {
+                progressLoading(state, id, lastKnownTotal, lastKnownTotal);
+            }
 
-                    // for progress: showing 0 out of anything since size info isn't available
-                    progressLoading(state, id, 0, 1);
+            // if (processFunc) {
+            //     processFunc(data).then((a) => {
+            //         if (showProgress) {
+            //             // Skip reporting completion when reloading asset.
+            //             doneLoading(state, id);
+            //         }
+            //         resolve(a);
+            //     }, (error) => {
+            //         errorLoading(state, error);
+            //         reject(error);
+            //     });
+            // } else
+            if (data) {
+                if (showProgress) {
+                    doneLoading(state, id);
                 }
-
-                processFunc(data).then((a) => {
-                    if (!data && showProgress) {
-                        // completion of above progress indicator
-                        progressLoading(state, id, 1, 1);
-                    }
-                    resolve(a);
-
-                    if (showProgress) {
-                        // Skip reporting completion when reloading asset.
-                        doneLoading(state, id);
-                    }
-                }, (error) => {
-                    errorLoading(state, error);
-                    reject(error);
-                });
+                resolve(data);
+            } else {
+                reject(new Error('Failed to load ' + url));
             }
         };
 
@@ -178,4 +177,19 @@ function doXHR(state, id, url, showProgress, processFunc) {
         setTimeout(() => xhr.send());
     });
     return promise;
+}
+
+function xhrToBlob(xhr) {
+    if (xhr.status.toString().match(/^2/)) {
+        const options = {};
+        const headers = xhr.getAllResponseHeaders();
+        const match = headers.match(/^Content-Type:\s*(.*?)$/mi);
+
+        if (match && match[1]) {
+            options.type = match[1];
+        }
+
+        return new Blob([xhr.response], options);
+    }
+    return undefined;
 }

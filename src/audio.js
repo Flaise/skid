@@ -34,9 +34,9 @@ export function loadAudio(state, eventCode, howlArgs) {
     for (const path of src) {
         const extension = extname(path).substr(1);
         if (Howler.codecs(extension)) {
-            loadData(state, path, undefined, () => Promise.resolve(howlArgs.src))
-                .then((source) => {
-                    const args = { ...howlArgs, src: source, format: [extension] };
+            loadData(state, path, undefined)
+                .then((_data) => {
+                    const args = { ...howlArgs, src: howlArgs.src, format: [extension] };
                     load(state, eventCode, args, id);
                 });
             return;

@@ -116,17 +116,14 @@ export function loadData(state, url, total, contentType) {
 }
 
 export function contentTypeMatches(expected, actual) {
-    if (expected.includes('/')) {
-        if (expected !== actual) {
-            return false;
-        }
-    } else if (actual.split('/')[0] !== expected) {
-        return false;
+    if (!expected.includes(';')) {
+        actual = actual.split(';')[0];
     }
-    return true;
+    if (!expected.includes('/')) {
+        actual = actual.split('/')[0];
+    }
+    return expected === actual;
 }
-
-// text/html; charset=utf-8
 
 function doXHR(state, id, url, showProgress, contentType) {
     const promise = new Promise((resolve, reject) => {

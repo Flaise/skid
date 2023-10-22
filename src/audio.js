@@ -37,8 +37,11 @@ export function loadAudio(state, eventCode, howlArgs) {
     if (!isArray(src)) {
         src = [src];
     }
-    for (const path of src) {
-        // TODO: pick URL.href
+
+    for (let path of src) {
+        if (path instanceof window.URL) {
+            path = path.href;
+        }
 
         const beforeQuery = path.split('?')[0];
         const extension = extname(beforeQuery).substr(1);
@@ -46,7 +49,7 @@ export function loadAudio(state, eventCode, howlArgs) {
             let { promise, loadingID } = loadData(state, path, undefined, 'audio');
 
             promise = promise.then(() => {
-                const args = { ...howlArgs, src: howlArgs.src, format: [extension] };
+                const args = { ...howlArgs, src: path, format: [extension] };
                 return load(state, eventCode, args);
             });
 

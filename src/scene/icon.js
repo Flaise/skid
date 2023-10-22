@@ -1,4 +1,4 @@
-import { loadData, reloadData, startLoading, doneLoading } from '../load';
+import { loadData, reloadData, startLoading, doneLoading, finalizeLoadingPromise } from '../load';
 import { handle } from '../event';
 import { isString } from '../is';
 
@@ -63,44 +63,65 @@ export class Icon {
     }
 }
 
-export function loadImage(state, source, sizeBytes) {
+function imageSrcPromise(image, src, originalSource) {
+    image.src = src;
+    return new Promise((resolve, reject) => {
+        image.onload = () => {
+            resolve();
+        };
+        image.onerror = (_meaninglessError) => {
+            // The error parameter doesn't contain details, so just replacing it.
+            reject(new Error(`Failed to load image from '${originalSource}'`));
+        };
+    });
+}
+
+function dataPromiseToImage(dataPromise, source) {
     const image = new window.Image();
-    loadData(state, source, sizeBytes, () => Promise.resolve(source))
+
+    const promise = dataPromise
         .then((data) => {
-            image.src = data;
+            return imageSrcPromise(image, data, source);
+        })
+        .catch((_error) => {
+            // HTTP request failed; may be running on localhost, so try loading without HTTP.
+            return imageSrcPromise(image, source, source);
         });
+
+    return { image, promise };
+}
+
+export function loadImage(state, source, sizeBytes) {
+    let { promise, loadingID } = loadData(state, source, sizeBytes, 'image');
+    let image;
+    ({ image, promise } = dataPromiseToImage(promise, source));
+    finalizeLoadingPromise(state, loadingID, promise);
     return image;
 }
 
 export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
-    if (isString(source) || source instanceof window.URL) {
-        const icon = new Icon();
-        const image = new window.Image();
-        icon.image = image;
-        loadData(state, source, sizeBytes, (data) => new Promise((resolve, reject) => {
-            image.onload = () => {
-                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                    image.width, image.height, true);
-                resolve();
-            };
-            image.onerror = () => {
-                // There's an error parameter here but it doesn't contain meaningful details.
+    const icon = new Icon();
 
-                console.error(`Failed to load icon from '${source}'`);
-                reject(new Error());
-            };
-            if (data) {
-                image.src = data;
-            } else {
-                // HTTP request failed; may be running on localhost, so try loading without HTTP
-                image.src = source;
-            }
-        }));
-        return icon;
+    if (isString(source) || source instanceof window.URL) {
+        let { promise, loadingID } = loadData(state, source, sizeBytes, 'image');
+        let image;
+        ({ image, promise } = dataPromiseToImage(promise, source));
+        icon.image = image;
+
+        promise = promise.then(() => {
+            icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+                image.width, image.height, true);
+        });
+
+        finalizeLoadingPromise(state, loadingID, promise);
     } else {
-        return new Icon(source, computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,
-            source.width, source.height, true));
+        // Assuming source parameter is a drawable object so just use it directly.
+        icon.image = source;
+        icon.layout = computeLayout(ax, ay, diameter, source.width, source.height, 0, 0,
+            source.width, source.height, true);
     }
+
+    return icon;
 }
 
 export function reloadIcon(state, icon, source, ax, ay, diameter) {
@@ -109,25 +130,23 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
         loadId = startLoading(state, 0);
     }
 
-    reloadData(state, source, () => Promise.resolve(source))
-        .then((data) => {
-            const image = new window.Image();
-            image.onload = () => {
-                // TODO: Putting this here reduces flicker but also introduces race condition.
-                // TODO: Need a way to mark an image load as canceled.
-                icon.image = image;
+    let { image, promise } = dataPromiseToImage(reloadData(state, source, 'image'), source);
+    promise = promise.then(() => {
+        // TODO: Putting this line here instead of outside of the promise reduces flicker but also
+        // introduces a race condition.
+        // TODO: Need a way to mark an image load as canceled.
+        icon.image = image;
 
-                icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
-                    image.width, image.height, true);
+        icon.layout = computeLayout(ax, ay, diameter, image.width, image.height, 0, 0,
+            image.width, image.height, true);
 
-                if (loadId) {
-                    doneLoading(state, loadId);
-                }
-                handle(state, 'icon_reloaded', icon);
-                handle(state, 'request_draw');
-            };
-            image.src = data;
-        });
+        if (loadId) {
+            doneLoading(state, loadId);
+        }
+        handle(state, 'icon_reloaded', icon);
+        handle(state, 'request_draw');
+    });
+    finalizeLoadingPromise(state, undefined, promise);
 }
 
 function computeLayout(

@@ -1,4 +1,5 @@
 import { handle } from './event';
+import { isDefined } from './is';
 
 let started = false;
 
@@ -105,22 +106,35 @@ export function errorLoading(state, error) {
     handle(state, 'load_error', error);
 }
 
-export function reloadData(state, url, processFunc) {
-    return doXHR(state, undefined, url, false, processFunc);
+export function reloadData(state, url, contentType) {
+    return doXHR(state, undefined, url, false, contentType);
 }
 
-export function loadData(state, url, total, processFunc) {
-    const id = startLoading(state, total);
-    return doXHR(state, id, url, true, processFunc);
+export function loadData(state, url, total, contentType) {
+    const loadingID = startLoading(state, total);
+    return { promise: doXHR(state, loadingID, url, true, contentType), loadingID };
 }
 
-function doXHR(state, id, url, showProgress, processFunc) {
+export function contentTypeMatches(expected, actual) {
+    if (!expected.includes(';')) {
+        actual = actual.split(';')[0];
+    }
+    if (!expected.includes('/')) {
+        actual = actual.split('/')[0];
+    }
+    return expected === actual;
+}
+
+function doXHR(state, id, url, showProgress, contentType) {
     const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
         if (showProgress) {
+            // just need nonzero placeholder until actual byte count is known
+            progressLoading(state, id, 0, 1);
+
             xhr.onprogress = (event) => {
                 if (event.lengthComputable) {
                     progressLoading(state, id, event.loaded, event.total);
@@ -129,48 +143,29 @@ function doXHR(state, id, url, showProgress, processFunc) {
         }
 
         xhr.onloadend = () => {
-            let data;
-            if (xhr.status.toString().match(/^2/)) {
-                const options = {};
-                const headers = xhr.getAllResponseHeaders();
-                const match = headers.match(/^Content-Type:\s*(.*?)$/mi);
-
-                if (match && match[1]) {
-                    options.type = match[1];
-                }
-
-                const blob = new Blob([xhr.response], options);
-                if (showProgress) {
-                    progressLoading(state, id, blob.size, blob.size);
-                }
-                data = window.URL.createObjectURL(blob);
+            const blob = xhrToBlob(xhr);
+            if (!blob) {
+                reject(new Error(`Failed to load ${url}`));
+                return;
             }
 
-            if (processFunc) {
-                if (!data && showProgress) {
-                    // XHR failed but it's possible for processFunc to recover and produce a valid
-                    // result anyway.
+            if (contentType && blob.type) {
+                if (!contentTypeMatches(contentType, blob.type)) {
+                    // Parcel silently redirects to the root HTML page if it can't resolve the URL
+                    // instead of generating an error.
 
-                    // for progress: showing 0 out of anything since size info isn't available
-                    progressLoading(state, id, 0, 1);
+                    reject(new Error(`Failed to load ${url}: expected content type ` +
+                        `'${contentType}', got '${blob.type}'`));
+                    return;
                 }
-
-                processFunc(data).then((a) => {
-                    if (!data && showProgress) {
-                        // completion of above progress indicator
-                        progressLoading(state, id, 1, 1);
-                    }
-                    resolve(a);
-
-                    if (showProgress) {
-                        // Skip reporting completion when reloading asset.
-                        doneLoading(state, id);
-                    }
-                }, (error) => {
-                    errorLoading(state, error);
-                    reject(error);
-                });
             }
+
+            if (showProgress) {
+                progressLoading(state, id, blob.size, blob.size);
+            }
+
+            const data = window.URL.createObjectURL(blob);
+            resolve(data);
         };
 
         // Explicitly moving to next turn of event loop because some errors will happen
@@ -178,4 +173,32 @@ function doXHR(state, id, url, showProgress, processFunc) {
         setTimeout(() => xhr.send());
     });
     return promise;
+}
+
+export function finalizeLoadingPromise(state, loadingID, promise) {
+    promise
+        .then(() => {
+            if (isDefined(loadingID)) {
+                doneLoading(state, loadingID);
+            }
+        })
+        .catch((error) => {
+            errorLoading(state, error);
+            throw error; // makes it show up in the console
+        });
+}
+
+function xhrToBlob(xhr) {
+    if (xhr.status.toString().match(/^2/)) {
+        const options = {};
+        const headers = xhr.getAllResponseHeaders();
+        const match = headers.match(/^Content-Type:\s*(.*?)$/mi);
+
+        if (match && match[1]) {
+            options.type = match[1];
+        }
+
+        return new Blob([xhr.response], options);
+    }
+    return undefined;
 }

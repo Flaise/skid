@@ -106,16 +106,29 @@ export function errorLoading(state, error) {
     handle(state, 'load_error', error);
 }
 
-export function reloadData(state, url) {
-    return doXHR(state, undefined, url, false);
+export function reloadData(state, url, contentType) {
+    return doXHR(state, undefined, url, false, contentType);
 }
 
-export function loadData(state, url, total) {
+export function loadData(state, url, total, contentType) {
     const loadingID = startLoading(state, total);
-    return { promise: doXHR(state, loadingID, url, true), loadingID };
+    return { promise: doXHR(state, loadingID, url, true, contentType), loadingID };
 }
 
-function doXHR(state, id, url, showProgress) {
+export function contentTypeMatches(expected, actual) {
+    if (expected.includes('/')) {
+        if (expected !== actual) {
+            return false;
+        }
+    } else if (actual.split('/')[0] !== expected) {
+        return false;
+    }
+    return true;
+}
+
+// text/html; charset=utf-8
+
+function doXHR(state, id, url, showProgress, contentType) {
     const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
@@ -141,6 +154,14 @@ function doXHR(state, id, url, showProgress) {
 
             let data;
             if (blob) {
+                if (contentType && blob.type) {
+                    if (!contentTypeMatches(contentType, blob.type)) {
+                        reject(new Error(`Failed to load ${url}: expected content type ` +
+                            `'${contentType}', got '${blob.type}'`));
+                        return;
+                    }
+                }
+
                 if (showProgress) {
                     lastKnownTotal = blob.size;
                 }

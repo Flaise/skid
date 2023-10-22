@@ -131,49 +131,41 @@ function doXHR(state, id, url, showProgress, contentType) {
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
-        // just need nonzero placeholder until actual byte count is known
-        let lastKnownTotal = 1;
-
         if (showProgress) {
-            progressLoading(state, id, 0, lastKnownTotal);
+            // just need nonzero placeholder until actual byte count is known
+            progressLoading(state, id, 0, 1);
 
             xhr.onprogress = (event) => {
                 if (event.lengthComputable) {
                     progressLoading(state, id, event.loaded, event.total);
-
-                    lastKnownTotal = event.total;
                 }
             };
         }
 
         xhr.onloadend = () => {
             const blob = xhrToBlob(xhr);
+            if (!blob) {
+                reject(new Error(`Failed to load ${url}`));
+                return;
+            }
 
-            let data;
-            if (blob) {
-                if (contentType && blob.type) {
-                    if (!contentTypeMatches(contentType, blob.type)) {
-                        reject(new Error(`Failed to load ${url}: expected content type ` +
-                            `'${contentType}', got '${blob.type}'`));
-                        return;
-                    }
-                }
+            if (contentType && blob.type) {
+                if (!contentTypeMatches(contentType, blob.type)) {
+                    // Parcel silently redirects to the root HTML page if it can't resolve the URL
+                    // instead of generating an error.
 
-                if (showProgress) {
-                    lastKnownTotal = blob.size;
+                    reject(new Error(`Failed to load ${url}: expected content type ` +
+                        `'${contentType}', got '${blob.type}'`));
+                    return;
                 }
-                data = window.URL.createObjectURL(blob);
             }
 
             if (showProgress) {
-                progressLoading(state, id, lastKnownTotal, lastKnownTotal);
+                progressLoading(state, id, blob.size, blob.size);
             }
 
-            if (data) {
-                resolve(data);
-            } else {
-                reject(new Error(`Failed to load ${url}`));
-            }
+            const data = window.URL.createObjectURL(blob);
+            resolve(data);
         };
 
         // Explicitly moving to next turn of event loop because some errors will happen

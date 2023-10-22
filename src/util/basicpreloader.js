@@ -22,7 +22,7 @@ export function initPreloader(state, camera, fillStyle = 'black') {
     text.textAlign = 'center';
     text.textBaseline = 'top';
     text.fillStyle = fillStyle;
-    text.font = '18px verdana';
+    text.font = '18px sans';
     text.text = 'Loading...';
 
     state.skid.preloader = { meter, textPosition, text };
@@ -42,6 +42,7 @@ addHandler('load_error', (state) => {
     state.skid.preloader.meter.fillStyle = '#b00';
     state.skid.preloader.text.fillStyle = '#b00';
     state.skid.preloader.text.text = 'Error';
+    handle(state, 'request_draw');
 });
 
 addHandler('load_done', (state) => {

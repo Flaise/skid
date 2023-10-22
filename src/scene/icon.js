@@ -92,7 +92,7 @@ function dataPromiseToImage(dataPromise, source) {
 }
 
 export function loadImage(state, source, sizeBytes) {
-    let { promise, loadingID } = loadData(state, source, sizeBytes);
+    let { promise, loadingID } = loadData(state, source, sizeBytes, 'image');
     let image;
     ({ image, promise } = dataPromiseToImage(promise, source));
     finalizeLoadingPromise(state, loadingID, promise);
@@ -103,7 +103,7 @@ export function loadIcon(state, source, ax, ay, diameter, sizeBytes) {
     const icon = new Icon();
 
     if (isString(source) || source instanceof window.URL) {
-        let { promise, loadingID } = loadData(state, source, sizeBytes);
+        let { promise, loadingID } = loadData(state, source, sizeBytes, 'image');
         let image;
         ({ image, promise } = dataPromiseToImage(promise, source));
         icon.image = image;
@@ -130,7 +130,7 @@ export function reloadIcon(state, icon, source, ax, ay, diameter) {
         loadId = startLoading(state, 0);
     }
 
-    let { image, promise } = dataPromiseToImage(reloadData(state, source), source);
+    let { image, promise } = dataPromiseToImage(reloadData(state, source, 'image'), source);
     promise = promise.then(() => {
         // TODO: Putting this line here instead of outside of the promise reduces flicker but also
         // introduces a race condition.

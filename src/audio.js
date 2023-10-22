@@ -6,6 +6,7 @@ import { isArray } from './is';
 
 function load(state, eventCode, howlArgs) {
     const sound = new Howl(howlArgs);
+
     addHandler(eventCode, () => {
         sound.play();
     });
@@ -37,13 +38,16 @@ export function loadAudio(state, eventCode, howlArgs) {
         src = [src];
     }
     for (const path of src) {
-        const extension = extname(path).substr(1);
+        // TODO: pick URL.href
+
+        const beforeQuery = path.split('?')[0];
+        const extension = extname(beforeQuery).substr(1);
         if (Howler.codecs(extension)) {
-            let { promise, loadingID } = loadData(state, path, undefined);
+            let { promise, loadingID } = loadData(state, path, undefined, 'audio');
 
             promise = promise.then(() => {
                 const args = { ...howlArgs, src: howlArgs.src, format: [extension] };
-                load(state, eventCode, args);
+                return load(state, eventCode, args);
             });
 
             finalizeLoadingPromise(state, loadingID, promise);

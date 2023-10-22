@@ -1,4 +1,5 @@
 import { handle } from './event';
+import { isDefined } from './is';
 
 let started = false;
 
@@ -110,8 +111,8 @@ export function reloadData(state, url) {
 }
 
 export function loadData(state, url, total) {
-    const id = startLoading(state, total);
-    return doXHR(state, id, url, true);
+    const loadingID = startLoading(state, total);
+    return { promise: doXHR(state, loadingID, url, true), loadingID };
 }
 
 function doXHR(state, id, url, showProgress) {
@@ -150,25 +151,10 @@ function doXHR(state, id, url, showProgress) {
                 progressLoading(state, id, lastKnownTotal, lastKnownTotal);
             }
 
-            // if (processFunc) {
-            //     processFunc(data).then((a) => {
-            //         if (showProgress) {
-            //             // Skip reporting completion when reloading asset.
-            //             doneLoading(state, id);
-            //         }
-            //         resolve(a);
-            //     }, (error) => {
-            //         errorLoading(state, error);
-            //         reject(error);
-            //     });
-            // } else
             if (data) {
-                if (showProgress) {
-                    doneLoading(state, id);
-                }
                 resolve(data);
             } else {
-                reject(new Error('Failed to load ' + url));
+                reject(new Error(`Failed to load ${url}`));
             }
         };
 
@@ -177,6 +163,19 @@ function doXHR(state, id, url, showProgress) {
         setTimeout(() => xhr.send());
     });
     return promise;
+}
+
+export function finalizeLoadingPromise(state, loadingID, promise) {
+    promise
+        .then(() => {
+            if (isDefined(loadingID)) {
+                doneLoading(state, loadingID);
+            }
+        })
+        .catch((error) => {
+            errorLoading(state, error);
+            throw error;
+        });
 }
 
 function xhrToBlob(xhr) {

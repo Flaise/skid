@@ -55,6 +55,25 @@ export function silence(code) {
     }
 }
 
+function logEvent(code, arg) {
+    if (silences.indexOf(code) >= 0) {
+        return;
+    }
+    if (arg === undefined) {
+        console.log('[event]', code);
+    } else if (isString(arg)) {
+        console.log('[event]', code, `"${arg}"`);
+    } else if (typeof window !== 'undefined') {
+        console.log('[event]', code, arg);
+    } else {
+        // Node builtin needs to be required inside the conditional so it's correctly
+        // stripped from the bundle for the production/browser build.
+        const { inspect } = require('util');
+
+        console.log('[event]', code, inspect(arg, { depth: 0 }));
+    }
+}
+
 let handling = 0;
 
 export function handle(state, code, arg) {
@@ -65,21 +84,7 @@ export function handle(state, code, arg) {
     }
     if (process.env.NODE_ENV === 'development') {
         // No logging in production or test modes
-        if (silences.indexOf(code) < 0) {
-            if (typeof arg === 'undefined') {
-                console.log('[event]', code);
-            } else if (typeof arg === 'string') {
-                console.log('[event]', code, `"${arg}"`);
-            } else if (typeof window !== 'undefined') {
-                console.log('[event]', code, arg);
-            } else {
-                // Node builtin needs to be required inside the conditional so it's correctly
-                // stripped from the bundle for the production/browser build.
-                const { inspect } = require('util');
-
-                console.log('[event]', code, inspect(arg, { depth: 0 }));
-            }
-        }
+        logEvent(code, arg);
     }
 
     const list = handlers[code];

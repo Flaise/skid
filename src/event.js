@@ -66,7 +66,11 @@ export function handle(state, code, arg) {
     if (process.env.NODE_ENV === 'development') {
         // No logging in production or test modes
         if (silences.indexOf(code) < 0) {
-            if (typeof window !== 'undefined') {
+            if (typeof arg === 'undefined') {
+                console.log('[event]', code);
+            } else if (typeof arg === 'string') {
+                console.log('[event]', code, `"${arg}"`);
+            } else if (typeof window !== 'undefined') {
                 console.log('[event]', code, arg);
             } else {
                 // Node builtin needs to be required inside the conditional so it's correctly

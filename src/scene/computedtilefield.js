@@ -8,6 +8,14 @@ export class ComputedTileField {
         this.avatars = Object.create(null); // {position: {[type]: [avatar, ...]}}
     }
 
+    get layer() {
+        throw new Error('a computed tile field has no layer - use ctf.field.layerOffset instead');
+    }
+
+    set layer(a) {
+        throw new Error('a computed tile field has no layer - use ctf.field.layerOffset instead');
+    }
+
     _hasTypeAtKey(key, types) {
         const map = this.avatars[key];
         if (!map) {
@@ -53,7 +61,7 @@ export class ComputedTileField {
         }
         const node = this.field._segments[key];
         if (node) {
-            node._altered = true;
+            node.altered = true;
         }
     }
 

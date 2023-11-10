@@ -16,6 +16,14 @@ export class TileField {
         this.imageSmoothingEnabled = imageSmoothingEnabled;
     }
 
+    get layer() {
+        throw new Error('a tile field has no layer - use field.layerOffset instead');
+    }
+
+    set layer(a) {
+        throw new Error('a tile field has no layer - use field.layerOffset instead');
+    }
+
     _keyOf(x, y) {
         return Math.floor(x / TILES_PER_SEGMENT) + ',' + Math.floor(y);
     }

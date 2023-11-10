@@ -1,14 +1,17 @@
 import { Cache } from './cache';
 import { Group } from './group';
 
-const TILES_PER_SEGMENT = 6;
-
 export class TileField {
-    constructor(root, tileSize, imageSmoothingEnabled) {
+    constructor(root, tileSize, imageSmoothingEnabled, nodeTileWidth = 8, nodeTileHeight = 1) {
+        if (!nodeTileWidth || !nodeTileHeight) {
+            throw new Error('tile field requires nodeTileWidth and nodeTileHeight');
+        }
         this.root = root;
         this._tileSize = tileSize;
         this._rows = Object.create(null);
         this._segments = Object.create(null);
+        this._nodeTileWidth = nodeTileWidth;
+        this._nodeTileHeight = nodeTileHeight;
         this.layerOffset = 0;
 
         // In the current imlementation, altering this field after a row has been created will have
@@ -25,7 +28,7 @@ export class TileField {
     }
 
     _keyOf(x, y) {
-        return Math.floor(x / TILES_PER_SEGMENT) + ',' + Math.floor(y);
+        return Math.floor(x / this._nodeTileWidth) + ',' + Math.floor(y / this._nodeTileHeight);
     }
 
     _ensureRow(y) {

@@ -3,8 +3,9 @@ import { IconAvatar } from './iconavatar';
 import { isIterable, isFunction } from '../is';
 
 export class ComputedTileField {
-    constructor(root, tileSize, imageSmoothingEnabled) {
-        this.field = new TileField(root, tileSize, imageSmoothingEnabled);
+    constructor(root, tileSize, imageSmoothingEnabled, nodeTileWidth, nodeTileHeight) {
+        this.field = new TileField(root, tileSize, imageSmoothingEnabled, nodeTileWidth,
+            nodeTileHeight);
         this.avatars = Object.create(null); // {position: {[type]: [avatar, ...]}}
     }
 

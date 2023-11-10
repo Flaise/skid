@@ -73,8 +73,8 @@ export class Group extends Avatar {
             const bottom2 = top2 + height2;
 
             if (first) {
-                first = false
-                ;[left, top, right, bottom] = [left2, top2, right2, bottom2];
+                first = false;
+                [left, top, right, bottom] = [left2, top2, right2, bottom2];
                 return;
             }
 

@@ -17,15 +17,13 @@ addHandler('load', (state) => {
     });
 });
 
-export function mouseXY(event, component) {
-    const x = event.pageX - (component.offsetLeft || 0);
-    const y = event.pageY - (component.offsetTop || 0);
-    return { x, y };
-}
-
-export function startMouseEvent(state, name, component, skidEventName = name) {
-    component.addEventListener(name, (event) => {
-        handle(state, skidEventName, mouseXY(event, component));
+export function startMouseEvent(state, eventName, component, skidEventName = eventName) {
+    component.addEventListener(eventName, (event) => {
+        handle(state, skidEventName, {
+            x: event.clientX,
+            y: event.clientY,
+            buttons: event.buttons,
+        });
     });
 }
 

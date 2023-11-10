@@ -177,15 +177,16 @@ function doXHR(state, id, url, showProgress, contentType) {
 
 export function finalizeLoadingPromise(state, loadingID, promise) {
     promise
+        .catch((error) => {
+            errorLoading(state, error);
+            throw error; // makes it show up in the console
+        })
         .then(() => {
             if (isDefined(loadingID)) {
                 doneLoading(state, loadingID);
             }
-        })
-        .catch((error) => {
-            errorLoading(state, error);
-            throw error; // makes it show up in the console
         });
+    // No .catch() here - can't call errorLoading() after doneLoading()
 }
 
 function xhrToBlob(xhr) {

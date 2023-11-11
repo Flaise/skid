@@ -68,6 +68,13 @@ export class RectAvatar extends Avatar {
         this.anchorX.remove();
         this.anchorY.remove();
     }
+
+    // angle is not currently supported
+    bounds() {
+        const offsetX = -this.w.curr * this.anchorX.curr;
+        const offsetY = -this.h.curr * this.anchorY.curr;
+        return [this.x.curr + offsetX, this.y.curr + offsetY, this.w.curr, this.h.curr];
+    }
 }
 
 function doRoundRectPath(context, x, y, w, h, radius) {

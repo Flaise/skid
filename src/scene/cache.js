@@ -24,6 +24,14 @@ export class Cache extends Group {
         this._height = 0;
     }
 
+    get _altered() {
+        throw new Error('use cache.altered, not cache._altered');
+    }
+
+    set _altered(a) {
+        throw new Error('use cache.altered, not cache._altered');
+    }
+
     insert(avatar) {
         super.insert(avatar);
         this.altered = true;

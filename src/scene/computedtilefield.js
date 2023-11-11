@@ -3,9 +3,18 @@ import { IconAvatar } from './iconavatar';
 import { isIterable, isFunction } from '../is';
 
 export class ComputedTileField {
-    constructor(root, tileSize, imageSmoothingEnabled) {
-        this.field = new TileField(root, tileSize, imageSmoothingEnabled);
+    constructor(root, tileSize, imageSmoothingEnabled, nodeTileWidth, nodeTileHeight) {
+        this.field = new TileField(root, tileSize, imageSmoothingEnabled, nodeTileWidth,
+            nodeTileHeight);
         this.avatars = Object.create(null); // {position: {[type]: [avatar, ...]}}
+    }
+
+    get layer() {
+        throw new Error('a computed tile field has no layer - use ctf.field.layerOffset instead');
+    }
+
+    set layer(a) {
+        throw new Error('a computed tile field has no layer - use ctf.field.layerOffset instead');
     }
 
     _hasTypeAtKey(key, types) {
@@ -53,7 +62,7 @@ export class ComputedTileField {
         }
         const node = this.field._segments[key];
         if (node) {
-            node._altered = true;
+            node.altered = true;
         }
     }
 

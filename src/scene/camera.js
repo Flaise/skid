@@ -42,7 +42,7 @@ export class Camera extends Group {
             context.translate(dx, dy);
         }
 
-        this.transform = DOMMatrix.fromMatrix(context.getTransform());
+        this.transform = context.getTransform();
 
         super.draw(context);
 

@@ -12,16 +12,21 @@ export class Opacity extends Group {
     }
 
     draw(context) {
-        if (this.empty || !this.alpha.curr) {
+        if (this.empty) {
             return;
         }
 
         const prev = context.globalAlpha;
-        if (prev !== this.alpha.curr) {
-            context.globalAlpha = Math.min(1, Math.max(0, this.alpha.curr));
+        const target = Math.min(1, Math.max(0, this.alpha.curr * prev));
+        if (target === 0) {
+            return;
+        }
+
+        if (prev !== target) {
+            context.globalAlpha = target;
         }
         super.draw(context);
-        if (prev !== this.alpha.curr) {
+        if (prev !== target) {
             context.globalAlpha = prev;
         }
     }

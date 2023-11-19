@@ -1,9 +1,11 @@
 import { addHandler, handle } from './event';
 
+// Returns a timeout ID. Use clearTimeout() to cancel.
 export function handleLater(state, delay, code, arg) {
     return callLater(state, delay, handle, state, code, arg);
 }
 
+// Returns an object. Use returnValue.stop() to stop execution.
 export function handleInterval(state, delay, code, arg) {
     let timeout;
     function trigger() {
@@ -28,6 +30,7 @@ function callingLater(state, callback, targetTime, a, b, c, d) {
     state.skid.timeRemainder = 0;
 }
 
+// Returns a timeout ID. Use clearTimeout() to cancel.
 export function callLater(state, delay, callback, a, b, c, d) {
     if (!state.skid.timeRemainder) {
         state.skid.timeRemainder = 0;

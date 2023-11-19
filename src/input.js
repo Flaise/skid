@@ -17,13 +17,15 @@ addHandler('load', (state) => {
     });
 });
 
+// Saving the event instance so repeated mouse inputs don't take up gc resources.
+const mouseEvent = { x: 0, y: 0, buttons: 0 };
+
 export function startMouseEvent(state, eventName, component, skidEventName = eventName) {
     component.addEventListener(eventName, (event) => {
-        handle(state, skidEventName, {
-            x: event.clientX,
-            y: event.clientY,
-            buttons: event.buttons,
-        });
+        mouseEvent.x = event.clientX;
+        mouseEvent.y = event.clientY;
+        mouseEvent.buttons = event.buttons;
+        handle(state, skidEventName, mouseEvent);
     });
 }
 

@@ -8,6 +8,23 @@ export function makeViewport(state, canvas) {
     return root;
 }
 
+function drawFunc(state) {
+    const currentFrame = Date.now();
+    handle(state, 'before_draw', currentFrame - state.skid.lastFrame);
+    const viewport = state.skid.viewport;
+    if (viewport && viewport.canvas) {
+        const context = viewport.canvas.getContext('2d');
+        viewport.root.draw(context);
+    }
+    state.skid.willDraw = false;
+    handle(state, 'after_draw');
+    if (state.skid.willDraw) {
+        state.skid.lastFrame = currentFrame;
+    } else {
+        state.skid.lastFrame = undefined;
+    }
+}
+
 addHandler('request_draw', (state) => {
     if (state.skid.willDraw) {
         return;
@@ -18,22 +35,7 @@ addHandler('request_draw', (state) => {
     }
 
     if (isNullish(state.skid.drawFunc)) {
-        state.skid.drawFunc = () => {
-            const currentFrame = Date.now();
-            handle(state, 'before_draw', currentFrame - state.skid.lastFrame);
-            const viewport = state.skid.viewport;
-            if (viewport && viewport.canvas) {
-                const context = viewport.canvas.getContext('2d');
-                viewport.root.draw(context);
-            }
-            state.skid.willDraw = false;
-            handle(state, 'after_draw');
-            if (state.skid.willDraw) {
-                state.skid.lastFrame = currentFrame;
-            } else {
-                state.skid.lastFrame = undefined;
-            }
-        };
+        state.skid.drawFunc = () => drawFunc(state);
     }
 
     animationFrame(state.skid.drawFunc);

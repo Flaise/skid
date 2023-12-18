@@ -1,5 +1,5 @@
-import { Group } from './group';
-import { isDefined } from '../is';
+import { Group } from './group.js';
+import { isDefined } from '../is.js';
 
 export class Smoothing extends Group {
     constructor(container, enabled) {

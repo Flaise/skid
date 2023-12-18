@@ -1,8 +1,8 @@
 import { extname } from 'path';
 import { Howl, Howler } from 'howler';
-import { loadData, errorLoading, finalizeLoadingPromise } from './load';
-import { addHandler, handle } from './event';
-import { isArray } from './is';
+import { loadData, errorLoading, finalizeLoadingPromise } from './load.js';
+import { addHandler, handle } from './event.js';
+import { isArray } from './is.js';
 
 function load(state, eventCode, howlArgs) {
     const sound = new Howl(howlArgs);

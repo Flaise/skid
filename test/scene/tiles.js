@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { ComputedTileField } from '../../src/scene/computedtilefield';
+import { ComputedTileField } from '../../src/scene/computedtilefield.js';
 
 suite('tiles');
 

@@ -1,4 +1,4 @@
-import { Group } from './group';
+import { Group } from './group.js';
 
 export class PathGroup extends Group {
     constructor(container) {

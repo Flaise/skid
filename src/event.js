@@ -1,4 +1,4 @@
-import { isArray, isFunction, isHash, isString } from './is';
+import { isArray, isFunction, isHash, isString } from './is.js';
 
 const handlers = Object.create(null);
 

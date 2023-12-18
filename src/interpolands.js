@@ -1,5 +1,5 @@
-import { filter, remove } from './array';
-import { handle, addHandler } from './event';
+import { filter, remove } from './array.js';
+import { handle, addHandler } from './event.js';
 
 class Interpoland {
     mod(delta, duration, tweenFunc, onDone) {

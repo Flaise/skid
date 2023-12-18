@@ -1,8 +1,8 @@
 import assert from 'power-assert';
 import sinon from 'sinon';
-import { makeInterpoland } from '../src/interpolands';
-import * as tween from '../src/tween';
-import { handle } from '../src/event';
+import { makeInterpoland } from '../src/interpolands.js';
+import * as tween from '../src/tween.js';
+import { handle } from '../src/event.js';
 
 suite('Interpoland');
 

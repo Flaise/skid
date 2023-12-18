@@ -1,7 +1,7 @@
-import { PieAvatar } from '../scene/pieavatar';
-import { Translation } from '../scene/translation';
-import { TextAvatar } from '../scene/textavatar';
-import { addHandler, handle } from '../event';
+import { PieAvatar } from '../scene/pieavatar.js';
+import { Translation } from '../scene/translation.js';
+import { TextAvatar } from '../scene/textavatar.js';
+import { addHandler, handle } from '../event.js';
 
 export function initPreloader(state, camera, fillStyle = 'black') {
     const meter = new PieAvatar(state, camera);

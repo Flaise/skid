@@ -1,6 +1,6 @@
-import { Avatar } from './avatar';
-import { toRadians } from '../turns';
-import { makeInterpoland } from '../interpolands';
+import { Avatar } from './avatar.js';
+import { toRadians } from '../turns.js';
+import { makeInterpoland } from '../interpolands.js';
 
 export class PieAvatar extends Avatar {
     constructor(state, container) {

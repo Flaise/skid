@@ -1,8 +1,8 @@
 import assert from 'power-assert';
 import lolex from 'lolex';
 import sinon from 'sinon';
-import { addHandler, handle } from '../src/event';
-import { procrastinate } from '../src/timer';
+import { addHandler, handle } from '../src/event.js';
+import { procrastinate } from '../src/timer.js';
 
 suite('Timer');
 

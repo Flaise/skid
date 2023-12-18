@@ -1,6 +1,6 @@
-import { Avatar } from './avatar';
-import { makeInterpoland } from '../interpolands';
-import { toRadians } from '../turns';
+import { Avatar } from './avatar.js';
+import { makeInterpoland } from '../interpolands.js';
+import { toRadians } from '../turns.js';
 
 export class RectAvatar extends Avatar {
     constructor(state, container) {

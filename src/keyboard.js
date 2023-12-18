@@ -1,4 +1,4 @@
-import { addHandler, handle } from './event';
+import { addHandler, handle } from './event.js';
 
 const states = Object.create(null);
 

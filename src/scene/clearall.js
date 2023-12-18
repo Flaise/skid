@@ -1,4 +1,4 @@
-import { Avatar } from './avatar';
+import { Avatar } from './avatar.js';
 
 /*
  * Clears the entire canvas. It is advisable to use this when the entire canvas is not being drawn

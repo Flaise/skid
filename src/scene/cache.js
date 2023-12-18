@@ -1,6 +1,6 @@
-import { Group } from './group';
-import { Translation } from './translation';
-import { Scalement } from './scalement';
+import { Group } from './group.js';
+import { Translation } from './translation.js';
+import { Scalement } from './scalement.js';
 
 export class Cache extends Group {
     constructor(container, tileSize, imageSmoothingEnabled) {

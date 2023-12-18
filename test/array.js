@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { filter, insertSorted, remove, copy } from '../src/array';
+import { filter, insertSorted, remove, copy } from '../src/array.js';
 
 suite('array');
 

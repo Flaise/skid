@@ -1,5 +1,5 @@
-import { Group } from './group';
-import { makeInterpoland } from '../interpolands';
+import { Group } from './group.js';
+import { makeInterpoland } from '../interpolands.js';
 
 export class Rotation extends Group {
     constructor(state, container, angle) {

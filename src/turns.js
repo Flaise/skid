@@ -1,4 +1,4 @@
-import { Vec2, rotatedXYTurns } from './vector2';
+import { Vec2, rotatedXYTurns } from './vector2.js';
 
 export function wrap(a) {
     const b = a - Math.ceil(a);

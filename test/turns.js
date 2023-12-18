@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import * as turns from '../src/turns';
+import * as turns from '../src/turns.js';
 
 function close(a, b) {
     return Math.abs(a - b) < 0.0001;

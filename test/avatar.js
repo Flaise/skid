@@ -1,8 +1,8 @@
 import assert from 'power-assert';
 import sinon from 'sinon';
-import { Translation } from '../src/scene/translation';
-import { makeViewport } from '../src/scene/viewport';
-import { handle } from '../src/event';
+import { Translation } from '../src/scene/translation.js';
+import { makeViewport } from '../src/scene/viewport.js';
+import { handle } from '../src/event.js';
 
 suite('Avatar');
 

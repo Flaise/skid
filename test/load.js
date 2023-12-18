@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { contentTypeMatches } from '../src/load';
+import { contentTypeMatches } from '../src/load.js';
 
 suite('load');
 

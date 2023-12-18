@@ -1,6 +1,6 @@
 import assert from 'power-assert';
 import { inspect } from 'util';
-import * as functions from '../src/is';
+import * as functions from '../src/is.js';
 
 suite('is');
 

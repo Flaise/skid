@@ -1,6 +1,6 @@
-import { Group } from './group';
-import { isDefined } from '../is';
-import { makeInterpoland } from '../interpolands';
+import { Group } from './group.js';
+import { isDefined } from '../is.js';
+import { makeInterpoland } from '../interpolands.js';
 
 export class Opacity extends Group {
     constructor(state, group, alpha) {

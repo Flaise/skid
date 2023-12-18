@@ -1,6 +1,6 @@
-import { loadData, reloadData, startLoading, doneLoading, finalizeLoadingPromise } from '../load';
-import { handle } from '../event';
-import { isString } from '../is';
+import { loadData, reloadData, startLoading, doneLoading, finalizeLoadingPromise } from '../load.js';
+import { handle } from '../event.js';
+import { isString } from '../is.js';
 
 export class Icon {
     constructor(image, layout) {

@@ -1,4 +1,4 @@
-import { toRadians } from './turns';
+import { toRadians } from './turns.js';
 
 export class Vec2 {
     constructor(x, y) {

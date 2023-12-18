@@ -1,4 +1,4 @@
-import { addHandler, handle } from './event';
+import { addHandler, handle } from './event.js';
 
 // Returns a timeout ID. Use clearTimeout() to cancel.
 export function handleLater(state, delay, code, arg) {

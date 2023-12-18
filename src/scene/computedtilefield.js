@@ -1,6 +1,6 @@
-import { TileField } from './tilefield';
-import { IconAvatar } from './iconavatar';
-import { isIterable, isFunction } from '../is';
+import { TileField } from './tilefield.js';
+import { IconAvatar } from './iconavatar.js';
+import { isIterable, isFunction } from '../is.js';
 
 export class ComputedTileField {
     constructor(root, tileSize, imageSmoothingEnabled, nodeTileWidth, nodeTileHeight) {

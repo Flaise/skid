@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { addHandler, handle } from '../src/event';
+import { addHandler, handle } from '../src/event.js';
 
 suite('Event');
 

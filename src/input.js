@@ -1,4 +1,4 @@
-import { addHandler, handle } from './event';
+import { addHandler, handle } from './event.js';
 
 addHandler('load', (state) => {
     window.addEventListener('focus', () => handle(state, 'windowfocus'));

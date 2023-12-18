@@ -1,6 +1,6 @@
-import { Avatar } from './avatar';
-import { isNullish } from '../is';
-import { insertSorted, remove } from '../array';
+import { Avatar } from './avatar.js';
+import { isNullish } from '../is.js';
+import { insertSorted, remove } from '../array.js';
 
 function compare(a, b) {
     if (isNullish(a._layer)) {

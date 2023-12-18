@@ -1,4 +1,4 @@
-import { Avatar } from './avatar';
+import { Avatar } from './avatar.js';
 
 export class IconAvatar extends Avatar {
     constructor(container, icon, x, y, w, h) {

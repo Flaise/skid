@@ -1,5 +1,5 @@
-import { Avatar } from './avatar';
-import { makeInterpoland } from '../interpolands';
+import { Avatar } from './avatar.js';
+import { makeInterpoland } from '../interpolands.js';
 
 export class LineAvatar extends Avatar {
     constructor(state, group) {

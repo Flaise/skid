@@ -1,5 +1,5 @@
-import { handle } from './event';
-import { isDefined } from './is';
+import { handle } from './event.js';
+import { isDefined } from './is.js';
 
 let started = false;
 

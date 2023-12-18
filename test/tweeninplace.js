@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { quake, sine } from '../src/tweeninplace';
+import { quake, sine } from '../src/tweeninplace.js';
 
 suite('tween in place');
 

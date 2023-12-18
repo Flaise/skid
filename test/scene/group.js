@@ -1,6 +1,6 @@
 import assert from 'power-assert';
-import { Group } from '../../src/scene/group';
-import { Avatar } from '../../src/scene/avatar';
+import { Group } from '../../src/scene/group.js';
+import { Avatar } from '../../src/scene/avatar.js';
 
 suite('group');
 

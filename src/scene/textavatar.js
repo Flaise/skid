@@ -1,6 +1,6 @@
-import { Avatar } from './avatar';
-import { isFunction } from '../is';
-import { makeInterpoland } from '../interpolands';
+import { Avatar } from './avatar.js';
+import { isFunction } from '../is.js';
+import { makeInterpoland } from '../interpolands.js';
 
 export class TextAvatar extends Avatar {
     constructor(state, container, camera) {

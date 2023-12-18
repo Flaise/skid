@@ -1,6 +1,6 @@
-import { Group } from './group';
-import { isNullish } from '../is';
-import { addHandler, handle } from '../event';
+import { Group } from './group.js';
+import { isNullish } from '../is.js';
+import { addHandler, handle } from '../event.js';
 
 export function makeViewport(state, canvas) {
     const root = new Group();

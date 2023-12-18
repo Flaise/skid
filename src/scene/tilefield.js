@@ -1,5 +1,5 @@
-import { Cache } from './cache';
-import { Group } from './group';
+import { Cache } from './cache.js';
+import { Group } from './group.js';
 
 export class TileField {
     constructor(root, tileSize, imageSmoothingEnabled, nodeTileWidth = 8, nodeTileHeight = 1) {

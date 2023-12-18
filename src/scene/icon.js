@@ -1,4 +1,7 @@
-import { loadData, reloadData, startLoading, doneLoading, finalizeLoadingPromise } from '../load.js';
+import {
+    loadData, reloadData, startLoading, doneLoading,
+    finalizeLoadingPromise,
+} from '../load.js';
 import { handle } from '../event.js';
 import { isString } from '../is.js';
 

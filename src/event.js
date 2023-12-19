@@ -63,14 +63,8 @@ function logEvent(code, arg) {
         console.log('[event]', code);
     } else if (isString(arg)) {
         console.log('[event]', code, `"${arg}"`);
-    } else if (typeof window !== 'undefined') {
-        console.log('[event]', code, arg);
     } else {
-        // Node builtin needs to be required inside the conditional so it's correctly
-        // stripped from the bundle for the production/browser build.
-        const { inspect } = require('util');
-
-        console.log('[event]', code, inspect(arg, { depth: 0 }));
+        console.log('[event]', code, arg);
     }
 }
 

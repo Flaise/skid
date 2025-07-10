@@ -26,7 +26,8 @@ export function start() {
             doLoad(state);
         });
     } else {
-        doLoad(state);
+        // Using a timeout so all code paths are async.
+        setTimeout(() => doLoad(state));
     }
 }
 
@@ -38,14 +39,14 @@ function doLoad(state) {
     }
 }
 
-export function startLoading(state, size) {
+export function startLoading(state, sizeBytes) {
     if (!state.skid.load) {
         throw new Error("load assets during the 'load' event");
     }
     state.skid.load.requests += 1;
     const id = state.skid.load.requests;
-    if (size != null) {
-        progressLoading(state, id, 0, size);
+    if (isDefined(sizeBytes)) {
+        progressLoading(state, id, 0, sizeBytes);
     }
     return id;
 }
@@ -110,9 +111,9 @@ export function reloadData(state, url, contentType) {
     return doXHR(state, undefined, url, false, contentType);
 }
 
-export function loadData(state, url, total, contentType) {
-    const loadingID = startLoading(state, total);
-    return { promise: doXHR(state, loadingID, url, true, contentType), loadingID };
+export function loadData(state, url, sizeBytes, contentType) {
+    const loadingID = startLoading(state, sizeBytes);
+    return { promise: doXHR(state, loadingID, url, true, contentType, sizeBytes), loadingID };
 }
 
 export function contentTypeMatches(expected, actual) {
@@ -125,18 +126,16 @@ export function contentTypeMatches(expected, actual) {
     return expected === actual;
 }
 
-function doXHR(state, id, url, showProgress, contentType) {
+function doXHR(state, id, url, showProgress, contentType, sizeBytes) {
     const promise = new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
         if (showProgress) {
-            // just need nonzero placeholder until actual byte count is known
-            progressLoading(state, id, 0, 1);
-
             xhr.onprogress = (event) => {
                 if (event.lengthComputable) {
+                    sizeBytes = event.total;
                     progressLoading(state, id, event.loaded, event.total);
                 }
             };
@@ -151,8 +150,8 @@ function doXHR(state, id, url, showProgress, contentType) {
 
             if (contentType && blob.type) {
                 if (!contentTypeMatches(contentType, blob.type)) {
-                    // Parcel silently redirects to the root HTML page if it can't resolve the URL
-                    // instead of generating an error.
+                    // Parcel and Vite dev servers silently redirect to the root HTML page
+                    // instead of correctly generating a 404 error.
 
                     reject(new Error(`Failed to load ${url}: expected content type ` +
                         `'${contentType}', got '${blob.type}'`));
@@ -160,8 +159,8 @@ function doXHR(state, id, url, showProgress, contentType) {
                 }
             }
 
-            if (showProgress) {
-                progressLoading(state, id, blob.size, blob.size);
+            if (showProgress && isDefined(sizeBytes)) {
+                progressLoading(state, id, sizeBytes, sizeBytes);
             }
 
             const data = window.URL.createObjectURL(blob);
@@ -186,7 +185,8 @@ export function finalizeLoadingPromise(state, loadingID, promise) {
                 doneLoading(state, loadingID);
             }
         });
-    // No .catch() here - can't call errorLoading() after doneLoading()
+    // No .catch() here - can't call errorLoading() after doneLoading().
+    // Just let it bubble up to the console.
 }
 
 function xhrToBlob(xhr) {

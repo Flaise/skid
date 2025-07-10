@@ -2,9 +2,9 @@ import { extname } from 'path';
 import { Howl, Howler } from 'howler';
 import { loadData, errorLoading, finalizeLoadingPromise } from './load.js';
 import { addHandler, handle } from './event.js';
-import { isArray } from './is.js';
+import { isArray, isDefined } from './is.js';
 
-function load(state, eventCode, howlArgs) {
+function loadHowl(state, eventCode, howlArgs) {
     const sound = new Howl(howlArgs);
 
     addHandler(eventCode, () => {
@@ -25,39 +25,50 @@ function load(state, eventCode, howlArgs) {
     });
 }
 
-// Basic usage: loadAudio(state, 'click', { src: 'click.wav' });
+// Basic usage: loadAudio(state, 'click', { src: 'click.wav' }, 1234);
 //
-// Plays 'click.wav' each time the 'click' event is triggered.
+// Plays 'click.wav' each time the 'click' event is triggered. The last argument is the size of
+// the file in bytes.
 //
 // To support multiple formats, pass an array of paths:
 //
-// loadAudio(state, 'click', { src: ['click.wav', 'click.ogg'] });
-export function loadAudio(state, eventCode, howlArgs) {
+// loadAudio(state, 'click', { src: ['click.wav', 'click.ogg'] }, [1234, 2345]);
+export function loadAudio(state, eventCode, howlArgs, sizeBytes) {
     let src = howlArgs.src;
+    if (!isDefined(src)) {
+        errorLoading(state, new Error('Missing field `src` from parameter howlArgs.'));
+        return;
+    }
     if (!isArray(src)) {
         src = [src];
     }
+    if (!isArray(sizeBytes)) {
+        sizeBytes = [sizeBytes]; // `[undefined]` is acceptable
+    }
 
-    for (let path of src) {
+    for (let i = 0; i < src.length; i += 1) {
+        let path = src[i];
         if (path instanceof window.URL) {
             path = path.href;
         }
 
         const beforeQuery = path.split('?')[0];
-        const extension = extname(beforeQuery).substr(1);
+        const extension = extname(beforeQuery).substring(1);
         if (Howler.codecs(extension)) {
-            let { promise, loadingID } = loadData(state, path, undefined, 'audio');
+            let { promise, loadingID } = loadData(state, path, sizeBytes[i], 'audio');
 
             promise = promise.then(() => {
                 const args = { ...howlArgs, src: path, format: [extension] };
-                return load(state, eventCode, args);
+                return loadHowl(state, eventCode, args);
             });
 
             finalizeLoadingPromise(state, loadingID, promise);
             return;
         }
     }
-    errorLoading(state, new Error(`Unsupported audio format: [${src}]`));
+    // None of the source URLs have file name extensions that are supported by this browser.
+    // Usually a bad input. Who doesn't support at least .ogg or .mp3?
+    errorLoading(state, new Error(`Unsupported audio format(s): [${src}]`));
 }
 
 export function muted() {

@@ -35,60 +35,32 @@
   ],
   "scripts": {
     "prepublishOnly": "npm prune && npm run test",
-    "prepare": "npm run lint && npm run build",
-    "test": "npm run headless -- karma start ./karma.conf.cjs --single-run",
-    "test-watch": "npm run headless -- karma start",
-    "build": "gobble build -f cjs",
-    "build-watch": "gobble watch cjs",
-    "headless": "node ./helpers/headless.mjs",
-    "apt-get": "apt-get install xvfb",
-    "karma": "karma start --single-run",
-    "karma-watch": "karma start",
-    "lint": "npx eslint ./test ./src ./helpers/**"
+    "prepare": "npm run lint",
+    "test": "mocha --ui qunit",
+    "lint": "npx eslint ./test ./src"
   },
   "exports": {
     "./*": {
-      "import": "./src/*.js",
-      "require": "./cjs/*.js"
+      "import": "./src/*.js"
     },
     "./scene/*": {
-      "import": "./src/scene/*.js",
-      "require": "./cjs/scene/*.js"
+      "import": "./src/scene/*.js"
     },
     "./util/*": {
-      "import": "./src/util/*.js",
-      "require": "./cjs/util/*.js"
+      "import": "./src/util/*.js"
     }
   },
   "dependencies": {
     "howler": "2.0.9"
   },
   "devDependencies": {
-    "babel-plugin-espower": "1.0.0",
-    "babel-runtime": "5.8.25",
-    "babelify": "6.3.0",
     "benchmark": "1.0.0",
-    "browserify": "17.0.0",
-    "browserify-istanbul": "3.0.1",
-    "gobble": "0.12.0",
-    "gobble-babel": "5.5.8",
-    "gobble-cli": "0.8.0",
+    "eslint": "8.51.0",
+    "eslint-config-standard": "17.1.0",
     "istanbul": "0.4.5",
-    "karma": "6.4.0",
-    "karma-babel-preprocessor": "8.0.2",
-    "karma-browserify": "8.1.0",
-    "karma-chrome-launcher": "0.2.1",
-    "karma-coverage": "0.5.2",
-    "karma-firefox-launcher": "0.1.6",
-    "karma-html-reporter": "0.2.7",
-    "karma-mocha": "0.2.0",
     "lolex": "1.3.2",
     "mocha": "10.2.0",
     "power-assert": "1.1.0",
-    "simulate-dom-event": "1.0.3",
-    "sinon": "1.17.1",
-    "xvfb": "0.3.0",
-    "eslint": "8.51.0",
-    "eslint-config-standard": "17.1.0"
+    "sinon": "1.17.1"
   }
 }

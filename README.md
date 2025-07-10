@@ -13,13 +13,7 @@ Installation
 
     $ npm install --save-exact skid
 
-Skid is designed primarily with the browser in mind, although its module system requires Commonjs or ES6 module support. The easiest way to do this is with [Parcel](https://parceljs.org/). Since Skid is packaged to work with both styles of bundling, you will have to tell Parcel how to locate Skid's files by adding the following to your `package.json`:
-
-```
-    "@parcel/resolver-default": {
-        "packageExports": true
-    }
-```
+Skid is designed primarily with the browser in mind, although its module system requires ES6 module support. The easiest way to do this is with [Parcel](https://parceljs.org/).
 
 License
 =======

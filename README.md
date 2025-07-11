@@ -18,9 +18,7 @@ Skid is designed primarily with the browser in mind, although its module system 
 License
 =======
 
-GNU Affero General Public License v3.0: Basically, it stays open source even when run on a remote server. Linking to closed-source software is not allowed.
-
-Contact me if you need a proprietary license.
+Apache 2.0
 
 ---
 ---
